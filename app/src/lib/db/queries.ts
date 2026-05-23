@@ -4,12 +4,14 @@ import { getNovaPredictDatabaseClient } from "@/lib/db/client";
 import type {
   FantasyFootballPlayerPosition,
   NovaPredictAccountabilityCallRecord,
+  NovaPredictAccountabilitySummaryRecord,
   NovaPredictExpertComparisonRecord,
   NovaPredictLeagueImportProviderRecord,
   NovaPredictPlatformMetricRecord,
   NovaPredictPlayerRecord,
   NovaPredictSignalWeightRecord,
 } from "@/lib/db/schema";
+import { NOVA_PREDICT_ACCOUNTABILITY_BACKTEST_SEASON } from "@/lib/constants/NovaPredictNflSeasonConstants";
 
 function safeNumber(value: unknown, fallback = 0): number {
   const numericValue = Number(value);
@@ -272,22 +274,97 @@ export async function getNovaPredictPlayerById(id: string): Promise<NovaPredictP
   return fuzzyMatch ?? null;
 }
 
-export async function getNovaPredictAccountabilityCalls(
-  limit = 8,
-): Promise<NovaPredictAccountabilityCallRecord[]> {
-  const callRows = await runRows<Record<string, unknown>>(() => sql`
+export async function getNovaPredictAccountabilitySummaryMetrics(): Promise<NovaPredictAccountabilitySummaryRecord> {
+  const summaryRows = await runRows<Record<string, unknown>>(() => sql`
     SELECT
-      COALESCE((to_jsonb(a)->>'id'), md5(random()::text)) AS id,
-      COALESCE((to_jsonb(a)->>'player_name'), (to_jsonb(a)->>'name'), 'Unknown Player') AS player_name,
-      COALESCE((to_jsonb(a)->>'position'), 'WR') AS position,
-      COALESCE((to_jsonb(a)->>'team'), 'TBD') AS team,
-      COALESCE((to_jsonb(a)->>'projection'), (to_jsonb(a)->>'projected_points'), '0') AS projection,
-      COALESCE((to_jsonb(a)->>'actual'), (to_jsonb(a)->>'actual_points'), '0') AS actual,
-      COALESCE((to_jsonb(a)->>'classification'), 'correct') AS classification,
-      COALESCE((to_jsonb(a)->>'diagnosis'), (to_jsonb(a)->>'summary'), 'Diagnosis pending') AS diagnosis
-    FROM accountability_calls a
-    LIMIT ${limit};
+      COUNT(*)::int AS total_calls,
+      SUM(CASE WHEN classification = 'correct' THEN 1 ELSE 0 END)::int AS correct_count,
+      SUM(CASE WHEN classification = 'miss' THEN 1 ELSE 0 END)::int AS miss_count,
+      SUM(CASE WHEN classification = 'variance' THEN 1 ELSE 0 END)::int AS variance_count,
+      AVG(ABS(actual::numeric - projection::numeric)) AS mean_abs_error
+    FROM accountability_calls
+    WHERE week >= 5;
   `);
+
+  const weekRows = await runRows<Record<string, unknown>>(() => sql`
+    SELECT DISTINCT week::int AS week
+    FROM accountability_calls
+    WHERE week >= 5
+    ORDER BY week DESC;
+  `);
+
+  if (summaryRows.length === 0 || safeNumber(summaryRows[0].total_calls) === 0) {
+    return {
+      totalCalls: 0,
+      correctCount: 0,
+      missCount: 0,
+      varianceCount: 0,
+      hitRatePercent: 0,
+      meanAbsoluteError: 0,
+      seasonLabel: `${NOVA_PREDICT_ACCOUNTABILITY_BACKTEST_SEASON} backtest`,
+      availableWeeks: [],
+    };
+  }
+
+  const summary = summaryRows[0];
+  const totalCalls = safeNumber(summary.total_calls);
+  const correctCount = safeNumber(summary.correct_count);
+  const missCount = safeNumber(summary.miss_count);
+  const varianceCount = safeNumber(summary.variance_count);
+
+  return {
+    totalCalls,
+    correctCount,
+    missCount,
+    varianceCount,
+    hitRatePercent: totalCalls > 0 ? (correctCount / totalCalls) * 100 : 0,
+    meanAbsoluteError: safeNumber(summary.mean_abs_error),
+    seasonLabel: `${NOVA_PREDICT_ACCOUNTABILITY_BACKTEST_SEASON} trailing baseline backtest`,
+    availableWeeks: weekRows.map((row) => safeNumber(row.week)).filter((week) => week > 0),
+  };
+}
+
+export async function getNovaPredictAccountabilityCalls(
+  limit = 24,
+  weekFilter?: number,
+): Promise<NovaPredictAccountabilityCallRecord[]> {
+  const callRows = await runRows<Record<string, unknown>>(() => {
+    if (weekFilter && weekFilter > 0) {
+      return sql`
+        SELECT
+          id::text AS id,
+          player_name,
+          position,
+          team,
+          projection,
+          actual,
+          classification,
+          diagnosis,
+          week
+        FROM accountability_calls
+        WHERE week = ${weekFilter}
+        ORDER BY ABS(actual::numeric - projection::numeric) DESC, player_name ASC
+        LIMIT ${limit};
+      `;
+    }
+
+    return sql`
+      SELECT
+        id::text AS id,
+        player_name,
+        position,
+        team,
+        projection,
+        actual,
+        classification,
+        diagnosis,
+        week
+      FROM accountability_calls
+      WHERE week >= 5
+      ORDER BY week DESC, ABS(actual::numeric - projection::numeric) DESC
+      LIMIT ${limit};
+    `;
+  });
 
   if (callRows.length === 0) {
     return [
@@ -300,6 +377,7 @@ export async function getNovaPredictAccountabilityCalls(
         actual: 24.8,
         classification: "correct",
         diagnosis: "Sharp steam moved receiving ladder +5.5 and held through close.",
+        week: 7,
       },
       {
         id: "fallback-call-saquon",
@@ -310,6 +388,7 @@ export async function getNovaPredictAccountabilityCalls(
         actual: 12.8,
         classification: "miss",
         diagnosis: "Blowout script reduced receiving floor beyond pregame range.",
+        week: 7,
       },
     ];
   }
@@ -328,6 +407,7 @@ export async function getNovaPredictAccountabilityCalls(
           ? "variance"
           : "correct",
     diagnosis: safeText(row.diagnosis, "Diagnosis pending"),
+    week: safeNumber(row.week, 0),
   }));
 }
 
@@ -364,14 +444,19 @@ export async function getNovaPredictExpertComparisons(
   }));
 }
 
-export async function getNovaPredictLeagueImportProviders(): Promise<NovaPredictLeagueImportProviderRecord[]> {
-  const rows = await runRows<Record<string, unknown>>(() => sql`
-    SELECT
-      COALESCE((to_jsonb(l)->>'provider'), 'Sleeper') AS provider,
-      COUNT(*)::text AS connected_count
-    FROM league_connections l
-    GROUP BY COALESCE((to_jsonb(l)->>'provider'), 'Sleeper');
-  `);
+export async function getNovaPredictLeagueImportProviders(
+  novapredictUserId?: string,
+): Promise<NovaPredictLeagueImportProviderRecord[]> {
+  const rows = novapredictUserId
+    ? await runRows<Record<string, unknown>>(() => sql`
+        SELECT
+          provider,
+          COUNT(*)::int AS connected_count
+        FROM league_connections
+        WHERE novapredict_user_id = ${novapredictUserId}
+        GROUP BY provider;
+      `)
+    : [];
 
   if (rows.length === 0) {
     return [
@@ -391,6 +476,11 @@ export async function getNovaPredictLeagueImportProviders(): Promise<NovaPredict
     const providerName = safeText(row.provider, "Sleeper");
     if (providerName in byProvider) {
       byProvider[providerName].connectedLeagueCount = safeNumber(row.connected_count);
+      if (byProvider[providerName].connectedLeagueCount > 0) {
+        byProvider[providerName].statusText = `${byProvider[providerName].connectedLeagueCount} league${
+          byProvider[providerName].connectedLeagueCount === 1 ? "" : "s"
+        } synced`;
+      }
     }
   }
 

@@ -1,3 +1,4 @@
+import { NovaPredictPageHeaderSection } from "@/components/layout/NovaPredictPageHeaderSection";
 import type { NovaPredictExpertComparisonRecord } from "@/lib/db/schema";
 import { getNovaPredictExpertComparisons } from "@/lib/db/queries";
 import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
@@ -11,7 +12,7 @@ export const metadata = BuildNovaPredictPageSiteMetadata({
 
 function rowTone(expert: NovaPredictExpertComparisonRecord): string {
   if (expert.analystName.toLowerCase().includes("nova")) {
-    return "var(--np-accent)";
+    return "var(--np-accent-bright)";
   }
   return "var(--np-text-strong)";
 }
@@ -20,15 +21,12 @@ export default async function ExpertsPage() {
   const experts = await getNovaPredictExpertComparisons(14);
 
   return (
-    <section style={{ display: "grid", gap: "1rem" }}>
-      <article className="np-card" style={{ padding: "1.4rem" }}>
-        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.65rem", letterSpacing: "-0.03em" }}>
-          Expert comparison
-        </h1>
-        <p style={{ marginTop: "0.5rem", color: "var(--np-text-muted)", lineHeight: 1.7 }}>
-          NovaPredict against the names you already follow — same slates, same scoring, no cherry-picking.
-        </p>
-      </article>
+    <section className="np-page-stack">
+      <NovaPredictPageHeaderSection
+        kicker="Benchmarks"
+        title="Expert comparison"
+        lead="NovaPredict against the names you already follow — same slates, same scoring, no cherry-picking."
+      />
 
       <article className="np-card" style={{ padding: "1rem" }}>
         <div className="np-card-muted" style={{ overflow: "hidden" }}>
@@ -38,10 +36,8 @@ export default async function ExpertsPage() {
               gridTemplateColumns: "1.5fr 0.9fr 0.8fr 0.8fr 0.7fr",
               padding: "0.7rem 0.75rem",
               borderBottom: "1px solid var(--np-border-subtle)",
-              color: "var(--np-text-dim)",
-              fontSize: "0.65rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
+              color: "var(--np-stat-label)",
+              fontSize: "0.78rem",
             }}
           >
             <span>Source</span>
@@ -62,14 +58,14 @@ export default async function ExpertsPage() {
               }}
             >
               <span style={{ color: rowTone(expert), fontWeight: 600, fontSize: "0.88rem" }}>{expert.analystName}</span>
-              <span style={{ color: "var(--np-text-dim)", fontSize: "0.74rem" }}>{expert.source}</span>
-              <span style={{ color: "var(--np-cyan)", textAlign: "right", fontFamily: "var(--font-jetbrains-mono)", fontSize: "0.8rem" }}>
+              <span style={{ color: "var(--np-text-dim)", fontSize: "0.78rem" }}>{expert.source}</span>
+              <span className="np-stat-value is-data" style={{ textAlign: "right", fontSize: "0.82rem" }}>
                 {expert.weeklyAccuracy.toFixed(1)}%
               </span>
-              <span style={{ color: "var(--np-accent)", textAlign: "right", fontFamily: "var(--font-jetbrains-mono)", fontSize: "0.8rem" }}>
+              <span className="np-stat-value is-signal" style={{ textAlign: "right", fontSize: "0.82rem" }}>
                 {expert.seasonAccuracy.toFixed(1)}%
               </span>
-              <span style={{ color: "#7598bb", textAlign: "right", fontFamily: "var(--font-jetbrains-mono)", fontSize: "0.8rem" }}>
+              <span className="np-stat-value is-data" style={{ textAlign: "right", fontSize: "0.82rem" }}>
                 {expert.seasonMae.toFixed(2)}
               </span>
             </div>

@@ -38,11 +38,11 @@ export function NovaPredictMobileNavigationDrawer({ open, onClose, isAppShellRou
         aria-label="Site menu"
       >
         <div className="np-mobile-nav-drawer-header">
-          <p className="np-pill np-pill-accent">{isAppShellRoute ? NOVA_PREDICT_CURRENT_WEEK_LABEL : "NovaPredict"}</p>
+          <p className="np-kicker">{isAppShellRoute ? NOVA_PREDICT_CURRENT_WEEK_LABEL : "NovaPredict"}</p>
           <p className="np-mobile-nav-drawer-subtitle">
             {isAppShellRoute
               ? "Everything for this week's slate."
-              : "See how NovaPredict turns Vegas lines into weekly fantasy edge."}
+              : "See what Vegas knows — and whether to believe it."}
           </p>
         </div>
 
@@ -99,7 +99,7 @@ export function NovaPredictMobileNavigationDrawer({ open, onClose, isAppShellRou
 
         <div className="np-mobile-nav-drawer-footer">
           {!isAppShellRoute ? (
-            <Link href="/dashboard" className="np-mobile-nav-drawer-cta np-accent-gradient" onClick={onClose}>
+            <Link href="/dashboard" className="np-mobile-nav-drawer-cta np-btn-primary" onClick={onClose}>
               Open dashboard
             </Link>
           ) : (

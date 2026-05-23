@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { NovaPredictMatchupVisualStrip } from "@/components/media/NovaPredictMatchupVisualStrip";
 import { NovaPredictPlayerHeadshotAvatar } from "@/components/media/NovaPredictPlayerHeadshotAvatar";
+import { NovaPredictMatchupVisualStrip } from "@/components/media/NovaPredictMatchupVisualStrip";
 import { ResolvePositionAccentColor } from "@/lib/assets/ResolveNovaPredictPlayerVisualAssets";
 import type { NovaPredictPlayerRecord } from "@/lib/db/schema";
 
@@ -63,7 +63,7 @@ export function NovaPredictPlayerProjectionCard({
                 border: `1px solid ${positionAccent}44`,
                 color: positionAccent,
                 padding: "0.18rem 0.45rem",
-                fontSize: "0.62rem",
+                fontSize: "0.68rem",
                 flexShrink: 0,
               }}
             >
@@ -79,20 +79,28 @@ export function NovaPredictPlayerProjectionCard({
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.35rem" }}>
         <div className="np-card-muted" style={{ padding: "0.45rem 0.5rem" }}>
-          <div style={{ color: "#395275", fontSize: "0.62rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Vegas PPR</div>
-          <div style={{ color: "#7a9bbb", fontFamily: "var(--font-jetbrains-mono)" }}>{player.vegasPprProjection.toFixed(1)}</div>
+          <div className="np-stat-label">Vegas PPR</div>
+          <div className="np-stat-value is-data">{player.vegasPprProjection.toFixed(1)}</div>
         </div>
         <div className="np-card-muted" style={{ padding: "0.45rem 0.5rem" }}>
-          <div style={{ color: "rgba(0,210,140,0.58)", fontSize: "0.62rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Nova PPR</div>
-          <div style={{ color: "var(--np-accent)", fontFamily: "var(--font-jetbrains-mono)", fontWeight: 600 }}>
-            {player.novaPprProjection.toFixed(1)}
-          </div>
+          <div className="np-stat-label">Nova PPR</div>
+          <div className="np-stat-value is-signal">{player.novaPprProjection.toFixed(1)}</div>
         </div>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "space-between", color: "var(--np-text-dim)", fontSize: "0.68rem", fontFamily: "var(--font-jetbrains-mono)" }}>
-        <span>Boom {player.boomProbability.toFixed(0)}%</span>
-        <span style={{ color: "var(--np-text-muted)", fontSize: "0.62rem", maxWidth: "55%", textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", color: "var(--np-text-dim)", fontSize: "0.72rem" }}>
+        <span className="np-metric-sublabel">Boom {player.boomProbability.toFixed(0)}%</span>
+        <span
+          style={{
+            color: "var(--np-text-muted)",
+            fontSize: "0.72rem",
+            maxWidth: "55%",
+            textAlign: "right",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           {player.marketSignalLabel}
         </span>
       </div>

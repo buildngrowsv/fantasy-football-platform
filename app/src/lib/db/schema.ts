@@ -83,6 +83,33 @@ export const leagueConnectionsTable = pgTable("league_connections", {
   leagueName: text("league_name").notNull(),
 });
 
+/** Email/password accounts for Challenge the Model, league import, and subscriptions. */
+export const novapredictUsersTable = pgTable("novapredict_users", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  displayName: text("display_name"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+/** Opaque session tokens stored server-side — HTTP-only cookie holds session id only. */
+export const novapredictUserSessionsTable = pgTable("novapredict_user_sessions", {
+  id: text("id").primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => novapredictUsersTable.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export interface NovaPredictAuthenticatedUserRecord {
+  id: string;
+  email: string;
+  displayName: string | null;
+  createdAt: Date;
+}
+
 export type FantasyFootballPlayerPosition = "QB" | "RB" | "WR" | "TE" | "K" | "DST" | "FLEX";
 
 export interface NovaPredictPlayerRecord {
@@ -126,6 +153,28 @@ export interface NovaPredictAccountabilityCallRecord {
   actual: number;
   classification: "correct" | "miss" | "variance";
   diagnosis: string;
+  week: number;
+}
+
+export interface NovaPredictAccountabilitySummaryRecord {
+  totalCalls: number;
+  correctCount: number;
+  missCount: number;
+  varianceCount: number;
+  hitRatePercent: number;
+  meanAbsoluteError: number;
+  seasonLabel: string;
+  availableWeeks: number[];
+}
+
+export interface NovaPredictLeagueConnectionRecord {
+  id: string;
+  provider: "Sleeper" | "ESPN" | "Yahoo";
+  externalLeagueId: string;
+  leagueName: string;
+  season: number;
+  sleeperUsername: string | null;
+  connectedAt: Date;
 }
 
 export interface NovaPredictExpertComparisonRecord {

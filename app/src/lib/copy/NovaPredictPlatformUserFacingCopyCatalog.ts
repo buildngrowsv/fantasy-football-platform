@@ -13,8 +13,8 @@ export const NOVA_PREDICT_CURRENT_WEEK_LABEL = "Week 7";
 export const NOVA_PREDICT_LOCK_COUNTDOWN_LABEL = "31h 14m to lock";
 
 export const NOVA_PREDICT_SIDEBAR_INTRO_COPY =
-  "Projections, overrides, and grades — everything for this slate in one place.";
+  "Projections, overrides, and grades for the current slate — one desk, one workflow.";
 
 export const NOVA_PREDICT_TOP_SIGNALS_HEADING = "Top signals";
 
-export const NOVA_PREDICT_TOP_SIGNALS_ACTION_LABEL = "See full slate →";
+export const NOVA_PREDICT_TOP_SIGNALS_ACTION_LABEL = "Full slate →";

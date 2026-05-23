@@ -7,6 +7,11 @@
     "dev:cf": "wrangler dev",
     "build": "next build",
     "db:seed": "node scripts/seed-database.mjs",
+    "db:auth:migrate": "node scripts/apply-auth-schema.mjs",
+    "db:league:migrate": "node scripts/apply-league-import-schema.mjs",
+    "db:challenge:migrate": "node scripts/apply-challenge-schema.mjs",
+    "db:challenge:scoring:migrate": "node scripts/apply-challenge-scoring-schema.mjs",
+    "db:slate:backfill-kickoff": "node scripts/backfill-matchup-kickoff-times.mjs",
     "assets:sync": "node scripts/sync-nfl-visual-assets.mjs",
     "assets:sync:manifest-only": "SKIP_HEADSHOT_DOWNLOAD=1 node scripts/sync-nfl-visual-assets.mjs",
     "prebuild:cf": "node scripts/generate-env-production-from-wrangler-vars.mjs && SKIP_HEADSHOT_DOWNLOAD=1 node scripts/sync-nfl-visual-assets.mjs",
@@ -20,6 +25,7 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
     "@opennextjs/cloudflare": "^1.19.11",
+    "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
@@ -30,6 +36,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260523.1",
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

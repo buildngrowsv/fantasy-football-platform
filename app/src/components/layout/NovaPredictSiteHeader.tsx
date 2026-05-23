@@ -17,6 +17,7 @@ import {
 import { NovaPredictMobileBottomNavigationBar } from "@/components/layout/NovaPredictMobileBottomNavigationBar";
 import { NovaPredictMobileNavigationDrawer } from "@/components/layout/NovaPredictMobileNavigationDrawer";
 import { NovaPredictWeekContextStatusStrip } from "@/components/layout/NovaPredictWeekContextStatusStrip";
+import { NovaPredictSiteHeaderAuthActions } from "@/components/auth/NovaPredictSiteHeaderAuthActions";
 
 /*
   NovaPredictSiteHeader.tsx
@@ -101,9 +102,11 @@ export function NovaPredictSiteHeader() {
           <div className="np-site-header-actions">
             {isAppShellRoute ? <NovaPredictWeekContextStatusStrip /> : null}
 
+            <NovaPredictSiteHeaderAuthActions />
+
             {!isAppShellRoute ? (
-              <Link href="/dashboard" className="np-site-header-cta np-accent-gradient np-btn">
-                Open dashboard
+              <Link href="/dashboard" className="np-site-header-cta-secondary np-btn-secondary np-btn">
+                Dashboard
               </Link>
             ) : null}
 

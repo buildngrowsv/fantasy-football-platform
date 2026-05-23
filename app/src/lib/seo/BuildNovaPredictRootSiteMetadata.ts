@@ -21,7 +21,7 @@ import { ResolveNovaPredictPublicSiteUrl } from "@/lib/seo/ResolveNovaPredictPub
 const NOVA_PREDICT_SITE_NAME = "NovaPredict";
 const NOVA_PREDICT_DEFAULT_TITLE = "NovaPredict | Fantasy Intelligence Platform";
 const NOVA_PREDICT_DEFAULT_DESCRIPTION =
-  "NovaPredict translates sportsbook probability into actionable fantasy football decisions — weekly projections, pick slate, accountability reports, and challenge mode.";
+  "NovaPredict reads the Vegas prop market, classifies why lines move, and turns that into accountable weekly fantasy decisions.";
 const NOVA_PREDICT_KEYWORDS = [
   "fantasy football",
   "NFL projections",

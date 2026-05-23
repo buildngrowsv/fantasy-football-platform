@@ -40,7 +40,9 @@ export function NovaPredictWeeklyDecisionFlowStrip() {
   return (
     <section className="np-weekly-flow-strip np-card-muted" aria-label={`${NOVA_PREDICT_CURRENT_WEEK_LABEL} workflow`}>
       <div className="np-weekly-flow-strip-header">
-        <p className="np-pill np-pill-cyan">{NOVA_PREDICT_CURRENT_WEEK_LABEL}</p>
+        <p className="np-kicker" style={{ margin: 0 }}>
+          {NOVA_PREDICT_CURRENT_WEEK_LABEL}
+        </p>
         <Link href="/accountability" className="np-weekly-flow-strip-after">
           After Sunday — see the gradebook →
         </Link>

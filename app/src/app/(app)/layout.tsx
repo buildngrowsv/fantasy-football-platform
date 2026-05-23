@@ -28,10 +28,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <div className="np-page-shell np-app-shell">
       <aside className="np-app-sidebar np-card">
         <div className="np-app-sidebar-intro">
-          <p className="np-pill np-pill-accent">
-            <span className="np-app-sidebar-week-dot" aria-hidden />
-            {NOVA_PREDICT_CURRENT_WEEK_LABEL}
-          </p>
+          <p className="np-kicker">{NOVA_PREDICT_CURRENT_WEEK_LABEL}</p>
           <p className="np-app-sidebar-intro-copy">{NOVA_PREDICT_SIDEBAR_INTRO_COPY}</p>
         </div>
 

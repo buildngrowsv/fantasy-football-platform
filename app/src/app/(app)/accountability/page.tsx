@@ -1,51 +1,89 @@
+import { NovaPredictAccountabilityWeekSelector } from "@/components/accountability/NovaPredictAccountabilityWeekSelector";
+import { NovaPredictPageHeaderSection } from "@/components/layout/NovaPredictPageHeaderSection";
+import { NovaPredictMetricStripSection } from "@/components/layout/NovaPredictMetricStripSection";
 import { NovaPredictNflTeamLogoBadge } from "@/components/media/NovaPredictNflTeamLogoBadge";
 import { NovaPredictPlayerHeadshotAvatar } from "@/components/media/NovaPredictPlayerHeadshotAvatar";
+import { NOVA_PREDICT_ACCOUNTABILITY_BACKTEST_SEASON } from "@/lib/constants/NovaPredictNflSeasonConstants";
 import { ResolveNovaPredictPlayerVisualAssets } from "@/lib/assets/ResolveNovaPredictPlayerVisualAssets";
 import type { NovaPredictAccountabilityCallRecord, FantasyFootballPlayerPosition } from "@/lib/db/schema";
-import { getNovaPredictAccountabilityCalls, getNovaPredictHomepageMetrics } from "@/lib/db/queries";
+import {
+  getNovaPredictAccountabilityCalls,
+  getNovaPredictAccountabilitySummaryMetrics,
+} from "@/lib/db/queries";
 import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
 
 export const metadata = BuildNovaPredictPageSiteMetadata({
   title: "Gradebook",
-  description:
-    "Every NovaPredict call graded — wins, misses, and what we learned from each one.",
+  description: "Every NovaPredict call graded — wins, misses, and what we learned from each one.",
   path: "/accountability",
 });
 
 function callClassStyles(call: NovaPredictAccountabilityCallRecord): { border: string; badge: string; text: string } {
   if (call.classification === "correct") {
-    return { border: "rgba(0,210,140,0.35)", badge: "rgba(0,210,140,0.1)", text: "var(--np-accent)" };
+    return { border: "rgba(200,150,12,0.35)", badge: "rgba(200,150,12,0.1)", text: "var(--np-accent-bright)" };
   }
   if (call.classification === "miss") {
-    return { border: "rgba(224,80,80,0.35)", badge: "rgba(224,80,80,0.1)", text: "var(--np-danger)" };
+    return { border: "rgba(196,92,74,0.35)", badge: "rgba(196,92,74,0.1)", text: "var(--np-danger)" };
   }
-  return { border: "rgba(201,140,42,0.35)", badge: "rgba(201,140,42,0.1)", text: "var(--np-amber)" };
+  return { border: "rgba(184,132,46,0.35)", badge: "rgba(184,132,46,0.1)", text: "var(--np-amber)" };
 }
 
-export default async function AccountabilityPage() {
-  const [calls, metrics] = await Promise.all([getNovaPredictAccountabilityCalls(12), getNovaPredictHomepageMetrics()]);
+export default async function AccountabilityPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ week?: string }>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const selectedWeek = resolvedSearchParams.week ? Number.parseInt(resolvedSearchParams.week, 10) : undefined;
+  const weekFilter = selectedWeek && Number.isFinite(selectedWeek) ? selectedWeek : undefined;
+
+  const [summary, calls] = await Promise.all([
+    getNovaPredictAccountabilitySummaryMetrics(),
+    getNovaPredictAccountabilityCalls(24, weekFilter),
+  ]);
+
+  const isLiveBacktest = summary.totalCalls > 0;
 
   return (
-    <section style={{ display: "grid", gap: "1rem" }}>
-      <article className="np-card" style={{ padding: "1.5rem" }}>
-        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.7rem", letterSpacing: "-0.03em" }}>
-          Gradebook
-        </h1>
-        <p style={{ marginTop: "0.5rem", color: "var(--np-text-muted)", lineHeight: 1.75 }}>
-          Every pick on the record — wins, misses, and exactly why the model was right or wrong.
-        </p>
-      </article>
+    <section className="np-page-stack">
+      <NovaPredictPageHeaderSection
+        kicker={summary.seasonLabel}
+        title="Gradebook"
+        lead={
+          isLiveBacktest
+            ? `Every pick on the record — wins, misses, and why the model was right or wrong. Showing real trailing-baseline backtest rows from ${NOVA_PREDICT_ACCOUNTABILITY_BACKTEST_SEASON} weeks 5–18.`
+            : "Every pick on the record — wins, misses, and exactly why the model was right or wrong."
+        }
+      />
 
-      <article className="np-card" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", overflow: "hidden" }}>
-        {metrics.map((metric) => (
-          <div key={metric.label} style={{ borderRight: "1px solid var(--np-border-subtle)", padding: "1rem" }}>
-            <div style={{ color: "var(--np-text-strong)", fontFamily: "var(--font-jetbrains-mono)", fontSize: "1.2rem" }}>{metric.value}</div>
-            <div style={{ color: "var(--np-text-dim)", marginTop: 2, fontSize: "0.66rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-              {metric.label}
-            </div>
-          </div>
-        ))}
-      </article>
+      <NovaPredictMetricStripSection
+        metrics={[
+          {
+            label: "Hit rate",
+            value: isLiveBacktest ? `${summary.hitRatePercent.toFixed(1)}%` : "—",
+            subLabel: isLiveBacktest ? `${summary.correctCount} correct` : "Run pipeline backtest",
+            tone: "accent",
+          },
+          {
+            label: "Graded calls",
+            value: isLiveBacktest ? summary.totalCalls.toLocaleString() : "—",
+            subLabel: isLiveBacktest ? "projection vs actual" : "pending",
+          },
+          {
+            label: "Misses",
+            value: isLiveBacktest ? summary.missCount.toLocaleString() : "—",
+            subLabel: isLiveBacktest ? `${summary.varianceCount} variance` : "pending",
+          },
+          {
+            label: "Mean abs error",
+            value: isLiveBacktest ? summary.meanAbsoluteError.toFixed(2) : "—",
+            subLabel: "PPR points",
+            tone: "data",
+          },
+        ]}
+      />
+
+      <NovaPredictAccountabilityWeekSelector availableWeeks={summary.availableWeeks} selectedWeek={weekFilter} />
 
       <article className="np-card" style={{ padding: "1rem", display: "grid", gap: "0.75rem" }}>
         {calls.map((call) => {
@@ -78,39 +116,27 @@ export default async function AccountabilityPage() {
                       <NovaPredictNflTeamLogoBadge teamAbbreviation={call.team} size={22} />
                     </div>
                     <div style={{ color: "var(--np-text-dim)", fontSize: "0.7rem", marginTop: 2 }}>
-                      {call.position} · Projection vs actual diagnostic
+                      {call.position} · Week {call.week || "—"} · projection vs actual
                     </div>
                   </div>
                 </div>
-                <span
-                  style={{
-                    borderRadius: 999,
-                    padding: "0.22rem 0.65rem",
-                    border: `1px solid ${styles.border}`,
-                    background: styles.badge,
-                    color: styles.text,
-                    fontSize: "0.66rem",
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    fontWeight: 700,
-                  }}
-                >
+                <span className={`np-pill ${call.classification === "correct" ? "np-pill-accent" : call.classification === "miss" ? "np-pill-amber" : "np-pill-cyan"}`}>
                   {call.classification}
                 </span>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "0.45rem", marginBottom: "0.5rem" }}>
                 <div className="np-card-muted" style={{ padding: "0.4rem 0.5rem" }}>
-                  <div style={{ color: "var(--np-text-dim)", fontSize: "0.63rem" }}>Projection</div>
-                  <div style={{ color: "#6f92b5", fontFamily: "var(--font-jetbrains-mono)" }}>{call.projection.toFixed(1)}</div>
+                  <div className="np-stat-label">Projection</div>
+                  <div className="np-stat-value is-data">{call.projection.toFixed(1)}</div>
                 </div>
                 <div className="np-card-muted" style={{ padding: "0.4rem 0.5rem" }}>
-                  <div style={{ color: "var(--np-text-dim)", fontSize: "0.63rem" }}>Actual</div>
-                  <div style={{ color: "var(--np-text-strong)", fontFamily: "var(--font-jetbrains-mono)" }}>{call.actual.toFixed(1)}</div>
+                  <div className="np-stat-label">Actual</div>
+                  <div className="np-stat-value">{call.actual.toFixed(1)}</div>
                 </div>
                 <div className="np-card-muted" style={{ padding: "0.4rem 0.5rem" }}>
-                  <div style={{ color: "var(--np-text-dim)", fontSize: "0.63rem" }}>Error</div>
-                  <div style={{ color: error >= 0 ? "var(--np-cyan)" : "var(--np-danger)", fontFamily: "var(--font-jetbrains-mono)" }}>
+                  <div className="np-stat-label">Error</div>
+                  <div className="np-stat-value" style={{ color: error >= 0 ? "var(--np-data)" : "var(--np-danger)" }}>
                     {error >= 0 ? "+" : ""}
                     {error.toFixed(1)}
                   </div>

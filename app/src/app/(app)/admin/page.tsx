@@ -1,3 +1,4 @@
+import { NovaPredictPageHeaderSection } from "@/components/layout/NovaPredictPageHeaderSection";
 import type { NovaPredictSignalWeightRecord } from "@/lib/db/schema";
 import { getNovaPredictSignalWeights } from "@/lib/db/queries";
 import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
@@ -19,25 +20,42 @@ export default async function AdminPage() {
   const signalWeights = await getNovaPredictSignalWeights(30);
 
   return (
-    <section style={{ display: "grid", gap: "1rem" }}>
-      <article className="np-card" style={{ padding: "1.4rem" }}>
-        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.65rem", letterSpacing: "-0.03em" }}>Signal weights</h1>
-        <p style={{ marginTop: "0.5rem", color: "var(--np-text-muted)", lineHeight: 1.7 }}>
-          How each market signal feeds the weekly blend — tuned in the open, not hidden behind the model.
-        </p>
-      </article>
+    <section className="np-page-stack">
+      <NovaPredictPageHeaderSection
+        kicker="Model tuning"
+        title="Signal weights"
+        lead="How each market signal feeds the weekly blend — tuned in the open, not hidden behind the model."
+      />
 
       <article className="np-card" style={{ padding: "1rem" }}>
         <div className="np-card-muted" style={{ overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 0.8fr 0.8fr", padding: "0.7rem 0.8rem", borderBottom: "1px solid var(--np-border-subtle)", color: "var(--np-text-dim)", fontSize: "0.64rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1.5fr 0.8fr 0.8fr",
+              padding: "0.7rem 0.8rem",
+              borderBottom: "1px solid var(--np-border-subtle)",
+              color: "var(--np-stat-label)",
+              fontSize: "0.78rem",
+            }}
+          >
             <span>Signal</span>
             <span style={{ textAlign: "right" }}>Multiplier</span>
             <span style={{ textAlign: "right" }}>Status</span>
           </div>
           {signalWeights.map((signalWeight) => (
-            <div key={signalWeight.id} style={{ display: "grid", gridTemplateColumns: "1.5fr 0.8fr 0.8fr", padding: "0.7rem 0.8rem", borderBottom: "1px solid var(--np-border-subtle)", alignItems: "center" }}>
+            <div
+              key={signalWeight.id}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1.5fr 0.8fr 0.8fr",
+                padding: "0.7rem 0.8rem",
+                borderBottom: "1px solid var(--np-border-subtle)",
+                alignItems: "center",
+              }}
+            >
               <span style={{ color: "var(--np-text-strong)", fontSize: "0.86rem", fontWeight: 600 }}>{signalWeight.signalName}</span>
-              <span style={{ color: "var(--np-cyan)", textAlign: "right", fontFamily: "var(--font-jetbrains-mono)", fontSize: "0.8rem" }}>
+              <span className="np-stat-value is-data" style={{ textAlign: "right", fontSize: "0.82rem" }}>
                 {signalWeight.weightMultiplier.toFixed(2)}x
               </span>
               <span style={{ justifySelf: "end" }} className={`np-pill ${weightStatusPill(signalWeight)}`}>

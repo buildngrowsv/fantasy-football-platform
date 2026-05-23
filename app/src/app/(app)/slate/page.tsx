@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { NovaPredictMatchupVisualStrip } from "@/components/media/NovaPredictMatchupVisualStrip";
 import { NovaPredictPlayerHeadshotAvatar } from "@/components/media/NovaPredictPlayerHeadshotAvatar";
+import { NovaPredictPageHeaderSection } from "@/components/layout/NovaPredictPageHeaderSection";
 import type { NovaPredictPlayerRecord } from "@/lib/db/schema";
 import { getNovaPredictPlayerRecords } from "@/lib/db/queries";
 import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
@@ -22,21 +23,20 @@ export default async function SlatePage() {
   const players = await getNovaPredictPlayerRecords(18);
 
   return (
-    <section style={{ display: "grid", gap: "1rem" }}>
-      <article className="np-card" style={{ padding: "1.3rem" }}>
-        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.6rem", letterSpacing: "-0.03em" }}>Pick slate</h1>
-        <p style={{ marginTop: "0.45rem", color: "var(--np-text-muted)", lineHeight: 1.7 }}>
-          Ranked starts and sits for this week — agree with Nova or override before lock.
-        </p>
-      </article>
+    <section className="np-page-stack">
+      <NovaPredictPageHeaderSection
+        kicker="Weekly decisions"
+        title="Pick slate"
+        lead="Ranked starts and sits for this week — agree with Nova or override before lock."
+      />
 
-      <article className="np-card np-slate-stack" style={{ maxWidth: 520, margin: "0 auto", width: "100%", padding: "1rem", display: "grid", gap: "0.65rem" }}>
+      <article className="np-card np-slate-stack" style={{ maxWidth: 540, margin: "0 auto", width: "100%", padding: "1rem", display: "grid", gap: "0.65rem" }}>
         {players.map((player, index) => (
           <div
             key={player.id}
             className="np-card-muted np-slate-row"
             style={{
-              padding: "0.8rem",
+              padding: "0.85rem",
               borderLeft: player.teamPrimaryColor ? `3px solid ${player.teamPrimaryColor}` : undefined,
             }}
           >
@@ -65,43 +65,36 @@ export default async function SlatePage() {
                 </div>
 
                 <div style={{ marginTop: "0.55rem", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.35rem" }}>
-                  <div className="np-card-muted" style={{ padding: "0.35rem 0.45rem" }}>
-                    <div style={{ color: "var(--np-text-dim)", fontSize: "0.62rem" }}>NOVA</div>
-                    <div style={{ color: "var(--np-accent)", fontFamily: "var(--font-jetbrains-mono)" }}>{player.novaPprProjection.toFixed(1)}</div>
+                  <div className="np-card-muted" style={{ padding: "0.4rem 0.5rem" }}>
+                    <div className="np-stat-label">Nova</div>
+                    <div className="np-stat-value is-signal">{player.novaPprProjection.toFixed(1)}</div>
                   </div>
-                  <div className="np-card-muted" style={{ padding: "0.35rem 0.45rem" }}>
-                    <div style={{ color: "var(--np-text-dim)", fontSize: "0.62rem" }}>BOOM</div>
-                    <div style={{ color: "var(--np-cyan)", fontFamily: "var(--font-jetbrains-mono)" }}>{player.boomProbability.toFixed(0)}%</div>
+                  <div className="np-card-muted" style={{ padding: "0.4rem 0.5rem" }}>
+                    <div className="np-stat-label">Boom</div>
+                    <div className="np-stat-value is-data">{player.boomProbability.toFixed(0)}%</div>
                   </div>
-                  <div className="np-card-muted" style={{ padding: "0.35rem 0.45rem" }}>
-                    <div style={{ color: "var(--np-text-dim)", fontSize: "0.62rem" }}>BUST</div>
-                    <div style={{ color: "var(--np-danger)", fontFamily: "var(--font-jetbrains-mono)" }}>{player.bustProbability.toFixed(0)}%</div>
+                  <div className="np-card-muted" style={{ padding: "0.4rem 0.5rem" }}>
+                    <div className="np-stat-label">Bust</div>
+                    <div className="np-stat-value" style={{ color: "var(--np-danger)" }}>
+                      {player.bustProbability.toFixed(0)}%
+                    </div>
                   </div>
                 </div>
 
                 <div style={{ marginTop: "0.55rem", display: "flex", gap: "0.45rem" }}>
-                  <button className="np-accent-gradient np-btn" style={{ flex: 1 }}>
+                  <button type="button" className="np-btn np-btn-primary" style={{ flex: 1 }}>
                     Agree
                   </button>
-                  <button className="np-btn np-btn-secondary" style={{ flex: 1 }}>
+                  <button type="button" className="np-btn np-btn-secondary" style={{ flex: 1 }}>
                     Override
                   </button>
-                  <Link
-                    href={`/players/${encodeURIComponent(player.id)}`}
-                    className="np-btn"
-                    style={{
-                      flex: 1,
-                      border: "1px solid var(--np-border)",
-                      background: "transparent",
-                      color: "var(--np-text-muted)",
-                    }}
-                  >
+                  <Link href={`/players/${encodeURIComponent(player.id)}`} className="np-btn np-btn-ghost" style={{ flex: 1 }}>
                     Profile
                   </Link>
                 </div>
 
                 {index === 0 ? (
-                  <div style={{ marginTop: "0.55rem", color: "var(--np-text-dim)", fontSize: "0.67rem", fontFamily: "var(--font-jetbrains-mono)" }}>
+                  <div className="np-metric-sublabel" style={{ marginTop: "0.55rem" }}>
                     Signal: {player.marketSignalLabel}
                   </div>
                 ) : null}
