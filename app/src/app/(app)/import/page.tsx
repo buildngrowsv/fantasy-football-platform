@@ -3,7 +3,7 @@ import { getNovaPredictLeagueImportProviders } from "@/lib/db/queries";
 import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
 
 export const metadata = BuildNovaPredictPageSiteMetadata({
-  title: "League Import",
+  title: "Import league",
   description:
     "Connect Sleeper, ESPN, or Yahoo leagues to personalize NovaPredict projections, lineup recommendations, and accountability tracking.",
   path: "/import",
@@ -21,9 +21,9 @@ export default async function ImportPage() {
   return (
     <section style={{ display: "grid", gap: "1rem" }}>
       <article className="np-card" style={{ padding: "1.4rem" }}>
-        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.65rem", letterSpacing: "-0.03em" }}>League Import</h1>
+        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.65rem", letterSpacing: "-0.03em" }}>Import league</h1>
         <p style={{ marginTop: "0.5rem", color: "var(--np-text-muted)", lineHeight: 1.7 }}>
-          Connect your Sleeper, ESPN, or Yahoo league to personalize projections, lineup recommendations, and accountability tracking.
+          Connect Sleeper, ESPN, or Yahoo so picks and grades reflect your actual roster.
         </p>
       </article>
 
@@ -42,9 +42,11 @@ export default async function ImportPage() {
             </div>
             <div style={{ color: "var(--np-text-muted)", lineHeight: 1.6, fontSize: "0.86rem", marginBottom: "0.55rem" }}>{provider.statusText}</div>
             <div style={{ color: "var(--np-text-dim)", fontFamily: "var(--font-jetbrains-mono)", fontSize: "0.72rem", marginBottom: "0.75rem" }}>
-              Connected leagues: {provider.connectedLeagueCount}
+              {provider.connectedLeagueCount === 0
+                ? "No leagues connected"
+                : `${provider.connectedLeagueCount} league${provider.connectedLeagueCount === 1 ? "" : "s"} connected`}
             </div>
-            <button className="np-accent-gradient" style={{ width: "100%", borderRadius: 9, border: 0, padding: "0.58rem 0.7rem", fontWeight: 700, textTransform: "uppercase", fontSize: "0.7rem", letterSpacing: "0.06em" }}>
+            <button className="np-accent-gradient np-btn" style={{ width: "100%" }}>
               Connect {provider.provider}
             </button>
           </div>

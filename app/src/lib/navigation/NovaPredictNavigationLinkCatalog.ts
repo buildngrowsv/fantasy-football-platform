@@ -15,16 +15,8 @@ import {
   -----------------------------------
   Single source of truth for every in-product navigation destination.
 
-  We centralize links here because the old SiteNav + app sidebar duplicated the
-  same eight URLs with inconsistent labels ("Admin" vs "Signal Weights") and no
-  grouping. Product IA should read as a flow — Play → Trust → Tools — not a flat
-  list of engineering routes.
-
-  Consumers:
-  - NovaPredictSiteHeader (marketing + compact app chrome)
-  - NovaPredictAppSidebarNavigationPanel (desktop app shell)
-  - NovaPredictMobileBottomNavigationBar (mobile primary tabs)
-  - NovaPredictMobileNavigationDrawer ("More" overflow on small screens)
+  Group labels read like a fantasy manager's mental model — not UX framework
+  buckets ("Play / Trust / Tools") or engineering route names.
 */
 
 export type NovaPredictNavigationLinkRecord = {
@@ -47,48 +39,48 @@ export const NOVA_PREDICT_MARKETING_HEADER_LINKS: NovaPredictNavigationLinkRecor
   {
     href: "/",
     label: "Overview",
-    description: "Product story, signal board, and platform metrics.",
+    description: "How NovaPredict turns Vegas lines into weekly fantasy edge.",
     icon: LayoutDashboard,
   },
   {
     href: "/accountability",
-    label: "Accountability",
-    description: "Public record of model calls — correct, miss, and pending.",
+    label: "Gradebook",
+    description: "Every call graded — wins, misses, and what we learned.",
     icon: ClipboardCheck,
   },
   {
     href: "/challenge",
     label: "Challenge",
-    description: "Override the model and track where your instincts win.",
+    description: "Bet your read against the model before lock.",
     icon: Trophy,
   },
 ];
 
 export const NOVA_PREDICT_APP_NAVIGATION_GROUPS: NovaPredictNavigationGroupRecord[] = [
   {
-    id: "play",
-    label: "Play",
+    id: "this-week",
+    label: "This week",
     links: [
       {
         href: "/dashboard",
         label: "Dashboard",
         shortLabel: "Home",
-        description: "Weekly command center — metrics, alerts, and top signals.",
+        description: "Week at a glance — alerts, metrics, and top signals.",
         icon: LayoutDashboard,
         showInMobileBottomBar: true,
       },
       {
         href: "/slate",
-        label: "Pick Slate",
+        label: "Pick slate",
         shortLabel: "Slate",
-        description: "Ranked cards for quick agree/override before lock.",
+        description: "Ranked starts and sits — agree or override before lock.",
         icon: ListOrdered,
         showInMobileBottomBar: true,
       },
       {
         href: "/challenge",
         label: "Challenge",
-        description: "Submit overrides and compare against model + community.",
+        description: "Put your projection against the model and the field.",
         icon: Trophy,
         showInMobileBottomBar: true,
         showNotificationDot: true,
@@ -96,39 +88,39 @@ export const NOVA_PREDICT_APP_NAVIGATION_GROUPS: NovaPredictNavigationGroupRecor
     ],
   },
   {
-    id: "trust",
-    label: "Trust",
+    id: "track-record",
+    label: "Track record",
     links: [
       {
         href: "/accountability",
-        label: "Accountability",
-        shortLabel: "Reports",
-        description: "Every projection graded with full miss diagnostics.",
+        label: "Gradebook",
+        shortLabel: "Grades",
+        description: "Every projection scored with full miss breakdowns.",
         icon: ClipboardCheck,
         showInMobileBottomBar: true,
       },
       {
         href: "/experts",
         label: "Experts",
-        description: "Curated analyst signals layered on Nova projections.",
+        description: "Nova vs. analysts on the same slates and scoring rules.",
         icon: Users,
       },
     ],
   },
   {
-    id: "tools",
-    label: "Tools",
+    id: "your-league",
+    label: "Your league",
     links: [
       {
         href: "/import",
-        label: "Import",
-        description: "Pull your league roster for personalized slate context.",
+        label: "Import league",
+        description: "Sync Sleeper, ESPN, or Yahoo for roster-aware picks.",
         icon: Upload,
       },
       {
         href: "/admin",
-        label: "Signal Weights",
-        description: "Tune conditioning weights for the weekly model blend.",
+        label: "Signal weights",
+        description: "Adjust how market signals feed the weekly blend.",
         icon: SlidersHorizontal,
       },
     ],

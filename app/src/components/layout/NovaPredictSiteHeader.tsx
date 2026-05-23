@@ -86,7 +86,7 @@ export function NovaPredictSiteHeader() {
               })}
             </nav>
           ) : (
-            <nav className="np-site-header-marketing-nav" aria-label="Product navigation">
+            <nav className="np-site-header-marketing-nav" aria-label="Explore NovaPredict">
               {marketingLinks.map((link) => {
                 const isActive = ResolveNovaPredictNavigationLinkIsActive(pathname, link.href);
                 return (
@@ -102,8 +102,8 @@ export function NovaPredictSiteHeader() {
             {isAppShellRoute ? <NovaPredictWeekContextStatusStrip /> : null}
 
             {!isAppShellRoute ? (
-              <Link href="/dashboard" className="np-site-header-cta np-accent-gradient">
-                Open Dashboard
+              <Link href="/dashboard" className="np-site-header-cta np-accent-gradient np-btn">
+                Open dashboard
               </Link>
             ) : null}
 

@@ -6,9 +6,9 @@ import { getNovaPredictAccountabilityCalls, getNovaPredictHomepageMetrics } from
 import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
 
 export const metadata = BuildNovaPredictPageSiteMetadata({
-  title: "Accountability Report",
+  title: "Gradebook",
   description:
-    "NovaPredict accountability report — every model call graded correct, miss, or pending with full transparency on weekly fantasy decisions.",
+    "Every NovaPredict call graded — wins, misses, and what we learned from each one.",
   path: "/accountability",
 });
 
@@ -29,10 +29,10 @@ export default async function AccountabilityPage() {
     <section style={{ display: "grid", gap: "1rem" }}>
       <article className="np-card" style={{ padding: "1.5rem" }}>
         <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.7rem", letterSpacing: "-0.03em" }}>
-          Accountability Report
+          Gradebook
         </h1>
         <p style={{ marginTop: "0.5rem", color: "var(--np-text-muted)", lineHeight: 1.75 }}>
-          Every projection is auditable. Every miss has a diagnosis. This page is intentionally transparent because trust compounds only when uncertainty is visible.
+          Every pick on the record — wins, misses, and exactly why the model was right or wrong.
         </p>
       </article>
 

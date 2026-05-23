@@ -66,11 +66,11 @@ export default async function HomePage() {
           </p>
 
           <div style={{ marginTop: "2rem", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.75rem" }}>
-            <Link href="/dashboard" className="np-accent-gradient" style={{ borderRadius: 10, padding: "0.85rem 1.2rem", fontWeight: 700, fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              Open Weekly Dashboard
+            <Link href="/dashboard" className="np-accent-gradient np-btn">
+              Open dashboard
             </Link>
-            <Link href="/accountability" style={{ color: "var(--np-cyan)", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", fontSize: "0.8rem" }}>
-              View Accountability Report →
+            <Link href="/accountability" className="np-text-link">
+              See the gradebook →
             </Link>
           </div>
         </div>
@@ -125,8 +125,8 @@ export default async function HomePage() {
         <p style={{ color: "var(--np-text-muted)", maxWidth: 640, margin: "0 auto 1.2rem", lineHeight: 1.7 }}>
           Compare your overrides, track edge patterns, and see exactly where your instincts beat consensus.
         </p>
-        <Link href="/challenge" className="np-accent-gradient" style={{ borderRadius: 10, padding: "0.9rem 1.3rem", fontWeight: 700, fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-          Enter Challenge Board
+        <Link href="/challenge" className="np-accent-gradient np-btn">
+          Take the challenge
         </Link>
       </section>
     </div>

@@ -1,72 +1,61 @@
 # NovaPredict Python Pipeline
 
-Batch ingestion, normalization, and baseline computation for NovaPredict. Runs locally and in **Cloudflare Workers Containers** per [documentation/architecture-plan.md](../documentation/architecture-plan.md).
-
-## What lives here
-
-| Path | Purpose |
-|------|---------|
-| `ingest/` | Pull live data from ESPN, Sleeper, nflverse, The Odds API |
-| `normalize/` | Promote raw snapshots → core + app tables (`players`, matchups, actuals) |
-| `compute/` | Derive `player_projections` from **real** trailing PPR stats |
-| `lib/` | Shared env, DB, crosswalk helpers |
-| `sql/` | Idempotent SQL migrations |
-| `RunNovaPredictWeeklyIngestOrchestrator.py` | Full weekly chain entrypoint |
+Batch ingestion, normalization, computation, and accountability for NovaPredict.
 
 ## Quick start
 
 ```bash
 ./scripts/setup-neon-env.sh dev
-./scripts/ingest-smoke-tests.sh              # live API checks
-./scripts/run-pipeline-weekly-ingest.sh      # full ingest → normalize → compute
+./scripts/ingest-smoke-tests.sh           # live API checks
+./scripts/run-pipeline-tests.sh           # vig/CDF/MC unit tests
+./scripts/run-pipeline-weekly-ingest.sh     # full pipeline (~3 min)
 ```
+
+## Pipeline stages (orchestrator)
+
+| Stage | What it does |
+|-------|--------------|
+| **Ingest** | ESPN, Sleeper, nflverse, Apify DK cross-validation |
+| **Scaffold ingest** | Odds API, OpenWeatherMap, SportsDataIO — skip until keys set |
+| **Normalize** | `players`, matchups, weekly actuals |
+| **Compute** | Trailing PPR projections (real nflverse data) |
+| **MC enhance** | 10K bootstrap on empirical weekly PPR |
+| **Accountability** | Historical backtest (2024 weeks 5–18) |
+
+## Computation engine (no API keys needed)
+
+| Module | Spec |
+|--------|------|
+| `computation/vig/` | American odds → no-vig probabilities, consensus, confidence |
+| `computation/cdf/` | PCHIP/linear CDF fit, percentile extraction, empirical CDF |
+| `computation/monte_carlo/` | Correlated MC + bootstrap from real weekly actuals |
+
+Run tests: `./scripts/run-pipeline-tests.sh`
 
 ## Data honesty
 
-| Column | Source today | Future (paid feeds) |
-|--------|--------------|---------------------|
-| `vegas_ppr` | Trailing 4-week nflverse `fantasy_points_ppr` avg | The Odds API prop-implied CDF |
-| `nova_ppr` | Trailing avg + small trend adjustment from same real data | Full 10-phase blend engine |
-| `move_type` | `"Trailing PPR baseline"` | Line Move Classifier labels |
+| Field | Source today | After API keys |
+|-------|--------------|----------------|
+| `vegas_ppr` | Trailing nflverse PPR avg | Odds API prop CDF |
+| `nova_ppr` | MC bootstrap median | Full 10-phase blend |
+| `move_type` | `Empirical MC (10K bootstrap)` | Line Move Classifier |
+| `accountability_calls` | Real 2024 backtest | Live weekly scoring |
 
-No mock or hash-randomized projections in this pipeline path.
+## Admin API
 
-## Ingest jobs
+Next.js app exposes pipeline health at **`GET /api/pipeline/status`** (ingest runs, table counts, pending keys).
 
-| Job | Source | Output |
-|-----|--------|--------|
-| `FetchEspnNflScoreboardIngestJob` | ESPN public API | `raw_espn_scoreboard_events` |
-| `FetchEspnNflNewsHeadlinesIngestJob` | ESPN public API | `raw_espn_news_articles` |
-| `FetchSleeperNflPlayerCatalogIngestJob` | Sleeper API | `raw_sleeper_player_catalog_snapshots` |
-| `FetchNflverseWeeklyPlayerStatsIngestJob` | nflverse GitHub | `raw_nflverse_weekly_player_stats` |
-| `FetchNflverseGamesScheduleIngestJob` | nflverse GitHub | `raw_nflverse_games` |
-| `FetchTheOddsApiNflEventsIngestJob` | The Odds API (optional) | `raw_the_odds_api_events` |
+## Pending API keys (jobs skip cleanly)
 
-## Normalize + compute
+| Key | Job activated |
+|-----|---------------|
+| `THE_ODDS_API_KEY` | Vegas prop + alt ladder ingest |
+| `SPORTSDATAIO_API_KEY` | Injuries + bet splits evaluation |
+| `OPENWEATHERMAP_API_KEY` | Stadium forecasts |
+| `PFF_API_KEY` | Snap/route participation |
 
-| Step | Output table |
-|------|--------------|
-| `NormalizeSleeperCatalogIntoPlayersTable` | `players` |
-| `NormalizeEspnScoreboardIntoWeeklyMatchupsTable` | `weekly_team_matchups`, `nfl_games` |
-| `NormalizeNflverseWeeklyStatsIntoPlayerWeeklyActualsTable` | `player_weekly_actuals` |
-| `ComputeWeeklyProjectionsFromRealWeeklyStatsJob` | `player_projections` |
+`APIFY_API_TOKEN` — already used for DraftKings cross-validation (187 events).
 
-The Next.js app in `app/` reads `players` and `player_projections` directly.
+## Neon
 
-## Neon branches
-
-| Branch | Use |
-|--------|-----|
-| `dev` | Local pipeline (default) |
-| `staging` | Pre-production Worker |
-| `main` | Production |
-
-Project: **novapredict** (`patient-sunset-77985570`)
-
-## Next steps
-
-- The Odds API prop + alt ladder ingest (requires `THE_ODDS_API_KEY`)
-- Vig removal + CDF + Monte Carlo computation engine (Phase 2)
-- Cloudflare Cron → Workers Container binding
-
-See [documentation/build-roadmap.md](../documentation/build-roadmap.md).
+Project: **novapredict** · Branches: `dev`, `staging`, `main`

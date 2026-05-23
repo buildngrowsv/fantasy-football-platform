@@ -24,9 +24,9 @@ export default async function SlatePage() {
   return (
     <section style={{ display: "grid", gap: "1rem" }}>
       <article className="np-card" style={{ padding: "1.3rem" }}>
-        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.6rem", letterSpacing: "-0.03em" }}>Pick Slate</h1>
+        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.6rem", letterSpacing: "-0.03em" }}>Pick slate</h1>
         <p style={{ marginTop: "0.45rem", color: "var(--np-text-muted)", lineHeight: 1.7 }}>
-          Mobile-first card stack for quick agree/override workflows before lock.
+          Ranked starts and sits for this week — agree with Nova or override before lock.
         </p>
       </article>
 
@@ -80,39 +80,23 @@ export default async function SlatePage() {
                 </div>
 
                 <div style={{ marginTop: "0.55rem", display: "flex", gap: "0.45rem" }}>
-                  <button className="np-accent-gradient" style={{ flex: 1, borderRadius: 8, padding: "0.45rem 0.6rem", fontSize: "0.67rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                  <button className="np-accent-gradient np-btn" style={{ flex: 1 }}>
                     Agree
                   </button>
-                  <button
-                    style={{
-                      flex: 1,
-                      borderRadius: 8,
-                      border: "1px solid rgba(0,180,216,0.3)",
-                      background: "rgba(0,180,216,0.08)",
-                      color: "var(--np-cyan)",
-                      padding: "0.45rem 0.6rem",
-                      fontSize: "0.67rem",
-                      fontWeight: 700,
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                    }}
-                  >
+                  <button className="np-btn np-btn-secondary" style={{ flex: 1 }}>
                     Override
                   </button>
                   <Link
                     href={`/players/${encodeURIComponent(player.id)}`}
+                    className="np-btn"
                     style={{
-                      borderRadius: 8,
+                      flex: 1,
                       border: "1px solid var(--np-border)",
+                      background: "transparent",
                       color: "var(--np-text-muted)",
-                      padding: "0.45rem 0.6rem",
-                      fontSize: "0.67rem",
-                      fontWeight: 700,
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
                     }}
                   >
-                    Card
+                    Profile
                   </Link>
                 </div>
 

@@ -18,14 +18,14 @@ export default async function ChallengePage() {
   return (
     <section style={{ display: "grid", gap: "1rem" }}>
       <article className="np-card" style={{ padding: "1.4rem" }}>
-        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.65rem", letterSpacing: "-0.03em" }}>Challenge The Model</h1>
+        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.65rem", letterSpacing: "-0.03em" }}>Challenge the model</h1>
         <p style={{ marginTop: "0.5rem", color: "var(--np-text-muted)", lineHeight: 1.7 }}>
-          Override NovaPredict with your own projection, track your record by reason code, and discover where your instincts outperform both consensus and model output.
+          Submit your own reads before lock, then see whether you beat the model and the field after Sunday.
         </p>
       </article>
 
       <article className="np-card" style={{ padding: "1rem" }}>
-        <div style={{ color: "var(--np-text-strong)", fontWeight: 600, marginBottom: "0.75rem" }}>This Week&apos;s Challenge Slate</div>
+        <div style={{ color: "var(--np-text-strong)", fontWeight: 600, marginBottom: "0.75rem" }}>This week&apos;s slate</div>
         <div className="np-player-card-grid">
           {challengePlayers.map((player, index) => (
             <NovaPredictPlayerProjectionCard key={player.id} player={player} variant="compact" priorityImage={index < 3} />
@@ -35,9 +35,9 @@ export default async function ChallengePage() {
 
       <article className="np-card" style={{ padding: "1rem", display: "grid", gridTemplateColumns: "minmax(0, 1.1fr) minmax(0, 0.9fr)", gap: "0.85rem" }}>
         <div className="np-card-muted" style={{ padding: "0.95rem" }}>
-          <div style={{ color: "var(--np-text-strong)", fontWeight: 600, marginBottom: "0.45rem" }}>Weekly Challenge Scorecard</div>
+          <div style={{ color: "var(--np-text-strong)", fontWeight: 600, marginBottom: "0.45rem" }}>Your record this week</div>
           <p style={{ color: "var(--np-text-muted)", margin: 0, lineHeight: 1.65, fontSize: "0.88rem" }}>
-            Submit your own start/sit calls before lock, then compare your finished week against model and community outcomes. Rankings are normalized by lineup difficulty and slate size.
+            Start/sit calls graded against the model and community once the week finishes.
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.45rem", marginTop: "0.75rem" }}>
@@ -57,7 +57,7 @@ export default async function ChallengePage() {
         </div>
 
         <div className="np-card-muted" style={{ padding: "0.95rem" }}>
-          <div style={{ color: "var(--np-text-strong)", fontWeight: 600, marginBottom: "0.5rem" }}>Reason-Coded Override Log</div>
+          <div style={{ color: "var(--np-text-strong)", fontWeight: 600, marginBottom: "0.5rem" }}>Override history</div>
           <div style={{ display: "grid", gap: "0.45rem" }}>
             {[
               ["Vegas moved late", "12W · 4L", "75%"],
@@ -76,7 +76,7 @@ export default async function ChallengePage() {
       </article>
 
       <article className="np-card" style={{ padding: "1rem" }}>
-        <div style={{ marginBottom: "0.7rem", color: "var(--np-text-strong)", fontWeight: 600 }}>Platform Benchmarks</div>
+        <div style={{ marginBottom: "0.7rem", color: "var(--np-text-strong)", fontWeight: 600 }}>Season benchmarks</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "0.45rem" }}>
           {metrics.map((metric) => (
             <div key={metric.label} className="np-card-muted" style={{ padding: "0.55rem 0.6rem" }}>

@@ -58,7 +58,7 @@ export function NovaPredictMobileBottomNavigationBar() {
       <Link
         href="/experts"
         className={`np-mobile-bottom-nav-item${overflowIsActive ? " is-active" : ""}`}
-        aria-label="More tools and settings"
+        aria-label="More"
       >
         <span className="np-mobile-bottom-nav-icon-wrap">
           <MoreIcon size={20} strokeWidth={1.75} aria-hidden />

@@ -4,7 +4,7 @@ import { getNovaPredictHomepageMetrics, getNovaPredictPlayerRecords } from "@/li
 import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
 
 export const metadata = BuildNovaPredictPageSiteMetadata({
-  title: "Weekly Dashboard",
+  title: "Dashboard",
   description:
     "Live NovaPredict weekly dashboard — platform metrics, top signals, and projection cards for your fantasy decisions.",
   path: "/dashboard",
@@ -22,9 +22,9 @@ export default async function DashboardPage() {
           background: "linear-gradient(135deg, rgba(0,210,140,0.08) 0%, transparent 55%)",
         }}
       >
-        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.7rem", letterSpacing: "-0.03em" }}>Week Overview</h1>
+        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.7rem", letterSpacing: "-0.03em" }}>Dashboard</h1>
         <p style={{ marginTop: "0.5rem", color: "var(--np-text-muted)", lineHeight: 1.7 }}>
-          Your command center for this slate: market intelligence, blended projections, and player-level ranges from the latest model run.
+          This week at a glance — market moves, blended projections, and the players worth a closer look.
         </p>
       </article>
 
@@ -41,9 +41,9 @@ export default async function DashboardPage() {
 
       <article className="np-card" style={{ padding: "1rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.8rem" }}>
-          <h2 style={{ margin: 0, fontSize: "1.2rem", color: "var(--np-text-strong)", letterSpacing: "-0.02em" }}>Top Player Cards</h2>
+          <h2 style={{ margin: 0, fontSize: "1.2rem", color: "var(--np-text-strong)", letterSpacing: "-0.02em" }}>Top projections</h2>
           <Link href="/slate" style={{ color: "var(--np-cyan)", fontWeight: 600, fontSize: "0.8rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
-            Open Pick Slate →
+            Open pick slate →
           </Link>
         </div>
 

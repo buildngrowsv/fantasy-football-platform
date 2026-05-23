@@ -6,7 +6,7 @@ Removes vig from alt-line / milestone one-sided markets.
 Spec: Dev Stack Prompt 2 / vig_removal FUNCTION 3.
 """
 
-from pipeline.computation.vig.ConvertAmericanOddsToRawImpliedProbability import (
+from computation.vig.ConvertAmericanOddsToRawImpliedProbability import (
     ConvertAmericanOddsToRawImpliedProbability,
 )
 

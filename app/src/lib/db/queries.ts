@@ -375,16 +375,16 @@ export async function getNovaPredictLeagueImportProviders(): Promise<NovaPredict
 
   if (rows.length === 0) {
     return [
-      { provider: "Sleeper", connectedLeagueCount: 0, statusText: "Ready to connect API token" },
-      { provider: "ESPN", connectedLeagueCount: 0, statusText: "Cookie-based import available" },
-      { provider: "Yahoo", connectedLeagueCount: 0, statusText: "OAuth import available" },
+      { provider: "Sleeper", connectedLeagueCount: 0, statusText: "Paste your Sleeper token to sync" },
+      { provider: "ESPN", connectedLeagueCount: 0, statusText: "Sign in with ESPN to import" },
+      { provider: "Yahoo", connectedLeagueCount: 0, statusText: "Sign in with Yahoo to import" },
     ];
   }
 
   const byProvider: Record<string, NovaPredictLeagueImportProviderRecord> = {
-    Sleeper: { provider: "Sleeper", connectedLeagueCount: 0, statusText: "Connected leagues detected" },
-    ESPN: { provider: "ESPN", connectedLeagueCount: 0, statusText: "Connected leagues detected" },
-    Yahoo: { provider: "Yahoo", connectedLeagueCount: 0, statusText: "Connected leagues detected" },
+    Sleeper: { provider: "Sleeper", connectedLeagueCount: 0, statusText: "Not connected yet" },
+    ESPN: { provider: "ESPN", connectedLeagueCount: 0, statusText: "Not connected yet" },
+    Yahoo: { provider: "Yahoo", connectedLeagueCount: 0, statusText: "Not connected yet" },
   };
 
   for (const row of rows) {

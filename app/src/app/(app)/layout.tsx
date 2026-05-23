@@ -4,6 +4,12 @@ import { NovaPredictAppSidebarNavigationPanel } from "@/components/layout/NovaPr
 import { NovaPredictWeeklyDecisionFlowStrip } from "@/components/layout/NovaPredictWeeklyDecisionFlowStrip";
 import { NovaPredictPlayerHeadshotAvatar } from "@/components/media/NovaPredictPlayerHeadshotAvatar";
 import { getNovaPredictPlayerRecords } from "@/lib/db/queries";
+import {
+  NOVA_PREDICT_CURRENT_WEEK_LABEL,
+  NOVA_PREDICT_SIDEBAR_INTRO_COPY,
+  NOVA_PREDICT_TOP_SIGNALS_ACTION_LABEL,
+  NOVA_PREDICT_TOP_SIGNALS_HEADING,
+} from "@/lib/copy/NovaPredictPlatformUserFacingCopyCatalog";
 
 export const dynamic = "force-dynamic";
 
@@ -24,20 +30,18 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         <div className="np-app-sidebar-intro">
           <p className="np-pill np-pill-accent">
             <span className="np-app-sidebar-week-dot" aria-hidden />
-            Week 7
+            {NOVA_PREDICT_CURRENT_WEEK_LABEL}
           </p>
-          <p className="np-app-sidebar-intro-copy">
-            Projections, overrides, and accountability — everything for this slate in one place.
-          </p>
+          <p className="np-app-sidebar-intro-copy">{NOVA_PREDICT_SIDEBAR_INTRO_COPY}</p>
         </div>
 
         <NovaPredictAppSidebarNavigationPanel />
 
         <div className="np-app-sidebar-signals np-card-muted">
           <div className="np-app-sidebar-signals-header">
-            <span>Top Nova Signals</span>
+            <span>{NOVA_PREDICT_TOP_SIGNALS_HEADING}</span>
             <Link href="/slate" className="np-app-sidebar-signals-action">
-              Full slate →
+              {NOVA_PREDICT_TOP_SIGNALS_ACTION_LABEL}
             </Link>
           </div>
 

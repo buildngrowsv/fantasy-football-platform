@@ -3,7 +3,7 @@ import { getNovaPredictExpertComparisons } from "@/lib/db/queries";
 import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
 
 export const metadata = BuildNovaPredictPageSiteMetadata({
-  title: "Expert Comparison Board",
+  title: "Expert comparison",
   description:
     "Compare NovaPredict against leading analysts and consensus feeds on identical weekly slates and scoring rules.",
   path: "/experts",
@@ -23,10 +23,10 @@ export default async function ExpertsPage() {
     <section style={{ display: "grid", gap: "1rem" }}>
       <article className="np-card" style={{ padding: "1.4rem" }}>
         <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.65rem", letterSpacing: "-0.03em" }}>
-          Expert Comparison Board
+          Expert comparison
         </h1>
         <p style={{ marginTop: "0.5rem", color: "var(--np-text-muted)", lineHeight: 1.7 }}>
-          NovaPredict side-by-side with leading analysts and consensus feeds, evaluated on identical weekly slates and scoring rules.
+          NovaPredict against the names you already follow — same slates, same scoring, no cherry-picking.
         </p>
       </article>
 

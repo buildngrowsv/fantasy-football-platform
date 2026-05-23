@@ -3,34 +3,33 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight, LayoutDashboard, ListOrdered, Trophy } from "lucide-react";
+import { NOVA_PREDICT_CURRENT_WEEK_LABEL } from "@/lib/copy/NovaPredictPlatformUserFacingCopyCatalog";
 import { ResolveNovaPredictNavigationLinkIsContextuallyActive } from "@/lib/navigation/ResolveNovaPredictNavigationLinkIsActive";
 
 /*
   NovaPredictWeeklyDecisionFlowStrip.tsx
   --------------------------------------
-  Guided pre-lock workflow strip shown atop app pages (hidden on marketing home).
-
-  Product intent: nudge users through Dashboard → Slate → Challenge instead of
-  treating eight routes as peers. Active step highlights based on pathname.
+  Lightweight wayfinding for the three screens managers actually use before lock.
+  No framework jargon — just the natural order of operations.
 */
 
 const NOVA_PREDICT_WEEKLY_FLOW_STEPS = [
   {
     href: "/dashboard",
-    label: "Review",
-    detail: "Scan metrics & alerts",
+    label: "Dashboard",
+    detail: "Check alerts and top signals",
     icon: LayoutDashboard,
   },
   {
     href: "/slate",
-    label: "Pick Slate",
-    detail: "Agree or override cards",
+    label: "Pick slate",
+    detail: "Lock in starts and sits",
     icon: ListOrdered,
   },
   {
     href: "/challenge",
     label: "Challenge",
-    detail: "Track your edge",
+    detail: "Back your overrides",
     icon: Trophy,
   },
 ] as const;
@@ -39,11 +38,11 @@ export function NovaPredictWeeklyDecisionFlowStrip() {
   const pathname = usePathname();
 
   return (
-    <section className="np-weekly-flow-strip np-card-muted" aria-label="Weekly decision workflow">
+    <section className="np-weekly-flow-strip np-card-muted" aria-label={`${NOVA_PREDICT_CURRENT_WEEK_LABEL} workflow`}>
       <div className="np-weekly-flow-strip-header">
-        <p className="np-pill np-pill-cyan">Pre-lock flow</p>
+        <p className="np-pill np-pill-cyan">{NOVA_PREDICT_CURRENT_WEEK_LABEL}</p>
         <Link href="/accountability" className="np-weekly-flow-strip-after">
-          Then review accountability →
+          After Sunday — see the gradebook →
         </Link>
       </div>
 

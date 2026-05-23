@@ -166,30 +166,18 @@ export default async function PlayerCardPage({ params }: { params: Promise<{ id:
           </div>
 
           <div style={{ display: "flex", gap: "0.55rem", flexWrap: "wrap" }}>
-            <button className="np-accent-gradient" style={{ borderRadius: 9, border: 0, padding: "0.65rem 0.95rem", fontWeight: 700, textTransform: "uppercase", fontSize: "0.72rem", letterSpacing: "0.06em" }}>
-              Agree · Start
+            <button className="np-accent-gradient np-btn">
+              Agree · start
             </button>
-            <button
-              style={{
-                borderRadius: 9,
-                border: "1px solid rgba(0,180,216,0.3)",
-                background: "rgba(0,180,216,0.1)",
-                color: "var(--np-cyan)",
-                padding: "0.65rem 0.95rem",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                fontSize: "0.72rem",
-                letterSpacing: "0.06em",
-              }}
-            >
-              Challenge Model
+            <button className="np-btn np-btn-secondary">
+              Override projection
             </button>
           </div>
         </div>
       </article>
 
       <article className="np-card" style={{ padding: "1rem" }}>
-        <h2 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.1rem" }}>Related Profiles</h2>
+        <h2 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.1rem" }}>Similar players</h2>
         <div className="np-player-card-grid" style={{ marginTop: "0.75rem", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
           {relatedPlayers.map((relatedPlayer) => (
             <NovaPredictPlayerProjectionCard key={relatedPlayer.id} player={relatedPlayer} variant="compact" />

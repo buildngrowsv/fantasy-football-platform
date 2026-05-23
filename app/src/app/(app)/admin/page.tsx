@@ -3,8 +3,8 @@ import { getNovaPredictSignalWeights } from "@/lib/db/queries";
 import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
 
 export const metadata = BuildNovaPredictPageSiteMetadata({
-  title: "Signal Weights Admin",
-  description: "Internal NovaPredict signal weight controls for model tuning.",
+  title: "Signal weights",
+  description: "Tune how market signals feed NovaPredict's weekly projection blend.",
   path: "/admin",
   noIndex: true,
 });
@@ -21,9 +21,9 @@ export default async function AdminPage() {
   return (
     <section style={{ display: "grid", gap: "1rem" }}>
       <article className="np-card" style={{ padding: "1.4rem" }}>
-        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.65rem", letterSpacing: "-0.03em" }}>Signal Weights Admin</h1>
+        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.65rem", letterSpacing: "-0.03em" }}>Signal weights</h1>
         <p style={{ marginTop: "0.5rem", color: "var(--np-text-muted)", lineHeight: 1.7 }}>
-          Internal controls for move-type multipliers and contextual model conditioning. This board is designed for transparent tuning, not hidden overrides.
+          How each market signal feeds the weekly blend — tuned in the open, not hidden behind the model.
         </p>
       </article>
 

@@ -10,21 +10,13 @@ import {
   ResolveNovaPredictNavigationLinkIsActive,
   ResolveNovaPredictNavigationLinkIsContextuallyActive,
 } from "@/lib/navigation/ResolveNovaPredictNavigationLinkIsActive";
+import { NOVA_PREDICT_CURRENT_WEEK_LABEL } from "@/lib/copy/NovaPredictPlatformUserFacingCopyCatalog";
 
 type NovaPredictMobileNavigationDrawerProps = {
   open: boolean;
   onClose: () => void;
   isAppShellRoute: boolean;
 };
-
-/*
-  NovaPredictMobileNavigationDrawer.tsx
-  -------------------------------------
-  Full-height slide-over for small screens when the header hamburger is tapped.
-
-  Marketing routes show story links + CTA; app routes expose the complete grouped
-  IA (Play / Trust / Tools) because the bottom bar only fits four primaries + More.
-*/
 
 export function NovaPredictMobileNavigationDrawer({ open, onClose, isAppShellRoute }: NovaPredictMobileNavigationDrawerProps) {
   const pathname = usePathname();
@@ -34,7 +26,7 @@ export function NovaPredictMobileNavigationDrawer({ open, onClose, isAppShellRou
       <button
         type="button"
         className={`np-mobile-nav-backdrop${open ? " is-visible" : ""}`}
-        aria-label="Close navigation menu"
+        aria-label="Close menu"
         onClick={onClose}
         tabIndex={open ? 0 : -1}
       />
@@ -43,14 +35,14 @@ export function NovaPredictMobileNavigationDrawer({ open, onClose, isAppShellRou
         id="np-mobile-navigation-drawer"
         className={`np-mobile-nav-drawer${open ? " is-open" : ""}`}
         aria-hidden={!open}
-        aria-label="Mobile navigation menu"
+        aria-label="Site menu"
       >
         <div className="np-mobile-nav-drawer-header">
-          <p className="np-pill np-pill-accent">Menu</p>
+          <p className="np-pill np-pill-accent">{isAppShellRoute ? NOVA_PREDICT_CURRENT_WEEK_LABEL : "NovaPredict"}</p>
           <p className="np-mobile-nav-drawer-subtitle">
             {isAppShellRoute
-              ? "Jump between weekly workflows, trust reports, and tools."
-              : "Explore NovaPredict before you open the weekly dashboard."}
+              ? "Everything for this week's slate."
+              : "See how NovaPredict turns Vegas lines into weekly fantasy edge."}
           </p>
         </div>
 
@@ -108,19 +100,13 @@ export function NovaPredictMobileNavigationDrawer({ open, onClose, isAppShellRou
         <div className="np-mobile-nav-drawer-footer">
           {!isAppShellRoute ? (
             <Link href="/dashboard" className="np-mobile-nav-drawer-cta np-accent-gradient" onClick={onClose}>
-              Open Weekly Dashboard
+              Open dashboard
             </Link>
           ) : (
             <Link href="/" className="np-mobile-nav-drawer-secondary" onClick={onClose}>
-              ← Back to product overview
+              About NovaPredict
             </Link>
           )}
-
-          {isAppShellRoute ? (
-            <p className="np-mobile-nav-drawer-footnote">
-              Tip: pin Dashboard → Slate → Challenge as your pre-lock ritual. Accountability closes the loop after Sunday.
-            </p>
-          ) : null}
         </div>
       </aside>
     </>
