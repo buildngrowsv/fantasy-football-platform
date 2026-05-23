@@ -19,7 +19,7 @@ export function NovaPredictAppSidebarNavigationPanel() {
   const pathname = usePathname();
 
   return (
-    <nav className="np-app-sidebar-nav" aria-label="App navigation">
+    <nav className="np-app-sidebar-nav" aria-label="Weekly tools">
       {NOVA_PREDICT_APP_NAVIGATION_GROUPS.map((group) => (
         <section key={group.id} className="np-app-sidebar-group">
           <h2 className="np-app-sidebar-group-label">{group.label}</h2>

@@ -46,7 +46,7 @@ export function NovaPredictMobileNavigationDrawer({ open, onClose, isAppShellRou
         aria-label="Mobile navigation menu"
       >
         <div className="np-mobile-nav-drawer-header">
-          <p className="np-pill np-pill-accent">Navigate</p>
+          <p className="np-pill np-pill-accent">Menu</p>
           <p className="np-mobile-nav-drawer-subtitle">
             {isAppShellRoute
               ? "Jump between weekly workflows, trust reports, and tools."

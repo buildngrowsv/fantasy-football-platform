@@ -68,7 +68,7 @@ export function NovaPredictSiteHeader() {
           </Link>
 
           {isAppShellRoute ? (
-            <nav className="np-site-header-app-nav" aria-label="Quick app navigation">
+            <nav className="np-site-header-app-nav" aria-label="Quick links">
               {appQuickLinks.map((link) => {
                 const isActive = ResolveNovaPredictNavigationLinkIsContextuallyActive(pathname, link.href);
                 const Icon = link.icon;

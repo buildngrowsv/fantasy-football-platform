@@ -22,9 +22,12 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <div className="np-page-shell np-app-shell">
       <aside className="np-app-sidebar np-card">
         <div className="np-app-sidebar-intro">
-          <p className="np-pill np-pill-accent">NovaPredict App</p>
+          <p className="np-pill np-pill-accent">
+            <span className="np-app-sidebar-week-dot" aria-hidden />
+            Week 7
+          </p>
           <p className="np-app-sidebar-intro-copy">
-            Your weekly decision engine — projections, overrides, and accountability in one loop.
+            Projections, overrides, and accountability — everything for this slate in one place.
           </p>
         </div>
 

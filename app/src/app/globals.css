@@ -503,6 +503,14 @@ a {
   color: var(--np-text-muted);
 }
 
+.np-app-sidebar-week-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--np-accent);
+  box-shadow: 0 0 14px rgba(0, 210, 140, 0.55);
+}
+
 .np-app-sidebar-nav {
   display: grid;
   gap: 1rem;
