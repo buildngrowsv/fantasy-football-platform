@@ -27,7 +27,7 @@ export function NovaPredictPlayerWeeklyActualsPerformanceChart({
       <div className="np-player-weekly-chart np-card-muted" style={{ padding: "1rem" }}>
         <p style={{ margin: 0, color: "var(--np-text-muted)", lineHeight: 1.65, fontSize: "0.88rem" }}>
           Weekly actuals will appear after nflverse ingest matches this player in{" "}
-          <span style={{ fontFamily: "var(--font-mono-loaded)" }}>player_weekly_actuals</span>.
+          <span style={{ fontFamily: "var(--font-jetbrains-mono)" }}>player_weekly_actuals</span>.
         </p>
       </div>
     );

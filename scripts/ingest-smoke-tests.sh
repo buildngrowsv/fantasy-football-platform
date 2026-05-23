@@ -156,6 +156,33 @@ assert len(rows) >= 1
 PY
 }
 
+smoke_apify_scionic_injury_monitor() {
+  if [[ -z "${APIFY_API_TOKEN:-}" ]]; then
+    echo "SKIP: APIFY_API_TOKEN not set"
+    return 0
+  fi
+  PYTHON_BIN="${REPO_ROOT}/pipeline/.venv/bin/python"
+  if [[ ! -x "$PYTHON_BIN" ]]; then
+    PYTHON_BIN="python3"
+  fi
+  REPO_ROOT="$REPO_ROOT" "$PYTHON_BIN" - <<'PY'
+import os, sys
+repo_root = os.environ["REPO_ROOT"]
+sys.path.insert(0, f"{repo_root}/pipeline")
+from lib.LoadNovaPredictEnvironmentVariables import LoadNovaPredictEnvironmentVariables
+from lib.RunApifyActorSyncGetDatasetItems import RunApifyActorSyncGetDatasetItems
+LoadNovaPredictEnvironmentVariables()
+rows = RunApifyActorSyncGetDatasetItems(
+    "scionic_dev/nfl-dfs-intelligence-monitor",
+    {},
+    timeout_seconds=180,
+    memory_megabytes=4096,
+)
+print(f"Apify scionic NFL injury rows: {len(rows)}")
+assert len(rows) >= 50
+PY
+}
+
 smoke_neon_database() {
   if [[ -z "${DATABASE_URL:-}" ]]; then
     echo "SKIP: DATABASE_URL not set — run ./scripts/setup-neon-env.sh first"
@@ -181,6 +208,7 @@ check "The Odds API endpoint live" smoke_odds_api_endpoint
 check "Apify auth" smoke_apify_auth
 check "Apify Playwright browser ESPN scoreboard" smoke_apify_playwright_browser_espn
 check "Apify harvest NFL sportsbook odds" smoke_apify_harvest_nfl_odds
+check "Apify scionic NFL injury monitor" smoke_apify_scionic_injury_monitor
 check "Neon DATABASE_URL" smoke_neon_database
 
 echo ""

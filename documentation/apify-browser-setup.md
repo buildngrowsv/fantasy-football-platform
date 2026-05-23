@@ -50,18 +50,23 @@ APIFY_BROWSER_ENABLED=true           # default on when token set; set false for 
 | `FetchEspnNflNewsHeadlinesIngestJob` | `apify_playwright_browser_espn_news` | Falls back to `espn_public_api` |
 | `FetchApifyDraftKingsOddsCrossValidationIngestJob` | `apify_zen_studio_draftkings_odds` | Skips if no token |
 | `FetchApifyHarvestSportsbookOddsIngestJob` | `apify_harvest_sportsbook_odds` | Input: `{"league":"NFL"}` |
+| `FetchApifyScionicNflInjuryIntelligenceIngestJob` | `apify_scionic_nfl_injury_monitor` | Requires Console permission approval (done) |
 
-Neon tables: `raw_apify_draftkings_events`, `raw_apify_harvest_sportsbook_odds` (migration `009_apify_browser_ingest_tables.sql`).
+Neon tables: `raw_apify_draftkings_events`, `raw_apify_harvest_sportsbook_odds`, `raw_injury_reports` (migration `009_apify_browser_ingest_tables.sql`).
 
 ---
 
-## Actors evaluated but not wired yet
+## Apify Console setup (completed 2026-05-23)
 
-| Actor | Blocker |
-|-------|---------|
-| `scionic_dev/nfl-dfs-intelligence-monitor` | Requires full-account permission approval in Apify Console |
-| `parseforge/nflverse-data-scraper` | Direct GitHub download is free/preferred |
-| `hgservices/apify-actor-espn` | NFL input ignored (returns NBA) |
+| Setting | Status |
+|---------|--------|
+| Account plan | **Starter** ($29/mo) |
+| API token | Verified in Settings → API & Integrations (`p9OUn7vkdUWD7hbGf`) |
+| `scionic_dev/nfl-dfs-intelligence-monitor` | **Authorized** (full-account permission) |
+| Privacy consent (Scionic actor) | **Accepted** in Console run view |
+| Actor runs validated | Playwright ESPN (16 events), Harvest (20), Scionic (296), DK odds |
+
+**Note:** NovaPredict runs Apify actors from the Python pipeline orchestrator — we do **not** use Apify Schedules (would duplicate pulls and cost). Apify Console is for testing, permissions, and monitoring runs.
 
 ---
 

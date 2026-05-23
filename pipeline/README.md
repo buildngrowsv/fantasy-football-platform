@@ -15,7 +15,7 @@ Batch ingestion, normalization, computation, and accountability for NovaPredict.
 
 | Stage | What it does |
 |-------|--------------|
-| **Ingest** | ESPN (Apify Browser), Sleeper, nflverse, Apify DK + Harvest odds |
+| **Ingest** | ESPN (Apify Browser), Sleeper, nflverse, Apify DK + Harvest + Scionic injuries |
 | **Scaffold ingest** | Odds API, OpenWeatherMap, SportsDataIO — skip until keys set |
 | **Normalize** | `players`, matchups, weekly actuals |
 | **Compute** | Trailing PPR projections (real nflverse data) |

@@ -30,6 +30,9 @@ from ingest.FetchApifyDraftKingsOddsCrossValidationIngestJob import (  # noqa: E
 from ingest.FetchApifyHarvestSportsbookOddsIngestJob import (  # noqa: E402
     FetchApifyHarvestSportsbookOddsIngestJob,
 )
+from ingest.FetchApifyScionicNflInjuryIntelligenceIngestJob import (  # noqa: E402
+    FetchApifyScionicNflInjuryIntelligenceIngestJob,
+)
 from ingest.FetchEspnNflNewsHeadlinesIngestJob import FetchEspnNflNewsHeadlinesIngestJob  # noqa: E402
 from ingest.FetchEspnNflScoreboardIngestJob import FetchEspnNflScoreboardIngestJob  # noqa: E402
 from ingest.FetchNflverseGamesScheduleIngestJob import FetchNflverseGamesScheduleIngestJob  # noqa: E402
@@ -82,6 +85,7 @@ def RunNovaPredictWeeklyIngestOrchestrator() -> dict[str, int | float]:
         results["nflverse_games"] = FetchNflverseGamesScheduleIngestJob()
         results["apify_draftkings_events"] = FetchApifyDraftKingsOddsCrossValidationIngestJob()
         results["apify_harvest_sportsbook_odds"] = FetchApifyHarvestSportsbookOddsIngestJob()
+        results["apify_scionic_injuries"] = FetchApifyScionicNflInjuryIntelligenceIngestJob()
         results["odds_api_events"] = FetchTheOddsApiNflEventsIngestJob()
         results["openweather_forecasts"] = FetchOpenWeatherMapStadiumForecastIngestJob()
         results["sportsdataio_injuries"] = FetchSportsDataIoNflInjuriesIngestJob()

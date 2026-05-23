@@ -1,0 +1,47 @@
+---
+description: Deploy NovaPredict to Cloudflare after finishing implementation work
+alwaysApply: true
+---
+
+# Deploy after work (NovaPredict)
+
+When you finish a task that changed code (not question-only / review-only turns), **deploy the app before you stop**.
+
+## Canonical command
+
+Run from `app/`:
+
+```bash
+npm run deploy:cf:full
+```
+
+This executes `scripts/deploy-cloudflare-locally.sh`: `wrangler whoami` → `npm ci` → `npm run lint` → `npm run build:cf` → `npm run deploy:cf`.
+
+## Fast path (same session)
+
+If you already ran `npm run lint` and `npm run build:cf` successfully in this session:
+
+```bash
+npm run deploy:cf:full:fast
+```
+
+Equivalent to `--skip-install --skip-tests`.
+
+## Do not
+
+- Do **not** use bare `npm run deploy:cf` as the default finish step — use the full script so lint/build run first.
+- Do **not** assume Vercel or Cloudflare Pages git deploy — production is **Workers via OpenNext** only.
+
+## When to skip app deploy
+
+Skip only for **read-only** answers or changes limited to `pipeline/`, root docs, or `.env.example` with **zero** `app/` impact. If `app/` changed, always deploy.
+
+## On failure
+
+1. Read `app/tmp/deploy-cloudflare-local-latest.log`
+2. Fix the failing step (lint, build, wrangler auth, etc.)
+3. Re-run `npm run deploy:cf:full` (or `:fast` if install/lint already passed)
+
+Production URL: `https://novapredict.buildngrowsv.workers.dev`
+
+Requires `wrangler login` on the machine running deploy.

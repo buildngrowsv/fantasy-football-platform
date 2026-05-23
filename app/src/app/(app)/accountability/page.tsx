@@ -20,12 +20,12 @@ export const metadata = BuildNovaPredictPageSiteMetadata({
 
 function callClassStyles(call: NovaPredictAccountabilityCallRecord): { border: string; badge: string; text: string } {
   if (call.classification === "correct") {
-    return { border: "rgba(0,210,140,0.35)", badge: "rgba(0,210,140,0.1)", text: "var(--np-accent)" };
+    return { border: "var(--np-success-border)", badge: "var(--np-success-bg)", text: "var(--np-accent)" };
   }
   if (call.classification === "miss") {
-    return { border: "rgba(224,80,80,0.35)", badge: "rgba(224,80,80,0.1)", text: "var(--np-danger)" };
+    return { border: "var(--np-danger-border)", badge: "var(--np-danger-bg)", text: "var(--np-danger)" };
   }
-  return { border: "rgba(201,140,42,0.35)", badge: "rgba(201,140,42,0.1)", text: "var(--np-amber)" };
+  return { border: "var(--np-warning-border)", badge: "var(--np-warning-bg)", text: "var(--np-amber)" };
 }
 
 export default async function AccountabilityPage({

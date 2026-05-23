@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" fill="none">
+  <defs>
+    <linearGradient id="npGradLight" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#007a52"/>
+      <stop offset="1" stop-color="#006d88"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="4" width="40" height="40" rx="10" fill="url(#npGradLight)" opacity="0.12"/>
+  <path d="M12 32L20 16L28 26L36 14" stroke="url(#npGradLight)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="36" cy="14" r="3" fill="#007a52"/>
+  <text x="52" y="32" fill="#0d1117" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" letter-spacing="-0.5">Nova</text>
+  <text x="108" y="32" fill="#007a52" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" letter-spacing="-0.5">Predict</text>
+</svg>

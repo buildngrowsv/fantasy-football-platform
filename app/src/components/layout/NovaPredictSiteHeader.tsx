@@ -18,6 +18,7 @@ import { NovaPredictMobileBottomNavigationBar } from "@/components/layout/NovaPr
 import { NovaPredictMobileNavigationDrawer } from "@/components/layout/NovaPredictMobileNavigationDrawer";
 import { NovaPredictWeekContextStatusStrip } from "@/components/layout/NovaPredictWeekContextStatusStrip";
 import { NovaPredictSiteHeaderAuthActions } from "@/components/auth/NovaPredictSiteHeaderAuthActions";
+import { NovaPredictColorSchemeToggleButton } from "@/components/theme/NovaPredictColorSchemeToggleButton";
 
 /*
   NovaPredictSiteHeader.tsx
@@ -60,11 +61,20 @@ export function NovaPredictSiteHeader() {
           <Link href="/" className="np-site-header-brand" aria-label="NovaPredict home">
             <Image
               src="/assets/brand/novapredict-logo.svg"
+              alt=""
+              width={140}
+              height={28}
+              priority
+              className="np-site-header-logo np-site-header-logo-dark"
+              aria-hidden
+            />
+            <Image
+              src="/assets/brand/novapredict-logo-light.svg"
               alt="NovaPredict"
               width={140}
               height={28}
               priority
-              className="np-site-header-logo"
+              className="np-site-header-logo np-site-header-logo-light"
             />
           </Link>
 
@@ -101,6 +111,8 @@ export function NovaPredictSiteHeader() {
 
           <div className="np-site-header-actions">
             {isAppShellRoute ? <NovaPredictWeekContextStatusStrip /> : null}
+
+            <NovaPredictColorSchemeToggleButton />
 
             <NovaPredictSiteHeaderAuthActions />
 
