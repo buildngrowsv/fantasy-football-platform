@@ -132,16 +132,21 @@ Without splits data, classifier degrades — not acceptable for launch per [deci
 
 ---
 
-## 4. Apify supplement layer
+## 4. Apify supplement layer (Apify Browser + HTTP actors)
 
-**Token:** `APIFY_API_TOKEN` in `.env` (gitignored). Upgrade from FREE plan before production schedules.
+**Token:** `APIFY_API_TOKEN` in `.env` (gitignored). Account on **Starter** plan (2026-05-23).
+
+**Setup guide:** [apify-browser-setup.md](./apify-browser-setup.md)
 
 | Actor | Role | When to run |
 |-------|------|-------------|
+| `apify/playwright-scraper` | **Apify Browser** — ESPN scoreboard + news JSON via managed Chromium | Every ESPN ingest (default when token set) |
 | `zen-studio/draftkings-odds` | Cross-validate DK props vs The Odds API | Tue + Sun during NFL season |
-| `harvest/sportsbook-odds-scraper` | Multi-book odds backup ($49/mo) | Weekly + line-move alerts |
-| `scionic_dev/nfl-dfs-intelligence-monitor` | Injury redundancy (ESPN/CBS/Yahoo) | Wed–Sun |
+| `harvest/sportsbook-odds-scraper` | Multi-book odds backup ($49/mo optional) | Weekly + line-move alerts |
+| `scionic_dev/nfl-dfs-intelligence-monitor` | Injury redundancy (ESPN/CBS/Yahoo) | Wed–Sun — **needs Console permission approval** |
 | `parseforge/nflverse-data-scraper` | Optional release index | Pre-season bulk load only |
+
+Set `APIFY_BROWSER_ENABLED=false` to force direct httpx for ESPN during local debugging.
 
 All Apify rows land in Neon with `source_provider = 'apify_*'` for reconciliation against primary APIs.
 

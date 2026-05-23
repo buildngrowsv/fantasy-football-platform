@@ -100,7 +100,59 @@ req = urllib.request.Request(
 with urllib.request.urlopen(req, timeout=20) as r:
     data = json.load(r)
 username = data.get("data", {}).get("username", "?")
-print(f"Apify user: {username}")
+plan = data.get("data", {}).get("plan", {}).get("id", "?")
+print(f"Apify user: {username} (plan: {plan})")
+PY
+}
+
+smoke_apify_playwright_browser_espn() {
+  if [[ -z "${APIFY_API_TOKEN:-}" ]]; then
+    echo "SKIP: APIFY_API_TOKEN not set"
+    return 0
+  fi
+  PYTHON_BIN="${REPO_ROOT}/pipeline/.venv/bin/python"
+  if [[ ! -x "$PYTHON_BIN" ]]; then
+    PYTHON_BIN="python3"
+  fi
+  REPO_ROOT="$REPO_ROOT" "$PYTHON_BIN" - <<'PY'
+import os, sys
+repo_root = os.environ["REPO_ROOT"]
+sys.path.insert(0, f"{repo_root}/pipeline")
+from lib.LoadNovaPredictEnvironmentVariables import LoadNovaPredictEnvironmentVariables
+from lib.FetchJsonDocumentFromUrlViaApifyPlaywrightBrowser import FetchJsonDocumentFromUrlViaApifyPlaywrightBrowser
+LoadNovaPredictEnvironmentVariables()
+url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+payload = FetchJsonDocumentFromUrlViaApifyPlaywrightBrowser(url, timeout_seconds=120)
+events = payload.get("events", [])
+print(f"Apify Playwright browser ESPN scoreboard events: {len(events)}")
+assert isinstance(events, list)
+PY
+}
+
+smoke_apify_harvest_nfl_odds() {
+  if [[ -z "${APIFY_API_TOKEN:-}" ]]; then
+    echo "SKIP: APIFY_API_TOKEN not set"
+    return 0
+  fi
+  PYTHON_BIN="${REPO_ROOT}/pipeline/.venv/bin/python"
+  if [[ ! -x "$PYTHON_BIN" ]]; then
+    PYTHON_BIN="python3"
+  fi
+  REPO_ROOT="$REPO_ROOT" "$PYTHON_BIN" - <<'PY'
+import os, sys
+repo_root = os.environ["REPO_ROOT"]
+sys.path.insert(0, f"{repo_root}/pipeline")
+from lib.LoadNovaPredictEnvironmentVariables import LoadNovaPredictEnvironmentVariables
+from lib.RunApifyActorSyncGetDatasetItems import RunApifyActorSyncGetDatasetItems
+LoadNovaPredictEnvironmentVariables()
+rows = RunApifyActorSyncGetDatasetItems(
+    "harvest/sportsbook-odds-scraper",
+    {"league": "NFL"},
+    timeout_seconds=180,
+    memory_megabytes=2048,
+)
+print(f"Apify harvest NFL odds rows: {len(rows)}")
+assert len(rows) >= 1
 PY
 }
 
@@ -127,6 +179,8 @@ check "ESPN NFL scoreboard" smoke_espn_scoreboard
 check "ESPN NFL news" smoke_espn_news
 check "The Odds API endpoint live" smoke_odds_api_endpoint
 check "Apify auth" smoke_apify_auth
+check "Apify Playwright browser ESPN scoreboard" smoke_apify_playwright_browser_espn
+check "Apify harvest NFL sportsbook odds" smoke_apify_harvest_nfl_odds
 check "Neon DATABASE_URL" smoke_neon_database
 
 echo ""

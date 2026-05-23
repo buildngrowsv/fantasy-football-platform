@@ -3,15 +3,19 @@ FetchEspnNflScoreboardIngestJob
 --------------------------------
 Pulls the public ESPN NFL scoreboard and persists each event as raw JSON in Neon.
 
-Why ESPN scoreboard first:
-- Free, no API key, verified live during data-source-research (2026-05-23).
-- Gives us real game IDs, team pairings, and status fields for scheduling ingest windows
-  before we pay for The Odds API during off-season development.
+Fetch path (reworked 2026-05-23 — Apify Browser primary):
+- **Primary:** Apify Playwright browser (`apify/playwright-scraper`) loads the ESPN JSON URL
+  through managed Chromium + proxy rotation when `APIFY_API_TOKEN` is set and browser mode is on.
+- **Fallback:** Direct httpx to site.api.espn.com when token missing or `APIFY_BROWSER_ENABLED=false`.
+
+Why Apify Browser for ESPN:
+- Same JSON endpoint, but Apify handles anti-bot egress that can block pipeline containers later.
+- Live-tested: 16 NFL events via Playwright actor vs direct httpx during data-source-research.
 
 Schedule (production):
 - Wed–Sat lightweight pulls; Sun 7 AM ET full refresh per data-sources.md
 
-Does NOT use mock data — hits site.api.espn.com directly.
+Does NOT use mock data.
 """
 
 from __future__ import annotations
@@ -30,10 +34,27 @@ from ingest.PersistIngestRunAuditRecord import (  # noqa: E402
     PersistIngestRunAuditRecordFinishSuccess,
     PersistIngestRunAuditRecordStart,
 )
+from lib.FetchJsonDocumentFromUrlViaApifyPlaywrightBrowser import (  # noqa: E402
+    FetchJsonDocumentFromUrlViaApifyPlaywrightBrowser,
+)
 from lib.LoadNovaPredictEnvironmentVariables import LoadNovaPredictEnvironmentVariables  # noqa: E402
 from lib.OpenNovaPredictNeonDatabaseConnection import OpenNovaPredictNeonDatabaseConnectionContext  # noqa: E402
+from lib.RunApifyActorSyncGetDatasetItems import ResolveApifyBrowserEnabledFromEnvironment  # noqa: E402
 
 ESPN_NFL_SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+
+
+def _FetchEspnNflScoreboardPayload() -> tuple[dict, str]:
+    """
+    Returns (scoreboard_json, source_provider_label) using Apify browser or direct HTTP.
+    """
+    if ResolveApifyBrowserEnabledFromEnvironment():
+        payload = FetchJsonDocumentFromUrlViaApifyPlaywrightBrowser(ESPN_NFL_SCOREBOARD_URL)
+        return payload, "apify_playwright_browser_espn_scoreboard"
+
+    response = httpx.get(ESPN_NFL_SCOREBOARD_URL, timeout=30.0)
+    response.raise_for_status()
+    return response.json(), "espn_public_api"
 
 
 def FetchEspnNflScoreboardIngestJob() -> int:
@@ -43,9 +64,7 @@ def FetchEspnNflScoreboardIngestJob() -> int:
     """
     LoadNovaPredictEnvironmentVariables()
 
-    response = httpx.get(ESPN_NFL_SCOREBOARD_URL, timeout=30.0)
-    response.raise_for_status()
-    payload = response.json()
+    payload, source_provider = _FetchEspnNflScoreboardPayload()
     events = payload.get("events") or []
 
     if not isinstance(events, list):
@@ -55,8 +74,13 @@ def FetchEspnNflScoreboardIngestJob() -> int:
         ingest_run_id = PersistIngestRunAuditRecordStart(
             connection,
             job_name="FetchEspnNflScoreboardIngestJob",
-            source_provider="espn_public_api",
-            metadata={"endpoint": ESPN_NFL_SCOREBOARD_URL},
+            source_provider=source_provider,
+            metadata={
+                "endpoint": ESPN_NFL_SCOREBOARD_URL,
+                "fetch_mode": "apify_playwright_browser"
+                if source_provider.startswith("apify_")
+                else "direct_http",
+            },
         )
 
         try:

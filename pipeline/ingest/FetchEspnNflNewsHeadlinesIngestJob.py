@@ -3,9 +3,13 @@ FetchEspnNflNewsHeadlinesIngestJob
 -----------------------------------
 Pulls ESPN NFL news headlines into raw_espn_news_articles for narrative/sentiment pipeline.
 
-Why news ingest early:
-- Master Spec §4J requires beat reporter + headline context for the news overreaction filter.
-- ESPN public news API is free and was verified live (2026-05-23) during data-source research.
+Fetch path (reworked 2026-05-23 — Apify Browser primary):
+- **Primary:** Apify Playwright browser when `APIFY_API_TOKEN` is set (25 articles validated live).
+- **Fallback:** Direct httpx when token missing or `APIFY_BROWSER_ENABLED=false`.
+
+Why news via Apify Browser:
+- Headline pulls run Wed–Sat q6h; consistent egress through Apify reduces intermittent blocks
+  that would starve the Master Spec §4J news overreaction filter.
 
 Schedule (production):
 - Wed–Sat every 6 hours per data-sources.md pull schedule.
@@ -29,10 +33,27 @@ from ingest.PersistIngestRunAuditRecord import (  # noqa: E402
     PersistIngestRunAuditRecordFinishSuccess,
     PersistIngestRunAuditRecordStart,
 )
+from lib.FetchJsonDocumentFromUrlViaApifyPlaywrightBrowser import (  # noqa: E402
+    FetchJsonDocumentFromUrlViaApifyPlaywrightBrowser,
+)
 from lib.LoadNovaPredictEnvironmentVariables import LoadNovaPredictEnvironmentVariables  # noqa: E402
 from lib.OpenNovaPredictNeonDatabaseConnection import OpenNovaPredictNeonDatabaseConnectionContext  # noqa: E402
+from lib.RunApifyActorSyncGetDatasetItems import ResolveApifyBrowserEnabledFromEnvironment  # noqa: E402
 
 ESPN_NFL_NEWS_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/news?limit=25"
+
+
+def _FetchEspnNflNewsPayload() -> tuple[dict, str]:
+    """
+    Returns (news_json, source_provider_label) using Apify browser or direct HTTP.
+    """
+    if ResolveApifyBrowserEnabledFromEnvironment():
+        payload = FetchJsonDocumentFromUrlViaApifyPlaywrightBrowser(ESPN_NFL_NEWS_URL)
+        return payload, "apify_playwright_browser_espn_news"
+
+    response = httpx.get(ESPN_NFL_NEWS_URL, timeout=30.0)
+    response.raise_for_status()
+    return response.json(), "espn_public_api"
 
 
 def FetchEspnNflNewsHeadlinesIngestJob() -> int:
@@ -42,9 +63,7 @@ def FetchEspnNflNewsHeadlinesIngestJob() -> int:
     """
     LoadNovaPredictEnvironmentVariables()
 
-    response = httpx.get(ESPN_NFL_NEWS_URL, timeout=30.0)
-    response.raise_for_status()
-    payload = response.json()
+    payload, source_provider = _FetchEspnNflNewsPayload()
     articles = payload.get("articles") or []
 
     if not isinstance(articles, list):
@@ -54,8 +73,13 @@ def FetchEspnNflNewsHeadlinesIngestJob() -> int:
         ingest_run_id = PersistIngestRunAuditRecordStart(
             connection,
             job_name="FetchEspnNflNewsHeadlinesIngestJob",
-            source_provider="espn_public_api",
-            metadata={"endpoint": ESPN_NFL_NEWS_URL},
+            source_provider=source_provider,
+            metadata={
+                "endpoint": ESPN_NFL_NEWS_URL,
+                "fetch_mode": "apify_playwright_browser"
+                if source_provider.startswith("apify_")
+                else "direct_http",
+            },
         )
 
         try:

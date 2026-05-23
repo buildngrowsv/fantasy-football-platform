@@ -27,6 +27,9 @@ from compute.EnhanceProjectionsWithMonteCarloFromEmpiricalDistributionJob import
 from ingest.FetchApifyDraftKingsOddsCrossValidationIngestJob import (  # noqa: E402
     FetchApifyDraftKingsOddsCrossValidationIngestJob,
 )
+from ingest.FetchApifyHarvestSportsbookOddsIngestJob import (  # noqa: E402
+    FetchApifyHarvestSportsbookOddsIngestJob,
+)
 from ingest.FetchEspnNflNewsHeadlinesIngestJob import FetchEspnNflNewsHeadlinesIngestJob  # noqa: E402
 from ingest.FetchEspnNflScoreboardIngestJob import FetchEspnNflScoreboardIngestJob  # noqa: E402
 from ingest.FetchNflverseGamesScheduleIngestJob import FetchNflverseGamesScheduleIngestJob  # noqa: E402
@@ -78,6 +81,7 @@ def RunNovaPredictWeeklyIngestOrchestrator() -> dict[str, int | float]:
         results["nflverse_weekly_rows"] = FetchNflverseWeeklyPlayerStatsIngestJob()
         results["nflverse_games"] = FetchNflverseGamesScheduleIngestJob()
         results["apify_draftkings_events"] = FetchApifyDraftKingsOddsCrossValidationIngestJob()
+        results["apify_harvest_sportsbook_odds"] = FetchApifyHarvestSportsbookOddsIngestJob()
         results["odds_api_events"] = FetchTheOddsApiNflEventsIngestJob()
         results["openweather_forecasts"] = FetchOpenWeatherMapStadiumForecastIngestJob()
         results["sportsdataio_injuries"] = FetchSportsDataIoNflInjuriesIngestJob()

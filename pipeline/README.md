@@ -15,7 +15,7 @@ Batch ingestion, normalization, computation, and accountability for NovaPredict.
 
 | Stage | What it does |
 |-------|--------------|
-| **Ingest** | ESPN, Sleeper, nflverse, Apify DK cross-validation |
+| **Ingest** | ESPN (Apify Browser), Sleeper, nflverse, Apify DK + Harvest odds |
 | **Scaffold ingest** | Odds API, OpenWeatherMap, SportsDataIO — skip until keys set |
 | **Normalize** | `players`, matchups, weekly actuals |
 | **Compute** | Trailing PPR projections (real nflverse data) |
@@ -54,7 +54,7 @@ Next.js app exposes pipeline health at **`GET /api/pipeline/status`** (ingest ru
 | `OPENWEATHERMAP_API_KEY` | Stadium forecasts |
 | `PFF_API_KEY` | Snap/route participation |
 
-`APIFY_API_TOKEN` — already used for DraftKings cross-validation (187 events).
+`APIFY_API_TOKEN` — Apify Browser (ESPN via Playwright) + DraftKings + Harvest multi-book odds. See `documentation/apify-browser-setup.md`.
 
 ## Neon
 

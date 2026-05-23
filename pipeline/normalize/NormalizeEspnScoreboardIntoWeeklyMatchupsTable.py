@@ -65,6 +65,7 @@ def NormalizeEspnScoreboardIntoWeeklyMatchupsTable() -> int:
             event = payload if isinstance(payload, dict) else json.loads(payload)
             competition = (event.get("competitions") or [{}])[0]
             competitors = competition.get("competitors") or []
+            kickoff_at = competition.get("date")
 
             home_team = None
             away_team = None
@@ -88,16 +89,17 @@ def NormalizeEspnScoreboardIntoWeeklyMatchupsTable() -> int:
                 connection.execute(
                     """
                     INSERT INTO weekly_team_matchups (
-                      season, week, team, opponent, is_home, matchup_label, source_provider
-                    ) VALUES (%s, %s, %s, %s, %s, %s, 'espn_public_api')
+                      season, week, team, opponent, is_home, matchup_label, source_provider, kickoff_at
+                    ) VALUES (%s, %s, %s, %s, %s, %s, 'espn_public_api', %s)
                     ON CONFLICT (season, week, team) DO UPDATE SET
                       opponent = EXCLUDED.opponent,
                       is_home = EXCLUDED.is_home,
                       matchup_label = EXCLUDED.matchup_label,
                       source_provider = EXCLUDED.source_provider,
+                      kickoff_at = EXCLUDED.kickoff_at,
                       updated_at = NOW()
                     """,
-                    (season, week, team, opponent, is_home, matchup_label),
+                    (season, week, team, opponent, is_home, matchup_label, kickoff_at),
                 )
                 upserted += 1
 

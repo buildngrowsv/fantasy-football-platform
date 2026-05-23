@@ -14,6 +14,7 @@ These documents define how to build, host, and launch the **complete production 
 | [deploy-plan.md](./deploy-plan.md) | **Local build + Cloudflare Worker upload** (modeled on GenFlick) |
 | [data-sources.md](./data-sources.md) | **Where live NFL data comes from** — providers, schedule, cost |
 | [data-source-research.md](./data-source-research.md) | API vs Apify research, smoke tests, sourcing plan |
+| [apify-browser-setup.md](./apify-browser-setup.md) | **Apify Browser setup** — Playwright actors, env vars, ingest jobs |
 | [architecture-plan.md](./architecture-plan.md) | System design, pipeline, APIs |
 | [build-roadmap.md](./build-roadmap.md) | Phases 0–8 (current) + Phase ML (later) |
 | [hosting-and-operations-plan.md](./hosting-and-operations-plan.md) | Cloudflare + Neon infrastructure |
