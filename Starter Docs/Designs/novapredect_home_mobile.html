@@ -1,0 +1,490 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  .shell{background:#090b11;font-family:'Inter',system-ui,sans-serif;color:#e2e8f0;max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:80px;position:relative;}
+
+  /* STATUS BAR */
+  .status-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px 8px;background:#0d1018;}
+  .sb-time{font-size:13px;font-weight:600;color:#f0f4ff;}
+  .sb-icons{display:flex;align-items:center;gap:5px;font-size:10px;color:#f0f4ff;}
+
+  /* NAV BAR */
+  .navbar{display:flex;align-items:center;justify-content:space-between;padding:8px 20px 12px;background:#0d1018;border-bottom:0.5px solid #161b27;}
+  .nav-logo{font-size:16px;font-weight:600;color:#f0f4ff;letter-spacing:-0.02em;}
+  .nav-logo span{color:#00d28c;}
+  .nav-right{display:flex;align-items:center;gap:10px;}
+  .nav-week{font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#3d4e66;background:#0a0c13;border:0.5px solid #1e2538;padding:4px 8px;border-radius:4px;}
+  .nav-lock{display:flex;align-items:center;gap:5px;font-size:9px;font-family:'JetBrains Mono',monospace;color:#c98c2a;background:rgba(186,117,23,0.06);border:0.5px solid rgba(186,117,23,0.18);padding:4px 8px;border-radius:4px;}
+  .lock-dot{width:5px;height:5px;background:#c98c2a;border-radius:50%;animation:lpulse 2s infinite;}
+  @keyframes lpulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+  .nav-avatar{width:28px;height:28px;border-radius:50%;background:rgba(0,210,140,0.1);border:0.5px solid rgba(0,210,140,0.22);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#00d28c;}
+
+  /* GREETING */
+  .greeting{padding:16px 20px 0;}
+  .greeting-name{font-size:18px;font-weight:500;color:#f0f4ff;letter-spacing:-0.01em;margin-bottom:3px;}
+  .greeting-sub{font-size:11px;color:#3d4e66;}
+  .greeting-sub .alert{color:#e05050;}
+  .greeting-sub .proj{color:#00b4d8;}
+
+  /* FEED PADDING */
+  .feed{padding:0 20px;}
+
+  /* SECTION HEADERS */
+  .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin:18px 0 10px;}
+  .sec-hdr-label{font-size:8.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#2e3d55;}
+  .sec-hdr-action{font-size:9px;color:#3d4e66;cursor:pointer;transition:color 0.15s;}
+  .sec-hdr-action:hover{color:#00b4d8;}
+  .sec-hdr-wrap{display:flex;align-items:center;position:relative;}
+
+  /* HELP */
+  .help-btn{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;border:0.5px solid #253048;color:#3d4e66;font-size:8px;font-weight:600;cursor:pointer;transition:all 0.15s;margin-left:5px;user-select:none;background:transparent;font-family:'Inter',sans-serif;line-height:1;}
+  .help-btn:hover{border-color:#4a6080;color:#8aabcc;}
+  .help-btn.active{border-color:#00b4d8;color:#00b4d8;background:rgba(0,180,216,0.08);}
+  .help-tooltip{display:none;position:absolute;left:0;top:calc(100% + 4px);width:280px;background:#0c101a;border:0.5px solid #253048;border-radius:7px;padding:10px 12px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,0.6);}
+  .help-tooltip.visible{display:block;}
+  .help-tooltip-title{font-size:10px;font-weight:600;color:#00b4d8;margin-bottom:5px;}
+  .help-tooltip-body{font-size:10px;color:#6a7d9a;line-height:1.6;}
+  .help-tooltip-body strong{color:#8aabcc;font-weight:500;}
+
+  /* ALERTS */
+  .alert-strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
+  .alert-strip::-webkit-scrollbar{display:none;}
+  .alert-pill{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:500;padding:5px 10px;border-radius:6px;border:0.5px solid;white-space:nowrap;cursor:pointer;transition:opacity 0.15s,transform 0.15s;flex-shrink:0;}
+  .alert-pill:hover{opacity:0.8;transform:translateY(-1px);}
+  .ap-red{background:rgba(224,80,80,0.06);border-color:rgba(224,80,80,0.2);color:#e05050;}
+  .ap-amber{background:rgba(186,117,23,0.06);border-color:rgba(186,117,23,0.2);color:#c98c2a;}
+  .ap-green{background:rgba(0,210,140,0.06);border-color:rgba(0,210,140,0.18);color:#00d28c;}
+  .ap-cyan{background:rgba(0,180,216,0.06);border-color:rgba(0,180,216,0.18);color:#00b4d8;}
+  .adot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+  .adot.red{background:#e05050;} .adot.amber{background:#c98c2a;} .adot.green{background:#00d28c;} .adot.cyan{background:#00b4d8;}
+
+  /* CHALLENGE CARD */
+  .challenge-card{background:#0f1118;border:0.5px solid #1e2538;border-radius:12px;overflow:hidden;margin-bottom:0;}
+  .ch-top{padding:12px 16px;border-bottom:0.5px solid #161b27;background:#11151f;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .ch-title{font-size:10px;font-weight:600;color:#8a9ebb;margin-bottom:2px;}
+  .ch-sub{font-size:8.5px;color:#2e3d55;font-family:'JetBrains Mono',monospace;}
+  .ch-cta{font-size:9px;font-weight:500;color:#00d28c;background:rgba(0,210,140,0.07);border:0.5px solid rgba(0,210,140,0.2);padding:5px 11px;border-radius:5px;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'Inter',sans-serif;transition:background 0.15s;}
+  .ch-cta:hover{background:rgba(0,210,140,0.13);}
+
+  .ch-tabs{display:flex;border-bottom:0.5px solid #161b27;}
+  .ch-tab{flex:1;padding:8px 0;text-align:center;font-size:9px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;color:#2e3d55;border-bottom:1.5px solid transparent;transition:all 0.15s;}
+  .ch-tab.active{color:#00d28c;border-bottom-color:#00d28c;background:rgba(0,210,140,0.03);}
+
+  .ch-body{padding:14px 16px;}
+  .ch-comparison{display:grid;grid-template-columns:1fr auto 1fr 0.5px 1fr;gap:0;align-items:center;margin-bottom:14px;}
+  .ch-side{text-align:center;}
+  .ch-side-label{font-size:8px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px;}
+  .ch-side-label.you{color:rgba(0,210,140,0.5);}
+  .ch-side-label.model{color:#3a5878;}
+  .ch-side-label.community{color:rgba(163,107,200,0.5);}
+  .ch-pct{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:500;line-height:1;letter-spacing:-0.02em;}
+  .ch-pct.you{color:#00d28c;}
+  .ch-pct.model{color:#4a6a8a;}
+  .ch-pct.community{color:#a36bc8;}
+  .ch-pct-sub{font-size:9px;color:#2e3d55;margin-top:2px;font-family:'JetBrains Mono',monospace;}
+  .ch-vs{font-size:9px;font-weight:600;color:#1e2a3f;text-align:center;padding:0 6px;}
+  .ch-vdiv{background:#1e2538;}
+
+  .ch-bars{margin-bottom:12px;}
+  .ch-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+  .ch-bar-lbl{font-size:9px;width:72px;flex-shrink:0;font-weight:500;}
+  .ch-bar-lbl.you{color:rgba(0,210,140,0.55);}
+  .ch-bar-lbl.model{color:#4a6a8a;}
+  .ch-bar-lbl.community{color:rgba(163,107,200,0.55);}
+  .ch-bar-track{flex:1;height:3px;background:#141a28;border-radius:2px;overflow:hidden;}
+  .ch-bar-fill{height:100%;border-radius:2px;}
+  .ch-bar-fill.you{background:linear-gradient(90deg,#004d30,#00d28c);}
+  .ch-bar-fill.model{background:linear-gradient(90deg,#0a1e30,#4a6a8a);}
+  .ch-bar-fill.community{background:linear-gradient(90deg,#1a0a30,#a36bc8);}
+  .ch-bar-val{font-family:'JetBrains Mono',monospace;font-size:9px;width:36px;text-align:right;flex-shrink:0;}
+  .ch-bar-val.you{color:#00d28c;}
+  .ch-bar-val.model{color:#4a6a8a;}
+  .ch-bar-val.community{color:rgba(163,107,200,0.65);}
+
+  .ch-override{display:flex;align-items:center;gap:8px;padding-top:10px;border-top:0.5px solid #161b27;}
+  .ch-ovr-label{font-size:9px;color:#2e3d55;flex:1;}
+  .ch-ovr-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:#00d28c;}
+  .ch-ovr-badge{font-size:8px;background:rgba(0,180,216,0.08);border:0.5px solid rgba(0,180,216,0.18);color:#00b4d8;padding:2px 6px;border-radius:3px;}
+
+  /* ROSTER */
+  .roster-group-label{font-size:8px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#1e2a3f;padding:8px 0 4px;}
+
+  .roster-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#0f1118;border:0.5px solid #1a1f2e;border-radius:8px;margin-bottom:2px;transition:border-color 0.15s,background 0.15s;cursor:pointer;position:relative;}
+  .roster-row:hover{background:#111620;border-color:#253048;}
+  .roster-row.nova-flag{border-color:rgba(186,117,23,0.28);background:rgba(186,117,23,0.02);}
+  .roster-row.signal-row{border-color:rgba(0,210,140,0.18);background:rgba(0,210,140,0.02);}
+  .roster-row.alert-row{border-color:rgba(224,80,80,0.22);}
+  .roster-row.bench{opacity:0.65;}
+  .roster-row.bench:hover{opacity:1;}
+
+  .slot-label{font-size:8px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#2e3d55;width:32px;flex-shrink:0;text-align:center;}
+  .pos-badge{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;}
+  .pb-qb{background:rgba(186,117,23,0.1);color:#c98c2a;border:0.5px solid rgba(186,117,23,0.2);}
+  .pb-rb{background:rgba(0,210,140,0.1);color:#00d28c;border:0.5px solid rgba(0,210,140,0.2);}
+  .pb-wr{background:rgba(0,180,216,0.1);color:#00b4d8;border:0.5px solid rgba(0,180,216,0.2);}
+  .pb-te{background:rgba(163,107,200,0.1);color:#a36bc8;border:0.5px solid rgba(163,107,200,0.2);}
+  .pb-def{background:rgba(80,100,140,0.1);color:#6a8ab0;border:0.5px solid rgba(80,100,140,0.2);}
+  .pb-k{background:rgba(80,80,80,0.1);color:#6a7a8a;border:0.5px solid rgba(80,80,80,0.2);}
+
+  .player-info{flex:1;min-width:0;}
+  .player-name{font-size:11px;font-weight:500;color:#c8d8f0;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .player-meta{font-size:8.5px;color:#2e3d55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .dna-mini{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;flex-shrink:0;}
+  .dm-sp{background:rgba(0,210,140,0.08);color:#00d28c;border:0.5px solid rgba(0,210,140,0.2);}
+  .dm-b{background:rgba(0,180,216,0.08);color:#00b4d8;border:0.5px solid rgba(0,180,216,0.2);}
+  .dm-v{background:rgba(186,117,23,0.08);color:#c98c2a;border:0.5px solid rgba(186,117,23,0.2);}
+  .dm-h{background:rgba(224,80,80,0.08);color:#e05050;border:0.5px solid rgba(224,80,80,0.2);}
+
+  .proj-cell{text-align:right;flex-shrink:0;min-width:40px;}
+  .proj-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;line-height:1;margin-bottom:1px;}
+  .pv-good{color:#00d28c;} .pv-ok{color:#8a9ebb;} .pv-warn{color:#c98c2a;} .pv-bad{color:#e05050;}
+  .proj-lbl{font-size:7.5px;color:#1e2a3f;text-align:right;}
+
+  .alert-sub{display:flex;align-items:flex-start;gap:6px;padding:5px 12px 7px 46px;margin-top:-4px;border-radius:0 0 8px 8px;margin-bottom:2px;}
+  .alert-sub.amber-sub{background:rgba(186,117,23,0.04);border:0.5px solid rgba(186,117,23,0.18);border-top:none;}
+  .alert-sub.green-sub{background:rgba(0,210,140,0.03);border:0.5px solid rgba(0,210,140,0.14);border-top:none;}
+  .alert-sub.red-sub{background:rgba(224,80,80,0.03);border:0.5px solid rgba(224,80,80,0.16);border-top:none;}
+  .as-icon{font-size:9px;margin-top:1px;flex-shrink:0;}
+  .as-text{font-size:9px;line-height:1.5;}
+  .as-text.amber{color:#7a6030;} .as-text.green{color:#3a7a5a;} .as-text.red{color:#7a4040;}
+  .nova-rec-tag{display:inline;font-size:8px;font-weight:600;background:rgba(186,117,23,0.1);border:0.5px solid rgba(186,117,23,0.25);color:#c98c2a;padding:1px 5px;border-radius:3px;}
+
+  .bench-divider{display:flex;align-items:center;gap:8px;margin:10px 0 6px;}
+  .bench-line{flex:1;height:0.5px;background:#1e2538;}
+  .bench-label-txt{font-size:8px;color:#1e2a3f;letter-spacing:0.12em;text-transform:uppercase;}
+
+  .proj-total{display:flex;align-items:center;justify-content:space-between;background:#0a0c13;border:0.5px solid #1e2538;border-radius:8px;padding:10px 14px;margin-top:8px;}
+  .pt-label{font-size:9px;color:#3d4e66;}
+  .pt-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;color:#00d28c;}
+  .pt-sub{font-size:8.5px;color:#2e3d55;font-family:'JetBrains Mono',monospace;}
+
+  .fold-divider{display:flex;align-items:center;gap:10px;padding:14px 0 0;}
+  .fold-line{flex:1;height:0.5px;background:#253048;}
+  .fold-label{font-size:8px;color:#4a6080;letter-spacing:0.12em;text-transform:uppercase;}
+  .fold-arrow{font-size:9px;color:#4a6080;}
+
+  /* SIGNAL FEED */
+  .signal-feed{display:flex;flex-direction:column;gap:1px;background:#161b27;border:0.5px solid #1e2538;border-radius:10px;overflow:hidden;}
+  .feed-item{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;background:#0f1118;transition:background 0.15s;cursor:pointer;}
+  .feed-item:hover{background:#111620;}
+  .fi-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+  .fi-dot.green{background:#00d28c;} .fi-dot.red{background:#e05050;} .fi-dot.amber{background:#c98c2a;}
+  .fi-content{flex:1;min-width:0;}
+  .fi-player{font-size:10px;font-weight:500;color:#8a9ebb;margin-bottom:2px;}
+  .fi-player .pt{font-size:8.5px;color:#2e3d55;font-weight:400;margin-left:4px;}
+  .fi-text{font-size:10px;color:#3d4e66;line-height:1.5;}
+  .fi-text strong{color:#5a6a84;font-weight:500;}
+  .fi-impact{font-family:'JetBrains Mono',monospace;font-size:9px;margin-top:3px;}
+  .fi-impact.pos{color:rgba(0,210,140,0.5);} .fi-impact.neg{color:rgba(224,80,80,0.5);}
+  .fi-time{font-size:8.5px;color:#1e2a3f;font-family:'JetBrains Mono',monospace;white-space:nowrap;flex-shrink:0;padding-top:2px;}
+
+  /* BOTTOM NAV */
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;background:#0d1018;border-top:0.5px solid #161b27;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 0 20px;z-index:50;}
+  .bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:opacity 0.15s;}
+  .bnav-item:hover{opacity:0.8;}
+  .bnav-icon svg{width:20px;height:20px;fill:none;stroke:#2e3d55;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+  .bnav-icon.active svg{stroke:#00d28c;}
+  .bnav-label{font-size:8px;color:#2e3d55;}
+  .bnav-label.active{color:#00d28c;}
+  .bnav-wrap{position:relative;}
+  .bnav-dot{width:5px;height:5px;background:#e05050;border-radius:50%;position:absolute;top:-1px;right:-2px;border:1px solid #0d1018;}
+</style>
+
+<div class="shell">
+
+  <div class="status-bar">
+    <div class="sb-time">9:41</div>
+    <div class="sb-icons">●●●● WiFi 🔋</div>
+  </div>
+
+  <div class="navbar">
+    <div class="nav-logo">Nova<span>Predict</span></div>
+    <div class="nav-right">
+      <div class="nav-week">Week 7</div>
+      <div class="nav-lock"><span class="lock-dot"></span>31h 14m</div>
+      <div class="nav-avatar">CH</div>
+    </div>
+  </div>
+
+  <div class="greeting">
+    <div class="greeting-name">Good morning, Chris.</div>
+    <div class="greeting-sub"><span class="alert">2 roster alerts</span> · 3 signals updated · projected <span class="proj">138.4 pts</span></div>
+  </div>
+
+  <div class="feed">
+
+    <!-- ALERTS -->
+    <div class="sec-hdr"><span class="sec-hdr-label">Alerts</span></div>
+    <div class="alert-strip">
+      <div class="alert-pill ap-amber"><span class="adot amber"></span>Start Henderson over Gibbs</div>
+      <div class="alert-pill ap-green"><span class="adot green"></span>Nacua prop +5.5 yds</div>
+      <div class="alert-pill ap-red"><span class="adot red"></span>McBride limited practice</div>
+      <div class="alert-pill ap-cyan"><span class="adot cyan"></span>Wk 7 slate live</div>
+    </div>
+
+    <!-- CHALLENGE -->
+    <div class="sec-hdr">
+      <div class="sec-hdr-wrap">
+        <span class="sec-hdr-label">Challenge the Model</span>
+        <span class="help-btn" id="hbtn-ch">?</span>
+        <div class="help-tooltip" id="htip-ch">
+          <div class="help-tooltip-title">Challenge the Model</div>
+          <div class="help-tooltip-body"><strong>SS%</strong> measures how often your start/sit decisions beat the model. Each week you agree, override, or skip picks. At week's end, you and the model are both scored. Track your edge weekly and vs the season — and see how you stack up against the community.</div>
+        </div>
+      </div>
+      <span class="sec-hdr-action">Full record →</span>
+    </div>
+
+    <div class="challenge-card">
+      <div class="ch-top">
+        <div>
+          <div class="ch-title">Week 7 · 4 picks made</div>
+          <div class="ch-sub">26 remaining · locks in 31h 14m</div>
+        </div>
+        <div class="ch-cta">Make picks →</div>
+      </div>
+      <div class="ch-tabs">
+        <div class="ch-tab active" id="t-week" onclick="chTab('week')">This Week</div>
+        <div class="ch-tab" id="t-season" onclick="chTab('season')">Season</div>
+      </div>
+      <div class="ch-body">
+        <div id="ch-week">
+          <div class="ch-comparison">
+            <div class="ch-side">
+              <div class="ch-side-label you">You</div>
+              <div class="ch-pct you">3/4</div>
+              <div class="ch-pct-sub">picks correct</div>
+            </div>
+            <div class="ch-vs">vs</div>
+            <div class="ch-side">
+              <div class="ch-side-label model">Model</div>
+              <div class="ch-pct model">4/4</div>
+              <div class="ch-pct-sub">picks correct</div>
+            </div>
+            <div class="ch-vdiv"></div>
+            <div class="ch-side">
+              <div class="ch-side-label community">Comm.</div>
+              <div class="ch-pct community">3.2/4</div>
+              <div class="ch-pct-sub">avg correct</div>
+            </div>
+          </div>
+          <div class="ch-bars">
+            <div class="ch-bar-row"><span class="ch-bar-lbl you">You</span><div class="ch-bar-track"><div class="ch-bar-fill you" style="width:75%"></div></div><span class="ch-bar-val you">75%</span></div>
+            <div class="ch-bar-row"><span class="ch-bar-lbl model">Model</span><div class="ch-bar-track"><div class="ch-bar-fill model" style="width:100%"></div></div><span class="ch-bar-val model">100%</span></div>
+            <div class="ch-bar-row"><span class="ch-bar-lbl community">Community</span><div class="ch-bar-track"><div class="ch-bar-fill community" style="width:80%"></div></div><span class="ch-bar-val community">80%</span></div>
+          </div>
+          <div class="ch-override">
+            <span class="ch-ovr-label">Override record this week</span>
+            <span class="ch-ovr-val">1W – 1L</span>
+          </div>
+        </div>
+        <div id="ch-season" style="display:none">
+          <div class="ch-comparison">
+            <div class="ch-side">
+              <div class="ch-side-label you">You</div>
+              <div class="ch-pct you">68.4%</div>
+              <div class="ch-pct-sub">SS% · 6 wks</div>
+            </div>
+            <div class="ch-vs">vs</div>
+            <div class="ch-side">
+              <div class="ch-side-label model">Model</div>
+              <div class="ch-pct model">72.1%</div>
+              <div class="ch-pct-sub">SS% · 6 wks</div>
+            </div>
+            <div class="ch-vdiv"></div>
+            <div class="ch-side">
+              <div class="ch-side-label community">Comm.</div>
+              <div class="ch-pct community">65.8%</div>
+              <div class="ch-pct-sub">SS% · 6 wks</div>
+            </div>
+          </div>
+          <div class="ch-bars">
+            <div class="ch-bar-row"><span class="ch-bar-lbl you">You</span><div class="ch-bar-track"><div class="ch-bar-fill you" style="width:68.4%"></div></div><span class="ch-bar-val you">68.4%</span></div>
+            <div class="ch-bar-row"><span class="ch-bar-lbl model">Model</span><div class="ch-bar-track"><div class="ch-bar-fill model" style="width:72.1%"></div></div><span class="ch-bar-val model">72.1%</span></div>
+            <div class="ch-bar-row"><span class="ch-bar-lbl community">Community</span><div class="ch-bar-track"><div class="ch-bar-fill community" style="width:65.8%"></div></div><span class="ch-bar-val community">65.8%</span></div>
+          </div>
+          <div class="ch-override">
+            <span class="ch-ovr-label">Season override record</span>
+            <span class="ch-ovr-val">34W – 18L</span>
+            <span class="ch-ovr-badge">65.4%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROSTER -->
+    <div class="sec-hdr">
+      <div class="sec-hdr-wrap">
+        <span class="sec-hdr-label">Your Lineup — Week 7</span>
+        <span class="help-btn" id="hbtn-roster">?</span>
+        <div class="help-tooltip" id="htip-roster">
+          <div class="help-tooltip-title">Your Lineup</div>
+          <div class="help-tooltip-body">Nova scans your full roster every morning and flags start/sit conflicts. <strong>Orange border</strong> = Nova recommends a change. <strong>Red border</strong> = injury alert. <strong>Green border</strong> = positive signal. Tap any player to open their full player card.</div>
+        </div>
+      </div>
+      <span class="sec-hdr-action">Edit lineup →</span>
+    </div>
+
+    <div class="roster-group-label">Starters</div>
+
+    <div class="roster-row signal-row">
+      <span class="slot-label">QB</span><div class="pos-badge pb-qb">QB</div>
+      <div class="player-info"><div class="player-name">Jayden Daniels</div><div class="player-meta">WAS · vs CHI · Sun 1pm</div></div>
+      <div class="dna-mini dm-sp">S+</div>
+      <div class="proj-cell"><div class="proj-val pv-good">24.6</div><div class="proj-lbl">Nova PPR</div></div>
+    </div>
+
+    <div class="roster-row nova-flag">
+      <span class="slot-label">RB1</span><div class="pos-badge pb-rb">RB</div>
+      <div class="player-info"><div class="player-name">Jonathan Taylor</div><div class="player-meta">IND · at HOU · Sun 1pm</div></div>
+      <div class="dna-mini dm-b">B</div>
+      <div class="proj-cell"><div class="proj-val pv-warn">14.2</div><div class="proj-lbl">Nova PPR</div></div>
+    </div>
+
+    <div class="roster-row nova-flag">
+      <span class="slot-label">RB2</span><div class="pos-badge pb-rb">RB</div>
+      <div class="player-info"><div class="player-name">Jahmyr Gibbs</div><div class="player-meta">DET · vs GB · Sun 4pm</div></div>
+      <div class="dna-mini dm-v">V</div>
+      <div class="proj-cell"><div class="proj-val pv-warn">13.8</div><div class="proj-lbl">Nova PPR</div></div>
+    </div>
+    <div class="alert-sub amber-sub">
+      <div class="as-icon" style="color:#c98c2a">↓</div>
+      <div class="as-text amber"><span class="nova-rec-tag">Alert 1 of 2</span> · Gibbs snap share down 11%. Henderson (bench) projects 16.8 — 3.0 pts higher.</div>
+    </div>
+
+    <div class="roster-row signal-row">
+      <span class="slot-label">WR1</span><div class="pos-badge pb-wr">WR</div>
+      <div class="player-info"><div class="player-name">Puka Nacua</div><div class="player-meta">LAR · vs SF · Sun 4pm</div></div>
+      <div class="dna-mini dm-sp">S+</div>
+      <div class="proj-cell"><div class="proj-val pv-good">21.8</div><div class="proj-lbl">Nova PPR</div></div>
+    </div>
+    <div class="alert-sub green-sub">
+      <div class="as-icon" style="color:#00d28c">↑</div>
+      <div class="as-text green"><span class="nova-rec-tag" style="background:rgba(0,210,140,0.08);border-color:rgba(0,210,140,0.22);color:#00d28c;">Alert 2 of 2</span> · Prop line +5.5 overnight. Sharp steam. Proj 19.2 → 21.8.</div>
+    </div>
+
+    <div class="roster-row">
+      <span class="slot-label">WR2</span><div class="pos-badge pb-wr">WR</div>
+      <div class="player-info"><div class="player-name">Jaxon Smith-Njigba</div><div class="player-meta">SEA · at ATL · Sun 1pm</div></div>
+      <div class="dna-mini dm-sp">S+</div>
+      <div class="proj-cell"><div class="proj-val pv-good">18.4</div><div class="proj-lbl">Nova PPR</div></div>
+    </div>
+
+    <div class="roster-row">
+      <span class="slot-label">FLEX</span><div class="pos-badge pb-rb">RB</div>
+      <div class="player-info"><div class="player-name">Bucky Irving</div><div class="player-meta">TB · vs CAR · Sun 1pm</div></div>
+      <div class="dna-mini dm-b">B</div>
+      <div class="proj-cell"><div class="proj-val pv-ok">15.1</div><div class="proj-lbl">Nova PPR</div></div>
+    </div>
+
+    <div class="roster-row alert-row">
+      <span class="slot-label">TE</span><div class="pos-badge pb-te">TE</div>
+      <div class="player-info"><div class="player-name">Trey McBride</div><div class="player-meta">ARI · at MIN · <span style="color:#c98c2a">Ltd practice</span></div></div>
+      <div class="dna-mini dm-b">B</div>
+      <div class="proj-cell"><div class="proj-val pv-warn">11.4</div><div class="proj-lbl">Nova PPR</div></div>
+    </div>
+
+    <div class="roster-row">
+      <span class="slot-label">DEF</span><div class="pos-badge pb-def">DEF</div>
+      <div class="player-info"><div class="player-name">Cowboys Defense</div><div class="player-meta">DAL · at NYG · Sun 1pm</div></div>
+      <div class="dna-mini dm-v">V</div>
+      <div class="proj-cell"><div class="proj-val pv-ok">8.2</div><div class="proj-lbl">Nova pts</div></div>
+    </div>
+
+    <div class="roster-row">
+      <span class="slot-label">K</span><div class="pos-badge pb-k">K</div>
+      <div class="player-info"><div class="player-name">Harrison Butker</div><div class="player-meta">KC · vs LV · Sun 4pm</div></div>
+      <div class="dna-mini dm-sp">S+</div>
+      <div class="proj-cell"><div class="proj-val pv-ok">9.2</div><div class="proj-lbl">Nova pts</div></div>
+    </div>
+
+    <div class="proj-total">
+      <div><div class="pt-label">Projected total</div><div class="pt-sub" style="margin-top:2px">current starters</div></div>
+      <div style="text-align:right"><div class="pt-val">138.4</div><div class="pt-sub">Nova PPR</div></div>
+    </div>
+
+    <div class="bench-divider">
+      <div class="bench-line"></div><div class="bench-label-txt">Bench</div><div class="bench-line"></div>
+    </div>
+
+    <div class="roster-row bench"><span class="slot-label" style="color:#1e2a3f">BN</span><div class="pos-badge pb-qb">QB</div><div class="player-info"><div class="player-name">Gardner Minshew</div><div class="player-meta">IND · at HOU</div></div><div class="dna-mini dm-h">H</div><div class="proj-cell"><div class="proj-val pv-bad">14.8</div><div class="proj-lbl">Nova PPR</div></div></div>
+
+    <div class="roster-row nova-flag bench"><span class="slot-label" style="color:#1e2a3f">BN</span><div class="pos-badge pb-rb">RB</div><div class="player-info"><div class="player-name">TreVeyon Henderson</div><div class="player-meta">NE · vs NYJ · <span style="color:#c98c2a">Start?</span></div></div><div class="dna-mini dm-b">B</div><div class="proj-cell"><div class="proj-val pv-good">16.8</div><div class="proj-lbl">Nova PPR</div></div></div>
+
+    <div class="roster-row bench"><span class="slot-label" style="color:#1e2a3f">BN</span><div class="pos-badge pb-rb">RB</div><div class="player-info"><div class="player-name">Rachaad White</div><div class="player-meta">TB · vs CAR</div></div><div class="dna-mini dm-v">V</div><div class="proj-cell"><div class="proj-val pv-warn">9.4</div><div class="proj-lbl">Nova PPR</div></div></div>
+
+    <div class="roster-row bench"><span class="slot-label" style="color:#1e2a3f">BN</span><div class="pos-badge pb-wr">WR</div><div class="player-info"><div class="player-name">Jalen McConkey</div><div class="player-meta">ATL · vs SEA</div></div><div class="dna-mini dm-b">B</div><div class="proj-cell"><div class="proj-val pv-ok">11.2</div><div class="proj-lbl">Nova PPR</div></div></div>
+
+    <div class="roster-row bench"><span class="slot-label" style="color:#1e2a3f">BN</span><div class="pos-badge pb-wr">WR</div><div class="player-info"><div class="player-name">Jameson Williams</div><div class="player-meta">DET · vs GB</div></div><div class="dna-mini dm-v">V</div><div class="proj-cell"><div class="proj-val pv-warn">10.6</div><div class="proj-lbl">Nova PPR</div></div></div>
+
+    <div class="roster-row bench"><span class="slot-label" style="color:#1e2a3f">BN</span><div class="pos-badge pb-te">TE</div><div class="player-info"><div class="player-name">Colston Loveland</div><div class="player-meta">CHI · at WAS</div></div><div class="dna-mini dm-b">B</div><div class="proj-cell"><div class="proj-val pv-ok">9.8</div><div class="proj-lbl">Nova PPR</div></div></div>
+
+    <!-- FOLD -->
+    <div class="fold-divider">
+      <div class="fold-line"></div><span class="fold-arrow">↓</span>
+      <div class="fold-label">Signal Feed Below</div>
+      <span class="fold-arrow">↓</span><div class="fold-line"></div>
+    </div>
+
+    <!-- SIGNAL FEED -->
+    <div class="sec-hdr" style="margin-top:14px">
+      <div class="sec-hdr-wrap">
+        <span class="sec-hdr-label">Signal Feed</span>
+        <span class="help-btn" id="hbtn-feed">?</span>
+        <div class="help-tooltip" id="htip-feed">
+          <div class="help-tooltip-title">Signal Feed</div>
+          <div class="help-tooltip-body">Real-time market movements, injury updates, and usage changes for players on your roster. Each signal shows the point impact applied to the Nova projection.</div>
+        </div>
+      </div>
+      <span class="sec-hdr-action">All signals →</span>
+    </div>
+
+    <div class="signal-feed">
+      <div class="feed-item"><div class="fi-dot green"></div><div class="fi-content"><div class="fi-player">Puka Nacua <span class="pt">WR · LAR</span></div><div class="fi-text">Prop to 91.5 (+5.5) — <strong>sharp steam confirmed</strong>. Proj updated 19.2 → 21.8.</div><div class="fi-impact pos">↑ +2.6 pts</div></div><div class="fi-time">2h</div></div>
+      <div class="feed-item"><div class="fi-dot amber"></div><div class="fi-content"><div class="fi-player">Jahmyr Gibbs <span class="pt">RB · DET</span></div><div class="fi-text">Snap share down 11% under new OC. <strong>Henderson flagged</strong> as higher-value start.</div><div class="fi-impact neg">↓ −3.0 vs bench alt</div></div><div class="fi-time">4h</div></div>
+      <div class="feed-item"><div class="fi-dot amber"></div><div class="fi-content"><div class="fi-player">Trey McBride <span class="pt">TE · ARI</span></div><div class="fi-text">Limited Wednesday practice — ankle. <strong>Monitor Thu–Fri</strong> reports.</div><div class="fi-impact neg">↓ −11.4 if inactive</div></div><div class="fi-time">6h</div></div>
+      <div class="feed-item"><div class="fi-dot green"></div><div class="fi-content"><div class="fi-player">Jayden Daniels <span class="pt">QB · WAS</span></div><div class="fi-text">Game total 50.5. Rushing prop elevated. <strong>Proj updated</strong> to 24.6.</div><div class="fi-impact pos">↑ +1.8 pts</div></div><div class="fi-time">8h</div></div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="bnav-item"><div class="bnav-icon active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div><div class="bnav-label active">Home</div></div>
+    <div class="bnav-item"><div class="bnav-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div><div class="bnav-label">Players</div></div>
+    <div class="bnav-item">
+      <div class="bnav-wrap"><div class="bnav-icon"><svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg></div><div class="bnav-dot"></div></div>
+      <div class="bnav-label">Challenge</div>
+    </div>
+    <div class="bnav-item"><div class="bnav-icon"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div><div class="bnav-label">Research</div></div>
+    <div class="bnav-item"><div class="bnav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div><div class="bnav-label">Reports</div></div>
+  </div>
+
+</div>
+
+<script>
+function chTab(t){
+  document.getElementById('t-week').className='ch-tab'+(t==='week'?' active':'');
+  document.getElementById('t-season').className='ch-tab'+(t==='season'?' active':'');
+  document.getElementById('ch-week').style.display=t==='week'?'block':'none';
+  document.getElementById('ch-season').style.display=t==='season'?'block':'none';
+}
+document.querySelectorAll('.help-btn').forEach(btn=>{
+  const tip=document.getElementById('htip-'+btn.id.replace('hbtn-',''));
+  if(!tip)return;
+  btn.addEventListener('click',e=>{
+    e.stopPropagation();
+    const open=tip.classList.contains('visible');
+    document.querySelectorAll('.help-tooltip').forEach(t=>t.classList.remove('visible'));
+    document.querySelectorAll('.help-btn').forEach(b=>b.classList.remove('active'));
+    if(!open){tip.classList.add('visible');btn.classList.add('active');}
+  });
+});
+document.addEventListener('click',()=>{
+  document.querySelectorAll('.help-tooltip').forEach(t=>t.classList.remove('visible'));
+  document.querySelectorAll('.help-btn').forEach(b=>b.classList.remove('active'));
+});
+</script>

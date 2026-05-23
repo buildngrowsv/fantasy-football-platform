@@ -1,0 +1,413 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  .page{font-family:'Inter',system-ui,sans-serif;background:#090b11;color:#e2e8f0;max-width:860px;margin:0 auto;}
+
+  /* HERO */
+  .hero{padding:72px 56px 64px;border-bottom:0.5px solid #1c2133;position:relative;overflow:hidden;}
+  .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,210,140,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,210,140,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+  .hero-eyebrow{font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#00d28c;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+  .hero-dot{width:6px;height:6px;background:#00d28c;border-radius:50%;}
+  .hero-title{font-size:56px;font-weight:800;color:#f0f4ff;letter-spacing:-0.04em;line-height:1.0;margin-bottom:16px;}
+  .hero-title .accent{color:#00d28c;}
+  .hero-title .dim{color:#3d4e66;}
+  .hero-sub{font-size:18px;color:#4a5a70;line-height:1.6;max-width:560px;margin-bottom:40px;font-weight:400;}
+  .hero-sub strong{color:#8a9ebb;font-weight:500;}
+  .hero-cta-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  .cta-primary{padding:14px 28px;background:linear-gradient(135deg,#00553a,#009060);color:#a8ffd4;font-size:13px;font-weight:600;border-radius:8px;letter-spacing:0.04em;cursor:pointer;border:0.5px solid rgba(0,210,140,0.3);}
+  .cta-secondary{font-size:13px;color:#3d4e66;letter-spacing:0.02em;cursor:pointer;}
+  .cta-secondary:hover{color:#5a6a84;}
+
+  /* PROOF STRIP */
+  .proof-strip{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:0.5px solid #1c2133;}
+  .proof-cell{padding:28px 0;text-align:center;border-right:0.5px solid #161b27;}
+  .proof-cell:last-child{border-right:none;}
+  .proof-val{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:500;color:#f0f4ff;line-height:1;margin-bottom:6px;letter-spacing:-0.02em;}
+  .proof-val span{font-size:16px;color:#00d28c;}
+  .proof-label{font-size:10px;color:#2e3d55;text-transform:uppercase;letter-spacing:0.1em;}
+  .proof-sub{font-size:9px;color:#1e2a3f;margin-top:3px;font-family:'JetBrains Mono',monospace;}
+
+  /* SECTION */
+  .section{padding:56px;}
+  .section-alt{background:#0b0e16;}
+  .section-eyebrow{font-size:9px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#00d28c;margin-bottom:12px;}
+  .section-title{font-size:32px;font-weight:700;color:#f0f4ff;letter-spacing:-0.03em;line-height:1.1;margin-bottom:16px;}
+  .section-body{font-size:15px;color:#4a5a70;line-height:1.8;max-width:600px;}
+  .section-body strong{color:#8a9ebb;font-weight:500;}
+
+  /* THE INSIGHT — big quote */
+  .insight-block{border-left:3px solid #00d28c;padding:24px 32px;margin:40px 0;background:rgba(0,210,140,0.03);}
+  .insight-text{font-size:20px;color:#c8d8f0;line-height:1.6;font-weight:400;letter-spacing:-0.01em;}
+  .insight-text em{color:#00d28c;font-style:normal;font-weight:500;}
+
+  /* THREE PILLARS */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#1c2133;margin-top:48px;}
+  .pillar{background:#0f1118;padding:32px 28px;}
+  .pillar-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:#1e2a3f;margin-bottom:16px;letter-spacing:0.1em;}
+  .pillar-title{font-size:16px;font-weight:600;color:#c8d8f0;margin-bottom:10px;letter-spacing:-0.01em;}
+  .pillar-body{font-size:13px;color:#3d4e66;line-height:1.7;}
+  .pillar-body strong{color:#5a6a84;font-weight:500;}
+
+  /* HOW IT WORKS — flow */
+  .flow{display:flex;flex-direction:column;gap:0;margin-top:48px;}
+  .flow-step{display:grid;grid-template-columns:48px 1fr;gap:24px;align-items:start;padding:28px 0;border-bottom:0.5px solid #111520;}
+  .flow-step:last-child{border-bottom:none;}
+  .flow-num{width:36px;height:36px;border-radius:50%;background:#0a0c13;border:0.5px solid #253048;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#3d4e66;flex-shrink:0;margin-top:2px;}
+  .flow-step.active .flow-num{background:rgba(0,210,140,0.08);border-color:rgba(0,210,140,0.25);color:#00d28c;}
+  .flow-content{}
+  .flow-title{font-size:15px;font-weight:600;color:#c8d8f0;margin-bottom:6px;}
+  .flow-body{font-size:13px;color:#3d4e66;line-height:1.7;}
+  .flow-body strong{color:#5a6a84;font-weight:500;}
+  .flow-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:500;padding:3px 9px;border-radius:4px;margin-top:8px;}
+  .fb-sharp{background:rgba(0,210,140,0.08);border:0.5px solid rgba(0,210,140,0.2);color:#00d28c;}
+  .fb-nova{background:rgba(0,180,216,0.08);border:0.5px solid rgba(0,180,216,0.2);color:#00b4d8;}
+  .fb-new{background:rgba(186,117,23,0.08);border:0.5px solid rgba(186,117,23,0.2);color:#c98c2a;}
+
+  /* THE MOAT */
+  .moat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:40px;}
+  .moat-card{background:#0a0c13;border:0.5px solid #1a1f2e;border-radius:10px;padding:22px 24px;transition:border-color 0.15s;}
+  .moat-card:hover{border-color:#253048;}
+  .moat-card.primary{border-color:rgba(0,210,140,0.18);background:rgba(0,210,140,0.02);}
+  .moat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:14px;}
+  .mi-green{background:rgba(0,210,140,0.1);border:0.5px solid rgba(0,210,140,0.2);}
+  .mi-cyan{background:rgba(0,180,216,0.1);border:0.5px solid rgba(0,180,216,0.2);}
+  .mi-amber{background:rgba(186,117,23,0.1);border:0.5px solid rgba(186,117,23,0.2);}
+  .mi-purple{background:rgba(163,107,200,0.1);border:0.5px solid rgba(163,107,200,0.2);}
+  .moat-title{font-size:14px;font-weight:600;color:#c8d8f0;margin-bottom:8px;}
+  .moat-body{font-size:12px;color:#3d4e66;line-height:1.7;}
+  .moat-body strong{color:#5a6a84;font-weight:500;}
+
+  /* VS TABLE */
+  .vs-wrap{margin-top:48px;overflow:hidden;border:0.5px solid #1c2133;border-radius:12px;}
+  .vs-table{width:100%;border-collapse:collapse;}
+  .vs-table th{padding:14px 20px;font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;text-align:left;border-bottom:0.5px solid #1c2133;}
+  .vs-table th.them{color:#2e3d55;background:#0a0c13;}
+  .vs-table th.us{color:#00d28c;background:rgba(0,210,140,0.05);}
+  .vs-table td{padding:12px 20px;font-size:13px;border-bottom:0.5px solid #0f1520;}
+  .vs-table tr:last-child td{border-bottom:none;}
+  .vs-table tr:hover td{background:#0d1120;}
+  .vs-table td.feature{color:#5a6a84;}
+  .vs-table td.them-val{color:#2e3d55;background:#0a0c13;font-size:12px;}
+  .vs-table td.us-val{color:#00d28c;background:rgba(0,210,140,0.02);font-size:12px;font-weight:500;}
+  .check{color:#00d28c;} .cross{color:#1e2a3f;}
+
+  /* THE BUDGET PREVIEW */
+  .budget-preview{margin-top:40px;background:#0a0c13;border:0.5px solid #1c2133;border-radius:12px;overflow:hidden;}
+  .bp-header{padding:16px 20px;border-bottom:0.5px solid #161b27;display:flex;align-items:center;justify-content:space-between;}
+  .bp-player{font-size:14px;font-weight:500;color:#c8d8f0;}
+  .bp-meta{font-size:10px;color:#2e3d55;}
+  .bp-body{padding:20px;}
+  .bp-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+  .bp-num-cell{background:#0d1018;border:0.5px solid #161b27;border-radius:7px;padding:12px;text-align:center;}
+  .bp-num-label{font-size:8px;color:#2e3d55;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;}
+  .bp-num-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:500;}
+  .bp-num-val.good{color:#00d28c;} .bp-num-val.neutral{color:#8a9ebb;} .bp-num-val.warn{color:#c98c2a;}
+  .bp-track-label{font-size:9px;color:#2e3d55;margin-bottom:8px;display:flex;justify-content:space-between;}
+  .bp-track{height:6px;background:#141a28;border-radius:3px;overflow:hidden;margin-bottom:6px;position:relative;}
+  .bp-pace-fill{position:absolute;left:0;top:0;height:100%;border-radius:3px;background:linear-gradient(90deg,#1a3a28,#00d28c);}
+  .bp-actual-marker{position:absolute;top:-3px;height:12px;width:2px;background:#00b4d8;border-radius:1px;}
+  .bp-track-sub{font-size:9px;color:#1e2a3f;font-family:'JetBrains Mono',monospace;}
+  .bp-prob-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:14px;}
+  .bp-prob{background:#0d1018;border:0.5px solid #161b27;border-radius:6px;padding:10px;text-align:center;}
+  .bp-prob-label{font-size:8px;color:#2e3d55;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
+  .bp-prob-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;}
+  .bp-prob-val.wr1{color:#00d28c;} .bp-prob-val.wr2{color:#8a9ebb;} .bp-prob-val.bust{color:#e05050;}
+
+  /* CTA SECTION */
+  .cta-section{padding:72px 56px;text-align:center;border-top:0.5px solid #1c2133;}
+  .cta-title{font-size:40px;font-weight:800;color:#f0f4ff;letter-spacing:-0.03em;line-height:1.1;margin-bottom:16px;}
+  .cta-title .accent{color:#00d28c;}
+  .cta-body{font-size:15px;color:#3d4e66;line-height:1.7;max-width:480px;margin:0 auto 36px;}
+  .cta-btn{display:inline-flex;align-items:center;gap:8px;padding:16px 36px;background:linear-gradient(135deg,#00553a,#009060);color:#a8ffd4;font-size:14px;font-weight:600;border-radius:10px;letter-spacing:0.04em;cursor:pointer;border:0.5px solid rgba(0,210,140,0.3);}
+  .cta-note{font-size:11px;color:#1e2a3f;margin-top:14px;}
+
+  /* FOOTER */
+  .foot{padding:24px 56px;border-top:0.5px solid #111520;display:flex;align-items:center;justify-content:space-between;}
+  .foot-logo{font-size:14px;font-weight:600;color:#f0f4ff;letter-spacing:-0.02em;}
+  .foot-logo span{color:#00d28c;}
+  .foot-tag{font-size:10px;color:#1e2a3f;font-family:'JetBrains Mono',monospace;}
+</style>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-eyebrow"><span class="hero-dot"></span>NovaPredict · 2025 NFL Season</div>
+    <div class="hero-title">
+      Vegas has<br>
+      <span class="accent">already told you</span><br>
+      <span class="dim">who to start.</span>
+    </div>
+    <div class="hero-sub">
+      Sportsbooks spend <strong>billions of dollars</strong> and employ armies of the sharpest analysts in sports to price every player, every game, every week. That intelligence is sitting right there in the prop markets.<br><br>
+      Nobody was translating it into fantasy points.<br>
+      Until now.
+    </div>
+    <div class="hero-cta-row">
+      <div class="cta-primary">Start free trial →</div>
+      <div class="cta-secondary">See the accountability report ↗</div>
+    </div>
+  </div>
+
+  <!-- PROOF STRIP -->
+  <div class="proof-strip">
+    <div class="proof-cell">
+      <div class="proof-val">71.8<span>%</span></div>
+      <div class="proof-label">Season SS% accuracy</div>
+      <div class="proof-sub">1,128 picks · 6 weeks</div>
+    </div>
+    <div class="proof-cell">
+      <div class="proof-val">82<span>%</span></div>
+      <div class="proof-label">Sharp signal hit rate</div>
+      <div class="proof-sub">when we flag sharp steam</div>
+    </div>
+    <div class="proof-cell">
+      <div class="proof-val">10K<span>+</span></div>
+      <div class="proof-label">Monte Carlo sims</div>
+      <div class="proof-sub">per player · per week</div>
+    </div>
+    <div class="proof-cell">
+      <div class="proof-val">100<span>%</span></div>
+      <div class="proof-label">Public accuracy record</div>
+      <div class="proof-sub">every call · every miss</div>
+    </div>
+  </div>
+
+  <!-- THE INSIGHT -->
+  <div class="section">
+    <div class="section-eyebrow">The insight</div>
+    <div class="section-title">The smartest room<br>in sports is already open.</div>
+
+    <div class="insight-block">
+      <div class="insight-text">
+        Vegas is the smartest room in sports. Sportsbooks have <em>billions of dollars</em>, armies of analysts, and sharp bettors hammering their lines into shape with real money. When they set a player prop — a wide receiver's over/under at 87.5 receiving yards — that number reflects the best collective intelligence money can buy. It is not a guess. It is a priced probability, forged under financial pressure, by people whose livelihood depends on getting it right.
+      </div>
+    </div>
+
+    <div class="section-body">
+      And every week, that intelligence was sitting completely untranslated. Fantasy players were reading beat writers. Watching highlight reels. Listening to podcasters argue about touchdowns. Meanwhile, the sharpest signal in sports was right there in the prop markets — ignored.
+      <br><br>
+      <strong>NovaPredict is the translation engine.</strong> We take the Vegas prop market apart down to the decimal, reconstruct the full probability distribution behind it, convert it to PPR fantasy points, and then layer our own model on top. The result is not a single projection number. It is a complete probability distribution for every player, every week — floor, ceiling, boom probability, bust probability, and a transparent breakdown showing exactly where every point comes from.
+    </div>
+
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-num">01 · INGEST</div>
+        <div class="pillar-title">We read the full prop market</div>
+        <div class="pillar-body">Not just the headline line. The full alt ladder — every threshold from 25 yards to 200+ — is a complete probability distribution priced by the market. We reconstruct <strong>what Vegas actually believes</strong>, not just what it advertises.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">02 · CLASSIFY</div>
+        <div class="pillar-title">We know why the line moved</div>
+        <div class="pillar-body">Sharp steam, injury news, public money, and book balancing all move lines differently. <strong>We classify the reason</strong> before we apply the signal. Public action is suppressed. Sharp steam gets full weight. No competitor does this.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">03 · LAYER</div>
+        <div class="pillar-title">We add what Vegas can't see</div>
+        <div class="pillar-body">Role changes. DNA volatility grades. Season budget pace. Historical signal patterns. <strong>Fourteen layers of proprietary intelligence</strong> applied on top of the Vegas baseline — producing a final number that the market hasn't priced yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section section-alt">
+    <div class="section-eyebrow">How it works</div>
+    <div class="section-title">Nine phases.<br>One number no one else has.</div>
+    <div class="section-body">Every Thursday through Sunday, the NovaPredict engine runs a nine-phase pipeline on every fantasy-relevant player in the NFL. This is what happens before you ever see a projection.</div>
+
+    <div class="flow">
+      <div class="flow-step active">
+        <div class="flow-num">01</div>
+        <div class="flow-content">
+          <div class="flow-title">Alt ladder ingestion</div>
+          <div class="flow-body">We pull every prop line from every major book — receiving yards, receptions, touchdowns, longest reception, combo props, head-to-head props. Not just the main line. Everything. Cross-book consensus is calculated and the sharpest book is identified.</div>
+          <div class="flow-badge fb-sharp">Vegas source · real money pricing</div>
+        </div>
+      </div>
+      <div class="flow-step active">
+        <div class="flow-num">02</div>
+        <div class="flow-content">
+          <div class="flow-title">Vig removal · CDF construction</div>
+          <div class="flow-body">The bookmaker's margin is stripped from every line. We fit a smooth probability curve through the alt ladder data points via PCHIP interpolation — producing a <strong>complete cumulative distribution function</strong> that represents what Vegas truly believes about this player's output this week.</div>
+          <div class="flow-badge fb-sharp">Probability · not a single number</div>
+        </div>
+      </div>
+      <div class="flow-step active">
+        <div class="flow-num">03</div>
+        <div class="flow-content">
+          <div class="flow-title">Move type classification</div>
+          <div class="flow-body">Every line movement is classified: Sharp Steam, Injury-Driven, Weather, Public Action, Book Balancing, or Unknown. Each type carries a different signal weight multiplier. Public moves are suppressed to 0.15×. Sharp steam and injury moves receive 1.0× full weight. The classifier runs before any CDF shift is applied.</div>
+          <div class="flow-badge fb-nova">New · no competitor does this</div>
+        </div>
+      </div>
+      <div class="flow-step active">
+        <div class="flow-num">04</div>
+        <div class="flow-content">
+          <div class="flow-title">Monte Carlo simulation</div>
+          <div class="flow-body">10,000 correlated scenarios are drawn from the yards, receptions, and TD distributions simultaneously, accounting for statistical relationships between them. Each scenario is converted to PPR points. The output is a complete probability histogram — not a point estimate, a distribution.</div>
+          <div class="flow-badge fb-sharp">10,000 simulations · per player · per week</div>
+        </div>
+      </div>
+      <div class="flow-step active">
+        <div class="flow-num">05</div>
+        <div class="flow-content">
+          <div class="flow-title">Internal model + final blend</div>
+          <div class="flow-body">The Nova internal model runs in parallel — DNA volatility grade, season budget pace, usage trends, role changes, historical signal flags, weekly conditioning. It blends with the market distribution proportional to market confidence. Low-confidence markets lean on the internal model. Sharp-side markets lean on Vegas. Both inform the final output.</div>
+          <div class="flow-badge fb-nova">The model edge · the +3.2 pts you can't get anywhere else</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">06</div>
+        <div class="flow-content">
+          <div class="flow-title">Season budget tracking</div>
+          <div class="flow-body">Every player has a Vegas Season Budget — derived from preseason season-long props — and a Nova Season Budget layered on top. Each week's actual output feeds back into the remaining budget. Players behind pace have elevated boom probability. Players ahead of pace get the post-boom regression signal. The weekly card and the season arc are connected.</div>
+          <div class="flow-badge fb-new">Season budget · pace tracking · boom/bust probability</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE MOAT -->
+  <div class="section">
+    <div class="section-eyebrow">Why this can't be copied</div>
+    <div class="section-title">Four moats.<br>None of them are marketing.</div>
+
+    <div class="moat-grid">
+      <div class="moat-card primary">
+        <div class="moat-icon mi-green">↑</div>
+        <div class="moat-title">The move type classifier</div>
+        <div class="moat-body">Every fantasy tool that sees a line move assumes it means something. We evaluate it first. <strong>Public money is noise. Sharp steam is signal.</strong> We show users which one they're looking at — on every single player, every week. Nobody else makes this distinction visible.</div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-icon mi-cyan">≡</div>
+        <div class="moat-title">The point breakdown</div>
+        <div class="moat-body">We show users exactly where every projected point comes from — catches, yards, touchdowns, line move adjustment, signal conditioning, usage momentum. <strong>Vegas-implied PPR vs Nova PPR, component by component.</strong> The delta is where our edge lives, and we show it explicitly.</div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-icon mi-amber">◎</div>
+        <div class="moat-title">The accountability record</div>
+        <div class="moat-body">We publish every call, every miss, and the exact reason for every miss — weekly, publicly, permanently. <strong>No spin. No cherry-picking.</strong> The accountability report is the acquisition page. Users who find it before they subscribe already trust us before they pay.</div>
+      </div>
+      <div class="moat-card">
+        <div class="moat-icon mi-purple">⬡</div>
+        <div class="moat-title">The challenge engine</div>
+        <div class="moat-body">Users build a personal performance record against the model and the community — start/sit accuracy, override win rate, edge finder badges. <strong>The data lives in their account.</strong> Canceling means starting from zero. Switching costs build automatically, every week, all season.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VS COMPETITORS -->
+  <div class="section section-alt">
+    <div class="section-eyebrow">The competitive landscape</div>
+    <div class="section-title">What everyone else<br>is still not doing.</div>
+
+    <div class="vs-wrap">
+      <table class="vs-table">
+        <thead>
+          <tr>
+            <th style="color:#3d4e66;background:#0a0c13;width:35%">Capability</th>
+            <th class="them">FantasyPros / DraftSharks / ESPN</th>
+            <th class="us">NovaPredict</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="feature">Full probability distribution (floor → ceiling)</td><td class="them-val"><span class="cross">✗</span> Single number or range</td><td class="us-val"><span class="check">✓</span> Full P10–P90 distribution</td></tr>
+          <tr><td class="feature">Vegas prop market as primary input</td><td class="them-val"><span class="cross">✗</span> Expert consensus / stats models</td><td class="us-val"><span class="check">✓</span> Alt ladder → CDF → Monte Carlo</td></tr>
+          <tr><td class="feature">Move type classification (sharp vs public)</td><td class="them-val"><span class="cross">✗</span> Not available</td><td class="us-val"><span class="check">✓</span> 6-type classifier · real-time</td></tr>
+          <tr><td class="feature">Component-by-component point breakdown</td><td class="them-val"><span class="cross">✗</span> Black box projection</td><td class="us-val"><span class="check">✓</span> Vegas PPR vs Nova PPR · every line</td></tr>
+          <tr><td class="feature">Boom% and Bust% from the distribution</td><td class="them-val"><span class="cross">✗</span> Not available</td><td class="us-val"><span class="check">✓</span> Probability · not a label</td></tr>
+          <tr><td class="feature">Season budget + pace tracking</td><td class="them-val"><span class="cross">✗</span> Not available</td><td class="us-val"><span class="check">✓</span> Vegas + Nova budget · week by week</td></tr>
+          <tr><td class="feature">Public accuracy record with miss analysis</td><td class="them-val"><span class="cross">✗</span> No published record</td><td class="us-val"><span class="check">✓</span> Every call · every miss · every week</td></tr>
+          <tr><td class="feature">User vs model vs community challenge</td><td class="them-val"><span class="cross">✗</span> Not available</td><td class="us-val"><span class="check">✓</span> Personal edge finder · season record</td></tr>
+          <tr><td class="feature">Preseason divergence score rankings</td><td class="them-val"><span class="cross">✗</span> Expert opinion rankings</td><td class="us-val"><span class="check">✓</span> Vegas vs Nova divergence · ADP-calibrated</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SEASON BUDGET PREVIEW -->
+  <div class="section">
+    <div class="section-eyebrow">New · Season budget tracker</div>
+    <div class="section-title">Every player has<br>a season to account for.</div>
+    <div class="section-body">The weekly projection is only half the story. NovaPredict tracks every player's season like a financial portfolio — where they are against their Vegas Season Budget and their Nova Season Budget, week by week, accounting for byes, injuries, and role changes. Players behind pace get elevated boom probability. Players ahead of pace get the regression flag. The season arc and the weekly card are one connected system.</div>
+
+    <div class="budget-preview">
+      <div class="bp-header">
+        <div>
+          <div class="bp-player">CeeDee Lamb · WR · DAL</div>
+          <div class="bp-meta">Week 7 of 16 active weeks · Season budget tracker</div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#2e3d55">Wk 7 proj: 22.4 Nova PPR</div>
+      </div>
+      <div class="bp-body">
+        <div class="bp-nums">
+          <div class="bp-num-cell">
+            <div class="bp-num-label">Vegas Season Budget</div>
+            <div class="bp-num-val neutral">248</div>
+            <div style="font-size:9px;color:#1e2a3f;margin-top:3px;font-family:'JetBrains Mono',monospace">from season-long props</div>
+          </div>
+          <div class="bp-num-cell">
+            <div class="bp-num-label">Nova Season Budget</div>
+            <div class="bp-num-val good">281</div>
+            <div style="font-size:9px;color:#00d28c;margin-top:3px;font-family:'JetBrains Mono',monospace">+33 pts above Vegas</div>
+          </div>
+          <div class="bp-num-cell">
+            <div class="bp-num-label">Scored to Date</div>
+            <div class="bp-num-val warn">79.4</div>
+            <div style="font-size:9px;color:#c98c2a;margin-top:3px;font-family:'JetBrains Mono',monospace">−8.1 pts behind pace</div>
+          </div>
+        </div>
+
+        <div class="bp-track-label">
+          <span>Season pace</span>
+          <span style="color:#00b4d8">Wk 6 actual · 79.4 pts</span>
+        </div>
+        <div class="bp-track">
+          <div class="bp-pace-fill" style="width:100%"></div>
+          <div class="bp-actual-marker" style="left:32.5%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <div class="bp-track-sub">0 pts</div>
+          <div class="bp-track-sub" style="color:#00b4d8">← behind pace · needs 18.3/wk remaining</div>
+          <div class="bp-track-sub">Nova 281</div>
+        </div>
+
+        <div class="bp-prob-row">
+          <div class="bp-prob">
+            <div class="bp-prob-label">WR1 season</div>
+            <div class="bp-prob-val wr1">68%</div>
+            <div style="font-size:8px;color:#1e2a3f;margin-top:2px">240+ pts final</div>
+          </div>
+          <div class="bp-prob">
+            <div class="bp-prob-label">WR2 season</div>
+            <div class="bp-prob-val wr2">24%</div>
+            <div style="font-size:8px;color:#1e2a3f;margin-top:2px">190–239 pts final</div>
+          </div>
+          <div class="bp-prob">
+            <div class="bp-prob-label">Bust season</div>
+            <div class="bp-prob-val bust">8%</div>
+            <div style="font-size:8px;color:#1e2a3f;margin-top:2px">under 190 pts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="cta-title">The season is<br>the <span class="accent">verdict.</span></div>
+    <div class="cta-body">NovaPredict gives you the sharpest intelligence in sports, translated into fantasy points, with full transparency on every call. The accountability report is public. The accuracy record is live. The model is improving every week — and publishing the proof.</div>
+    <div class="cta-btn">Start your free trial →</div>
+    <div class="cta-note">No credit card required · Full access · Cancel anytime</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="foot">
+    <div class="foot-logo">Nova<span>Predict</span></div>
+    <div class="foot-tag">Probability, not predictions. · novapredict.com</div>
+  </div>
+
+</div>

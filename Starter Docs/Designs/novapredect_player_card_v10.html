@@ -1,0 +1,775 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  .np{font-family:'Inter',system-ui,sans-serif;background:#090b11;color:#e2e8f0;padding:20px 16px 40px;}
+  .card{background:#0f1118;border:0.5px solid #1c2133;border-radius:14px;max-width:430px;margin:0 auto;overflow:visible;}
+
+  .hdr{padding:18px 20px 16px;border-bottom:2px solid #161b27;background:#11151f;border-radius:14px 14px 0 0;}
+  .hdr-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .player-name{font-size:20px;font-weight:600;color:#f0f4ff;letter-spacing:-0.02em;line-height:1;}
+  .tier-chip{background:rgba(0,210,140,0.08);border:0.5px solid rgba(0,210,140,0.22);color:#00d28c;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:4px 9px;border-radius:4px;margin-top:2px;white-space:nowrap;}
+  .meta-row{display:flex;align-items:center;gap:6px;font-size:11px;color:#5a6a84;margin-bottom:14px;}
+  .meta-dot{width:2px;height:2px;background:#2a3448;border-radius:50%;}
+  .matchup{color:#3a7bd5;}
+  .proj-dual{display:grid;grid-template-columns:1fr 0.5px 1fr;background:#0a0c13;border:0.5px solid #1e2538;border-radius:8px;overflow:hidden;margin-bottom:10px;}
+  .proj-divider{background:#1e2538;}
+  .proj-cell{padding:12px 14px;transition:background 0.15s;cursor:default;}
+  .proj-cell:hover{background:#0f1420;}
+  .proj-cell-label{font-size:8px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px;}
+  .proj-cell-label.vegas{color:#3a5878;}
+  .proj-cell-label.nova{color:rgba(0,210,140,0.5);}
+  .proj-cell-val{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:500;line-height:1;letter-spacing:-0.02em;transition:all 0.3s;}
+  .proj-cell-val.vegas{color:#5a7a9a;}
+  .proj-cell-val.nova{color:#00d28c;}
+  .proj-cell-sub{font-size:9px;font-family:'JetBrains Mono',monospace;margin-top:4px;color:#2e3d55;transition:all 0.3s;}
+  .proj-delta{display:inline-flex;align-items:center;gap:4px;background:rgba(0,210,140,0.08);border:0.5px solid rgba(0,210,140,0.18);border-radius:3px;padding:2px 6px;font-size:9px;font-family:'JetBrains Mono',monospace;color:#00d28c;margin-top:6px;transition:all 0.3s;}
+  .stat-strip{display:grid;grid-template-columns:repeat(3,1fr);background:#0a0c13;border:0.5px solid #1e2538;border-radius:8px;overflow:hidden;}
+  .sstat{padding:8px 0 7px;text-align:center;border-right:0.5px solid #161b27;transition:background 0.15s;cursor:default;}
+  .sstat:last-child{border-right:none;}
+  .sstat:hover{background:#0f1320;}
+  .sstat-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:#c8d8f0;line-height:1;margin-bottom:2px;}
+  .sstat-label{font-size:8px;color:#3d4e66;letter-spacing:0.06em;text-transform:uppercase;}
+
+  .sec{padding:16px 20px;border-bottom:2px solid #161b27;position:relative;}
+  .sec::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;opacity:0;background:#1e3a52;transition:opacity 0.2s;}
+  .sec:hover::before{opacity:1;}
+  .sec-header{display:flex;align-items:center;gap:6px;margin-bottom:12px;}
+  .sec-label{font-size:8.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#3d4e66;}
+
+  .help-btn{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:transparent;border:0.5px solid #253048;color:#3d4e66;font-size:8px;font-weight:600;cursor:pointer;transition:border-color 0.15s,color 0.15s,background 0.15s;flex-shrink:0;font-family:'Inter',sans-serif;line-height:1;user-select:none;}
+  .help-btn:hover{border-color:#4a6080;color:#8aabcc;background:rgba(74,96,128,0.1);}
+  .help-btn.active{border-color:#00b4d8;color:#00b4d8;background:rgba(0,180,216,0.08);}
+  .help-tooltip{display:none;position:absolute;left:20px;top:calc(100% + 2px);width:calc(100% - 40px);background:#0c101a;border:0.5px solid #253048;border-radius:7px;padding:10px 12px;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,0.5);}
+  .help-tooltip.visible{display:block;}
+  .help-tooltip-title{font-size:10px;font-weight:600;color:#00b4d8;margin-bottom:5px;}
+  .help-tooltip-body{font-size:10px;color:#6a7d9a;line-height:1.6;}
+  .help-tooltip-body strong{color:#8aabcc;font-weight:500;}
+
+  /* TD TOGGLE */
+  .td-toggle-row{display:flex;align-items:center;justify-content:space-between;background:#0a0c13;border:0.5px solid #1e2538;border-radius:8px;padding:10px 14px;margin-bottom:12px;}
+  .td-toggle-info{display:flex;flex-direction:column;gap:2px;}
+  .td-toggle-label{font-size:10px;font-weight:500;color:#8a9ebb;}
+  .td-toggle-sub{font-size:9px;color:#3d4e66;font-family:'JetBrains Mono',monospace;}
+  .toggle-wrap{display:flex;align-items:center;gap:8px;}
+  .toggle-opt{font-size:9px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:#3d4e66;transition:color 0.2s;}
+  .toggle-opt.active{color:#00d28c;}
+  .toggle-opt.active-off{color:#e05050;}
+  .toggle{position:relative;width:36px;height:18px;cursor:pointer;flex-shrink:0;}
+  .toggle input{opacity:0;width:0;height:0;position:absolute;}
+  .toggle-track{position:absolute;inset:0;background:#141a28;border:0.5px solid #253048;border-radius:9px;transition:background 0.25s,border-color 0.25s;}
+  .toggle input:checked ~ .toggle-track{background:rgba(0,210,140,0.15);border-color:rgba(0,210,140,0.35);}
+  .toggle-thumb{position:absolute;top:2px;left:2px;width:12px;height:12px;background:#3d4e66;border-radius:50%;transition:transform 0.25s,background 0.25s;}
+  .toggle input:checked ~ .toggle-thumb{transform:translateX(18px);background:#00d28c;}
+
+  /* BREAKDOWN */
+  .breakdown-wrap{background:#0a0c13;border:0.5px solid #1e2538;border-radius:8px;overflow:hidden;}
+  .breakdown-header{display:grid;grid-template-columns:1fr 68px 68px 52px;padding:7px 12px;border-bottom:0.5px solid #1e2538;}
+  .bh-label{font-size:8px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#2e3d55;}
+  .bh-label.r{text-align:right;}
+  .bh-label.nova{color:rgba(0,210,140,0.35);text-align:right;}
+  .bh-label.delta{color:rgba(0,180,216,0.3);text-align:right;}
+  .breakdown-row{display:grid;grid-template-columns:1fr 68px 68px 52px;padding:7px 12px;border-bottom:0.5px solid #0f1520;transition:background 0.15s;cursor:default;align-items:center;}
+  .breakdown-row:last-child{border-bottom:none;}
+  .breakdown-row:hover{background:#0d1220;}
+  .br-component{font-size:10px;color:#6a7d9a;}
+  .br-formula{font-size:8.5px;color:#2e3d55;margin-top:1px;font-family:'JetBrains Mono',monospace;}
+  .br-vegas{font-family:'JetBrains Mono',monospace;font-size:11px;color:#4a6a8a;text-align:right;transition:all 0.3s;}
+  .br-nova{font-family:'JetBrains Mono',monospace;font-size:11px;color:#00d28c;text-align:right;transition:all 0.3s;}
+  .br-delta{font-family:'JetBrains Mono',monospace;font-size:10px;text-align:right;transition:all 0.3s;}
+  .br-delta.pos{color:rgba(0,210,140,0.55);}
+  .br-delta.neg{color:rgba(224,80,80,0.55);}
+  .br-delta.zero{color:#2e3d55;}
+  .td-row{transition:opacity 0.3s;}
+  .td-row.dimmed{opacity:0.3;}
+  .breakdown-total{display:grid;grid-template-columns:1fr 68px 68px 52px;padding:9px 12px;background:#0d1018;border-top:0.5px solid #1e2538;align-items:center;}
+  .bt-label{font-size:9px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#3d4e66;}
+  .bt-vegas{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:#5a7a9a;text-align:right;transition:all 0.3s;}
+  .bt-nova{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:500;color:#00d28c;text-align:right;transition:all 0.3s;}
+  .bt-delta{font-family:'JetBrains Mono',monospace;font-size:11px;color:#00b4d8;text-align:right;font-weight:500;transition:all 0.3s;}
+
+  /* VOLUME */
+  .volume-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+  .vol-card{background:#0a0c13;border:0.5px solid #1e2538;border-radius:7px;padding:9px 10px;transition:border-color 0.15s,background 0.15s,transform 0.15s;cursor:default;}
+  .vol-card:hover{background:#0d1120;border-color:#2d3f5a;transform:translateY(-1px);}
+  .vol-label{font-size:8px;color:#3d4e66;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:5px;}
+  .vol-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;color:#c8d8f0;line-height:1;}
+  .vol-val.highlight{color:#00b4d8;}
+  .vol-sub{font-size:8.5px;color:#2e3d55;margin-top:3px;font-family:'JetBrains Mono',monospace;}
+  .vol-sub.pos{color:rgba(0,210,140,0.45);}
+
+  /* HISTOGRAM */
+  .hist-wrap{position:relative;margin-bottom:4px;}
+  .histogram{display:flex;align-items:flex-end;gap:2px;height:48px;cursor:crosshair;}
+  .hbar{flex:1;border-radius:2px 2px 0 0;transition:filter 0.1s,transform 0.1s;min-width:0;transform-origin:bottom;}
+  .hbar:hover{filter:brightness(1.7);transform:scaleY(1.06);}
+  #htip{position:absolute;background:#0a0c13;border:0.5px solid #253048;border-radius:5px;padding:5px 9px;font-size:10px;font-family:'JetBrains Mono',monospace;color:#c8d8f0;pointer-events:none;z-index:50;white-space:nowrap;display:none;}
+  .dist-track{height:3px;background:#141a28;border-radius:2px;position:relative;margin:6px 0 10px;}
+  .dist-fill{position:absolute;left:9%;right:6%;top:0;height:100%;background:linear-gradient(90deg,transparent 0%,rgba(0,180,216,0.3) 15%,rgba(0,210,140,0.7) 45%,rgba(0,210,140,0.9) 52%,rgba(0,210,140,0.7) 58%,rgba(0,180,216,0.3) 80%,transparent 100%);border-radius:2px;}
+  .dist-median-line{position:absolute;left:51%;top:-5px;width:1.5px;height:13px;background:#00d28c;border-radius:1px;}
+  .dist-markers{display:flex;justify-content:space-between;}
+  .dmark{display:flex;flex-direction:column;align-items:center;gap:2px;}
+  .dmark-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:#8a9ebb;}
+  .dmark-val.median{color:#00d28c;font-size:13px;}
+  .dmark-label{font-size:8px;color:#3d4e66;}
+  .dmark-label.median{color:rgba(0,210,140,0.45);}
+  .bb-row{display:grid;grid-template-columns:1fr 0.5px 1fr;margin-top:14px;background:#0a0c13;border:0.5px solid #1e2538;border-radius:8px;overflow:hidden;}
+  .bb-divider{background:#1e2538;}
+  .bb-cell{padding:11px 0;text-align:center;transition:background 0.15s;cursor:default;}
+  .bb-cell:hover{background:#0d1120;}
+  .bb-pct{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:500;line-height:1;letter-spacing:-0.02em;margin-bottom:2px;}
+  .bb-pct.boom{color:#00d28c;} .bb-pct.bust{color:#e05050;}
+  .bb-label{font-size:8px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#3d4e66;margin-bottom:5px;}
+  .bb-delta-wrap{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:4px;}
+  .bb-avg{font-family:'JetBrains Mono',monospace;font-size:10px;color:#3d4e66;}
+  .bb-delta-chip{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;padding:2px 6px;border-radius:3px;}
+  .bb-delta-chip.pos{background:rgba(0,210,140,0.1);color:#00d28c;border:0.5px solid rgba(0,210,140,0.2);}
+  .bb-delta-chip.neg{background:rgba(224,80,80,0.1);color:#e05050;border:0.5px solid rgba(224,80,80,0.2);}
+
+  /* DNA MCS */
+  .dna-mcs-row{display:grid;grid-template-columns:1fr 0.5px 1fr;}
+  .vdiv{background:#1e2538;}
+  .dna-cell{display:flex;align-items:center;gap:11px;padding-right:16px;}
+  .dna-chip{flex-shrink:0;width:44px;height:44px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,210,140,0.07);border:0.5px solid rgba(0,210,140,0.22);transition:background 0.15s,border-color 0.15s,transform 0.15s;cursor:default;}
+  .dna-chip:hover{background:rgba(0,210,140,0.13);border-color:rgba(0,210,140,0.38);transform:scale(1.04);}
+  .dna-chip-grade{font-size:15px;font-weight:700;color:#00d28c;line-height:1;}
+  .dna-chip-sub{font-size:7px;color:rgba(0,210,140,0.4);letter-spacing:0.06em;text-transform:uppercase;margin-top:2px;}
+  .dna-name{font-size:12px;font-weight:500;color:#c8d8f0;margin-bottom:3px;}
+  .dna-desc{font-size:10px;color:#5a6a84;line-height:1.4;}
+  .mcs-cell{padding-left:16px;}
+  .mcs-lbl{font-size:8.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#3d4e66;margin-bottom:8px;display:block;}
+  .mcs-track{height:3px;background:#0d1018;border-radius:2px;margin-bottom:6px;overflow:hidden;border:0.5px solid #1e2538;}
+  .mcs-fill{height:100%;width:72%;background:linear-gradient(90deg,#0051a0,#00b4d8);border-radius:2px;}
+  .mcs-bottom{display:flex;justify-content:space-between;align-items:center;}
+  .mcs-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;color:#00b4d8;}
+  .mcs-tier{font-size:8.5px;color:rgba(0,180,216,0.45);}
+
+  /* ── VEGAS SIGNAL — REDESIGNED ── */
+  .vegas-fpts-row{display:grid;grid-template-columns:1fr 0.5px 1fr 0.5px 1fr;background:#0a0c13;border:0.5px solid #1e2538;border-radius:8px;overflow:hidden;margin-bottom:10px;}
+  .vfpt-divider{background:#1e2538;}
+  .vfpt-cell{padding:10px 10px;text-align:center;transition:background 0.15s;cursor:default;}
+  .vfpt-cell:hover{background:#0d1120;}
+  .vfpt-label{font-size:8px;color:#3d4e66;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:5px;}
+  .vfpt-val{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:500;color:#c8d8f0;line-height:1;}
+  .vfpt-val.primary{color:#00d28c;font-size:18px;}
+  .vfpt-sub{font-size:8.5px;color:#2e3d55;margin-top:3px;font-family:'JetBrains Mono',monospace;}
+
+  /* Move type badge — the new element */
+  .move-type-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:10px;border:0.5px solid;}
+  .move-type-row.sharp{background:rgba(0,210,140,0.04);border-color:rgba(0,210,140,0.2);}
+  .move-type-row.injury{background:rgba(0,210,140,0.04);border-color:rgba(0,210,140,0.2);}
+  .move-type-row.weather{background:rgba(186,117,23,0.04);border-color:rgba(186,117,23,0.2);}
+  .move-type-row.public{background:rgba(90,106,132,0.04);border-color:rgba(90,106,132,0.15);}
+  .move-type-row.uncertain{background:rgba(186,117,23,0.04);border-color:rgba(186,117,23,0.2);}
+
+  .move-type-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 9px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+  .move-type-badge.sharp{background:rgba(0,210,140,0.12);color:#00d28c;border:0.5px solid rgba(0,210,140,0.28);}
+  .move-type-badge.injury{background:rgba(0,210,140,0.12);color:#00d28c;border:0.5px solid rgba(0,210,140,0.28);}
+  .move-type-badge.weather{background:rgba(186,117,23,0.1);color:#c98c2a;border:0.5px solid rgba(186,117,23,0.25);}
+  .move-type-badge.public{background:rgba(90,106,132,0.1);color:#5a6a84;border:0.5px solid rgba(90,106,132,0.2);}
+  .move-type-badge.uncertain{background:rgba(186,117,23,0.1);color:#c98c2a;border:0.5px solid rgba(186,117,23,0.25);}
+
+  .move-type-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+  .move-type-dot.sharp{background:#00d28c;}
+  .move-type-dot.public{background:#3d4e66;}
+  .move-type-dot.weather{background:#c98c2a;}
+
+  .move-type-info{flex:1;min-width:0;}
+  .move-type-desc{font-size:10px;color:#5a6a84;line-height:1.5;}
+  .move-type-desc.muted{color:#3d4e66;}
+  .move-type-weight{font-family:'JetBrains Mono',monospace;font-size:9px;flex-shrink:0;white-space:nowrap;}
+  .move-type-weight.full{color:rgba(0,210,140,0.5);}
+  .move-type-weight.partial{color:rgba(186,117,23,0.5);}
+  .move-type-weight.suppressed{color:#2e3d55;}
+
+  /* raw vegas cards */
+  .vegas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+  .vstat{background:#0a0c13;border:0.5px solid #1e2538;border-radius:7px;padding:9px 10px;transition:border-color 0.15s,background 0.15s;cursor:default;}
+  .vstat:hover{background:#0d1120;border-color:#2d3f5a;}
+  .vstat-label{font-size:8.5px;color:#3d4e66;letter-spacing:0.06em;margin-bottom:5px;text-transform:uppercase;}
+  .vstat-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:#8a9ebb;}
+  .vstat-val.pos{color:#00d28c;}
+  .vstat-val.neutral{color:#00b4d8;}
+  .vstat-change{font-size:9px;font-family:'JetBrains Mono',monospace;color:#2e3d55;margin-top:2px;}
+
+  .signal-text{font-size:11px;color:#5a6a84;line-height:1.7;border-left:1.5px solid rgba(0,180,216,0.15);padding-left:10px;}
+  .signal-kw{color:#00b4d8;font-weight:500;}
+  .signal-pos{color:#00d28c;font-weight:500;}
+
+  /* move type demo switcher */
+  .demo-switcher{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap;}
+  .demo-btn{font-size:8.5px;font-weight:500;letter-spacing:0.05em;padding:4px 9px;border-radius:5px;cursor:pointer;border:0.5px solid;transition:all 0.15s;font-family:'Inter',sans-serif;}
+  .demo-btn.sharp-btn{background:rgba(0,210,140,0.06);border-color:rgba(0,210,140,0.2);color:#00d28c;}
+  .demo-btn.sharp-btn:hover,.demo-btn.sharp-btn.sel{background:rgba(0,210,140,0.15);border-color:rgba(0,210,140,0.4);}
+  .demo-btn.public-btn{background:rgba(90,106,132,0.06);border-color:rgba(90,106,132,0.18);color:#5a6a84;}
+  .demo-btn.public-btn:hover,.demo-btn.public-btn.sel{background:rgba(90,106,132,0.15);border-color:rgba(90,106,132,0.35);}
+  .demo-btn.injury-btn{background:rgba(0,180,216,0.06);border-color:rgba(0,180,216,0.18);color:#00b4d8;}
+  .demo-btn.injury-btn:hover,.demo-btn.injury-btn.sel{background:rgba(0,180,216,0.15);border-color:rgba(0,180,216,0.35);}
+  .demo-btn.weather-btn{background:rgba(186,117,23,0.06);border-color:rgba(186,117,23,0.18);color:#c98c2a;}
+  .demo-btn.weather-btn:hover,.demo-btn.weather-btn.sel{background:rgba(186,117,23,0.15);border-color:rgba(186,117,23,0.35);}
+  .demo-label{font-size:8px;color:#2e3d55;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+
+  .flags-row{padding:10px 20px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:2px solid #161b27;}
+  .flag-pill{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;padding:3px 8px;border-radius:4px;border:0.5px solid;transition:opacity 0.15s,transform 0.15s;cursor:default;}
+  .flag-pill:hover{opacity:0.75;transform:translateY(-1px);}
+  .flag-amber{background:rgba(186,117,23,0.07);border-color:rgba(186,117,23,0.2);color:#c98c2a;}
+  .flag-cyan{background:rgba(0,180,216,0.06);border-color:rgba(0,180,216,0.18);color:#00b4d8;}
+  .flag-green{background:rgba(0,210,140,0.06);border-color:rgba(0,210,140,0.18);color:#00d28c;}
+  .flag-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+  .flag-dot.amber{background:#ba7517;} .flag-dot.cyan{background:#00b4d8;} .flag-dot.green{background:#00d28c;}
+
+  .fold-divider{display:flex;align-items:center;gap:10px;padding:11px 20px;border-bottom:2px solid #161b27;background:#0b0e16;cursor:default;}
+  .fold-line{flex:1;height:0.5px;background:#253048;}
+  .fold-label{font-size:8px;color:#4a6080;letter-spacing:0.12em;text-transform:uppercase;}
+  .fold-arrow{font-size:9px;color:#4a6080;}
+
+  .cond-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+  .cond-card{background:#0a0c13;border:0.5px solid #1e2538;border-radius:7px;padding:9px 11px;transition:border-color 0.15s,background 0.15s,transform 0.15s;cursor:default;}
+  .cond-card:hover{background:#0d1120;border-color:#2d3f5a;transform:translateY(-1px);}
+  .cond-card-label{font-size:8.5px;color:#3d4e66;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;}
+  .cond-card-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:#8a9ebb;}
+  .cond-card-val.pos{color:#00d28c;} .cond-card-val.neg{color:#e05050;}
+  .cond-card-sub{font-size:9px;color:#3d4e66;margin-top:2px;}
+
+  .sig-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:4px 6px;border-radius:5px;transition:background 0.15s;cursor:default;}
+  .sig-row:hover{background:#0d1120;}
+  .sig-name{font-size:10px;color:#6a7d9a;width:130px;flex-shrink:0;}
+  .sig-bar-wrap{flex:1;height:3px;background:#141a28;border-radius:2px;overflow:hidden;}
+  .sig-bar{height:100%;border-radius:2px;}
+  .sig-bar.pos{background:linear-gradient(90deg,#0a3020,#00d28c);}
+  .sig-bar.neg{background:linear-gradient(90deg,#2a0a0a,#e05050);}
+  .sig-impact{font-family:'JetBrains Mono',monospace;font-size:9px;width:40px;text-align:right;flex-shrink:0;}
+  .sig-impact.pos{color:rgba(0,210,140,0.65);} .sig-impact.neg{color:rgba(224,80,80,0.65);}
+
+  .usage-table{width:100%;border-collapse:collapse;}
+  .usage-table th{font-size:8px;color:#2e3d55;text-transform:uppercase;letter-spacing:0.08em;font-weight:500;padding:0 0 8px;text-align:left;}
+  .usage-table th.r{text-align:right;}
+  .usage-table td{padding:5px 0;vertical-align:middle;border-top:0.5px solid #111520;}
+  .usage-table tr{transition:background 0.12s;cursor:default;}
+  .usage-table tr:hover td{background:#0d1120;}
+  .u-label{font-size:10px;color:#6a7d9a;padding-right:10px;white-space:nowrap;}
+  .u-bar-wrap{height:3px;background:#0d1018;border-radius:2px;overflow:hidden;border:0.5px solid #161b27;}
+  .u-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,#001a30,#00b4d8);}
+  .u-val{font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9ebb;text-align:right;padding:0 10px;white-space:nowrap;}
+  .u-trend{font-family:'JetBrains Mono',monospace;font-size:10px;text-align:right;white-space:nowrap;min-width:52px;}
+  .u-trend.up{color:#00d28c;} .u-trend.down{color:#e05050;}
+
+  .hist-table{width:100%;border-collapse:collapse;}
+  .hist-table td{font-size:10px;padding:6px 0;border-bottom:0.5px solid #111520;color:#6a7d9a;}
+  .hist-table tr{transition:background 0.12s;cursor:default;}
+  .hist-table tr:hover td{background:#0d1120;}
+  .hist-table tr:last-child td{border-bottom:none;}
+  .hist-table td:last-child{text-align:right;font-family:'JetBrains Mono',monospace;color:#8a9ebb;}
+  .hist-table .good{color:#00d28c;} .hist-table .bad{color:#e05050;}
+
+  .gamevar-list{display:flex;flex-direction:column;gap:6px;}
+  .gamevar-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:7px;border:0.5px solid;transition:transform 0.15s,border-color 0.15s;cursor:default;}
+  .gamevar-item:hover{transform:translateX(2px);}
+  .gamevar-item.positive{background:rgba(0,210,140,0.03);border-color:rgba(0,210,140,0.12);}
+  .gamevar-item.positive:hover{border-color:rgba(0,210,140,0.22);}
+  .gamevar-item.negative{background:rgba(224,80,80,0.04);border-color:rgba(224,80,80,0.14);}
+  .gamevar-item.negative:hover{border-color:rgba(224,80,80,0.25);}
+  .gamevar-item.neutral{background:rgba(186,117,23,0.03);border-color:rgba(186,117,23,0.14);}
+  .gamevar-item.neutral:hover{border-color:rgba(186,117,23,0.25);}
+  .gamevar-icon{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;margin-top:1px;}
+  .gamevar-icon.pos{background:rgba(0,210,140,0.12);color:#00d28c;}
+  .gamevar-icon.neg{background:rgba(224,80,80,0.15);color:#e05050;}
+  .gamevar-icon.neu{background:rgba(186,117,23,0.12);color:#c98c2a;}
+  .gamevar-title{font-size:10px;font-weight:500;color:#8a9ebb;margin-bottom:2px;}
+  .gamevar-desc{font-size:9px;color:#3d4e66;line-height:1.5;}
+  .gamevar-impact{font-family:'JetBrains Mono',monospace;font-size:9px;margin-left:auto;padding-left:10px;white-space:nowrap;flex-shrink:0;align-self:center;}
+  .gamevar-impact.neg{color:rgba(224,80,80,0.6);} .gamevar-impact.pos{color:rgba(0,210,140,0.6);} .gamevar-impact.neu{color:rgba(186,117,23,0.6);}
+  .gamevar-footnote{font-size:9px;color:#2e3d55;margin-top:8px;font-family:'JetBrains Mono',monospace;}
+
+  .outcome-card{background:#0a0c13;border:0.5px solid #1e2538;border-radius:10px;overflow:hidden;}
+  .outcome-header{padding:10px 14px;border-bottom:0.5px solid #1e2538;display:flex;align-items:center;justify-content:space-between;}
+  .outcome-header-label{font-size:8.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#3d4e66;}
+  .outcome-conf-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+  .outcome-conf-badge{font-size:8px;background:rgba(0,180,216,0.08);border:0.5px solid rgba(0,180,216,0.18);color:#00b4d8;padding:2px 6px;border-radius:3px;}
+  .outcome-conf-sub{font-size:8px;color:#2e3d55;text-align:right;}
+  .outcome-grid{display:grid;grid-template-columns:1fr 0.5px 1fr 0.5px 1fr;border-bottom:0.5px solid #1e2538;}
+  .outcome-vdiv{background:#1e2538;}
+  .outcome-cell{padding:12px 10px;text-align:center;transition:background 0.15s;cursor:default;}
+  .outcome-cell:hover{background:#0d1220;}
+  .outcome-cell-label{font-size:8px;color:#2e3d55;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px;}
+  .outcome-cell-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;line-height:1;margin-bottom:3px;transition:all 0.3s;}
+  .outcome-cell-val.main{color:#00d28c;font-size:20px;}
+  .outcome-cell-sub{font-size:8.5px;color:#2e3d55;font-family:'JetBrains Mono',monospace;}
+  .outcome-prob-row{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:0.5px solid #1e2538;}
+  .outcome-prob-cell{padding:9px 10px;text-align:center;border-right:0.5px solid #1e2538;transition:background 0.15s;cursor:default;}
+  .outcome-prob-cell:last-child{border-right:none;}
+  .outcome-prob-cell:hover{background:#0d1220;}
+  .opc-label{font-size:8px;color:#2e3d55;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
+  .opc-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;}
+  .opc-val.boom{color:#00d28c;} .opc-val.mid{color:#8a9ebb;}
+  .outcome-footer{padding:10px 14px;}
+  .outcome-verdict{font-size:10px;color:#6a7d9a;line-height:1.6;}
+  .outcome-verdict strong{color:#c8d8f0;font-weight:500;}
+
+  .sep{background:#161b27;height:2px;}
+  .footer{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+  .btn-row{display:flex;gap:8px;}
+  .btn{position:relative;overflow:hidden;font-size:10px;font-weight:500;letter-spacing:0.05em;padding:7px 16px;border-radius:7px;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:filter 0.2s,transform 0.08s,box-shadow 0.2s;}
+  .btn:active{transform:scale(0.95);}
+  .btn::after{content:'';position:absolute;top:0;left:-80%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);transform:skewX(-15deg);pointer-events:none;opacity:0;}
+  .btn:hover::after{animation:micro-shimmer 0.45s ease forwards;}
+  @keyframes micro-shimmer{0%{left:-80%;opacity:1;}100%{left:130%;opacity:0;}}
+  .btn-primary{background:linear-gradient(135deg,#00553a 0%,#007a52 60%,#009060 100%);color:#a8ffd4;border:0.5px solid rgba(0,210,140,0.28);box-shadow:0 1px 0 rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.06);}
+  .btn-primary:hover{filter:brightness(1.1);box-shadow:0 2px 10px rgba(0,160,90,0.2);}
+  .btn-secondary{background:linear-gradient(135deg,#0e1320 0%,#141d2e 100%);color:#6a7d9a;border:0.5px solid #253048;}
+  .btn-secondary:hover{color:#9ab0cc;border-color:#3a5070;filter:brightness(1.12);}
+  .updated{font-size:9px;color:#1e2a3f;font-family:'JetBrains Mono',monospace;}
+</style>
+
+<div class="np"><div class="card">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-top">
+      <div>
+        <div class="player-name">CeeDee Lamb</div>
+        <div class="meta-row">
+          <span>WR · DAL · #88</span><span class="meta-dot"></span>
+          <span class="matchup">at NYG · Sun 1pm ET · MetLife Stadium</span>
+        </div>
+      </div>
+      <div class="tier-chip">Tier 1 · Start</div>
+    </div>
+    <div class="proj-dual">
+      <div class="proj-cell">
+        <div class="proj-cell-label vegas">Vegas-Implied PPR</div>
+        <div class="proj-cell-val vegas" id="h-vegas">19.2</div>
+        <div class="proj-cell-sub" id="h-vegas-sub">87.5 yds prop baseline</div>
+      </div>
+      <div class="proj-divider"></div>
+      <div class="proj-cell">
+        <div class="proj-cell-label nova">NovaPredict PPR</div>
+        <div class="proj-cell-val nova" id="h-nova">22.4</div>
+        <div class="proj-delta" id="h-delta">↑ +3.2 model edge</div>
+      </div>
+    </div>
+    <div class="stat-strip">
+      <div class="sstat"><div class="sstat-val" style="color:#00b4d8">+4.5 yds</div><div class="sstat-label">Line Move</div></div>
+      <div class="sstat"><div class="sstat-val" style="color:#c98c2a">48.5</div><div class="sstat-label">Game Total</div></div>
+      <div class="sstat"><div class="sstat-val" style="color:#00b4d8">72 / 100</div><div class="sstat-label">Mkt Confidence</div></div>
+    </div>
+  </div>
+
+  <!-- BREAKDOWN -->
+  <div class="sec" id="sec-breakdown">
+    <div class="sec-header">
+      <span class="sec-label">Fantasy Point Breakdown — WR Scoring</span>
+      <span class="help-btn" data-tip="breakdown">?</span>
+    </div>
+    <div class="help-tooltip" id="tip-breakdown">
+      <div class="help-tooltip-title">Fantasy Point Breakdown</div>
+      <div class="help-tooltip-body"><strong>Vegas PPR</strong> shows points implied directly by the prop market. <strong>Nova PPR</strong> adds signal conditioning, DNA adjustments, usage momentum, and matchup overlays. Toggle TDs off to stress-test the floor without scoring plays.</div>
+    </div>
+    <div class="td-toggle-row">
+      <div class="td-toggle-info">
+        <div class="td-toggle-label">TD Scoring</div>
+        <div class="td-toggle-sub" id="td-toggle-sub">22% TD probability · +4.80 Nova pts</div>
+      </div>
+      <div class="toggle-wrap">
+        <span class="toggle-opt active-off" id="lbl-off">Off</span>
+        <label class="toggle"><input type="checkbox" id="td-switch" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        <span class="toggle-opt active" id="lbl-on">On</span>
+      </div>
+    </div>
+    <div class="breakdown-wrap">
+      <div class="breakdown-header">
+        <span class="bh-label">Component</span>
+        <span class="bh-label r" style="color:#3a5878">Vegas</span>
+        <span class="bh-label nova">Nova</span>
+        <span class="bh-label delta">Edge</span>
+      </div>
+      <div class="breakdown-row"><div><div class="br-component">Receptions</div><div class="br-formula">5.8 rec × 1.0 pt</div></div><div class="br-vegas">+5.80</div><div class="br-nova">+6.30</div><div class="br-delta pos">+0.50</div></div>
+      <div class="breakdown-row"><div><div class="br-component">Receiving Yards</div><div class="br-formula">Vegas 87.5 · Nova 92.0 × 0.1</div></div><div class="br-vegas">+8.75</div><div class="br-nova">+9.20</div><div class="br-delta pos">+0.45</div></div>
+      <div class="breakdown-row" style="background:rgba(0,180,216,0.03)"><div><div class="br-component" style="color:#4a6a8a">↳ Line Move (+4.5 yds)</div><div class="br-formula">+0.45 pts · Nova yds only</div></div><div class="br-vegas" style="color:#2e4a5a">—</div><div class="br-nova" style="color:#3a6a5a">incl.</div><div class="br-delta pos">+0.45</div></div>
+      <div class="breakdown-row td-row" id="td-row-1"><div><div class="br-component">Receiving TDs</div><div class="br-formula">22% TD prob × 6.0 pt</div></div><div class="br-vegas" id="td-vegas">+3.60</div><div class="br-nova" id="td-nova">+4.80</div><div class="br-delta pos" id="td-edge">+1.20</div></div>
+      <div class="breakdown-row"><div><div class="br-component">2-Pt Conversions</div><div class="br-formula">4% prob × 2.0 pt</div></div><div class="br-vegas">+0.08</div><div class="br-nova">+0.08</div><div class="br-delta zero">—</div></div>
+      <div class="breakdown-row" style="background:rgba(0,210,140,0.025)"><div><div class="br-component" style="color:#4a8a6a">Signal Conditioning</div><div class="br-formula">DNA · matchup · bounce rate</div></div><div class="br-vegas" style="color:#2e4a5a">—</div><div class="br-nova">+2.10</div><div class="br-delta pos">+2.10</div></div>
+      <div class="breakdown-row" style="background:rgba(0,210,140,0.025)"><div><div class="br-component" style="color:#4a8a6a">Usage Momentum</div><div class="br-formula">target share +5.1% trend</div></div><div class="br-vegas" style="color:#2e4a5a">—</div><div class="br-nova">+0.40</div><div class="br-delta pos">+0.40</div></div>
+      <div class="breakdown-row"><div><div class="br-component" style="color:#7a5a5a">TD Dependency Risk</div><div class="br-formula">variance penalty applied</div></div><div class="br-vegas" style="color:#2e4a5a">—</div><div class="br-nova" style="color:#e05050">−0.48</div><div class="br-delta neg">−0.48</div></div>
+      <div class="breakdown-total"><span class="bt-label">Total PPR</span><span class="bt-vegas" id="tot-vegas">19.2</span><span class="bt-nova" id="tot-nova">22.4</span><span class="bt-delta" id="tot-delta">+3.2</span></div>
+    </div>
+  </div>
+
+  <!-- VOLUME -->
+  <div class="sec" id="sec-volume">
+    <div class="sec-header"><span class="sec-label">Expected Volume — This Week</span><span class="help-btn" data-tip="volume">?</span></div>
+    <div class="help-tooltip" id="tip-volume">
+      <div class="help-tooltip-title">Expected Volume</div>
+      <div class="help-tooltip-body">Volume is the foundation of PPR scoring. <strong>Targets</strong> derived from yards prop + target share trend. <strong>Air yards share</strong> signals deep route opportunity. Nova rec yards (92.0) reflect the +4.5 line move applied to the 87.5 prop baseline.</div>
+    </div>
+    <div class="volume-grid">
+      <div class="vol-card"><div class="vol-label">Targets</div><div class="vol-val highlight">9.2</div><div class="vol-sub pos">↑ +1.4 vs season avg</div></div>
+      <div class="vol-card"><div class="vol-label">Receptions</div><div class="vol-val highlight">6.3</div><div class="vol-sub pos">68% catch rate</div></div>
+      <div class="vol-card"><div class="vol-label">Nova Rec Yards</div><div class="vol-val">92.0</div><div class="vol-sub pos">↑ +4.5 line move</div></div>
+      <div class="vol-card"><div class="vol-label">Air Yards</div><div class="vol-val">148</div><div class="vol-sub">48% of team share</div></div>
+      <div class="vol-card"><div class="vol-label">TD Probability</div><div class="vol-val" style="color:#c98c2a">22%</div><div class="vol-sub">3.1 RZ targets/gm</div></div>
+      <div class="vol-card"><div class="vol-label">Snap Share</div><div class="vol-val">91%</div><div class="vol-sub pos">↑ +3.2% 4-wk trend</div></div>
+    </div>
+  </div>
+
+  <!-- DISTRIBUTION -->
+  <div class="sec" id="sec-dist">
+    <div class="sec-header"><span class="sec-label">Probability Distribution — Monte Carlo</span><span class="help-btn" data-tip="dist">?</span></div>
+    <div class="help-tooltip" id="tip-dist">
+      <div class="help-tooltip-title">Probability Distribution</div>
+      <div class="help-tooltip-body">10,000 Monte Carlo simulations using the Nova projection. Each bar shows the probability of landing in that scoring range. <strong>Floor (P10)</strong> exceeded 90% of the time. <strong>Ceiling (P90)</strong> reached 10% of the time. Hover any bar for the exact percentage.</div>
+    </div>
+    <div class="hist-wrap"><div class="histogram" id="hist"></div><div id="htip"></div></div>
+    <div class="dist-track"><div class="dist-fill"></div><div class="dist-median-line"></div></div>
+    <div class="dist-markers">
+      <div class="dmark"><span class="dmark-val">9.2</span><span class="dmark-label">Floor P10</span></div>
+      <div class="dmark"><span class="dmark-val">16.4</span><span class="dmark-label">P25</span></div>
+      <div class="dmark"><span class="dmark-val median">22.4</span><span class="dmark-label median">Median</span></div>
+      <div class="dmark"><span class="dmark-val">29.1</span><span class="dmark-label">P75</span></div>
+      <div class="dmark"><span class="dmark-val">38.0</span><span class="dmark-label">Ceil P90</span></div>
+    </div>
+    <div class="bb-row">
+      <div class="bb-cell"><div class="bb-label">Boom · ≥20 pts</div><div class="bb-pct boom">44%</div><div class="bb-delta-wrap"><span class="bb-avg">season avg 31%</span><span class="bb-delta-chip pos">+13%</span></div></div>
+      <div class="bb-divider"></div>
+      <div class="bb-cell"><div class="bb-label">Bust · &lt;10 pts</div><div class="bb-pct bust">9%</div><div class="bb-delta-wrap"><span class="bb-avg">season avg 18%</span><span class="bb-delta-chip neg">−9%</span></div></div>
+    </div>
+  </div>
+
+  <!-- SAFETY PROFILE -->
+  <div class="sec" id="sec-dna">
+    <div class="sec-header"><span class="sec-label">Safety Profile</span><span class="help-btn" data-tip="dna">?</span></div>
+    <div class="help-tooltip" id="tip-dna">
+      <div class="help-tooltip-title">Safety Profile</div>
+      <div class="help-tooltip-body"><strong>DNA Grade</strong> (S+ through X) measures historical floor reliability and volatility. <strong>Market Confidence Score</strong> (0–100) reflects Vegas market alignment this week. Above 65 indicates sharp-money agreement.</div>
+    </div>
+    <div class="dna-mcs-row">
+      <div class="dna-cell"><div class="dna-chip"><div class="dna-chip-grade">S+</div><div class="dna-chip-sub">DNA</div></div><div><div class="dna-name">Elite Floor</div><div class="dna-desc">Low variance · High volume<br>Boom rate top 4% at position</div></div></div>
+      <div class="vdiv"></div>
+      <div class="mcs-cell"><span class="mcs-lbl">Market Confidence</span><div class="mcs-track"><div class="mcs-fill"></div></div><div class="mcs-bottom"><div class="mcs-val">72 / 100</div><div class="mcs-tier">Strong · Sharp-side</div></div></div>
+    </div>
+  </div>
+
+  <!-- ── VEGAS SIGNAL — REDESIGNED WITH MOVE TYPE ── -->
+  <div class="sec" id="sec-vegas">
+    <div class="sec-header">
+      <span class="sec-label">Vegas Signal</span>
+      <span class="help-btn" data-tip="vegas">?</span>
+    </div>
+    <div class="help-tooltip" id="tip-vegas">
+      <div class="help-tooltip-title">Vegas Signal &amp; Move Type</div>
+      <div class="help-tooltip-body">Fantasy projections are derived from Vegas prop lines. But <strong>not all line movement is equal</strong>. NovaPredict classifies why the line moved before applying it to the projection. Sharp steam and injury-driven moves receive full signal weight. Public money and book balancing are suppressed — they reflect sentiment, not information. The Move Type tells you which one you are looking at.</div>
+    </div>
+
+    <!-- FANTASY POINT OUTPUTS -->
+    <div class="vegas-fpts-row">
+      <div class="vfpt-cell"><div class="vfpt-label">Proj PPR</div><div class="vfpt-val primary" id="veg-nova">22.4</div><div class="vfpt-sub">from prop line</div></div>
+      <div class="vfpt-divider"></div>
+      <div class="vfpt-cell"><div class="vfpt-label">Floor PPR</div><div class="vfpt-val" style="color:#8a9ebb">9.2</div><div class="vfpt-sub">P10 outcome</div></div>
+      <div class="vfpt-divider"></div>
+      <div class="vfpt-cell"><div class="vfpt-label">Ceiling PPR</div><div class="vfpt-val" style="color:#00d28c">38.0</div><div class="vfpt-sub">P90 outcome</div></div>
+    </div>
+
+    <!-- MOVE TYPE DEMO SWITCHER -->
+    <div class="demo-label">Try different move types ↓</div>
+    <div class="demo-switcher">
+      <button class="demo-btn sharp-btn sel" onclick="setMoveType('sharp')">Sharp Steam</button>
+      <button class="demo-btn public-btn" onclick="setMoveType('public')">Public Action</button>
+      <button class="demo-btn injury-btn" onclick="setMoveType('injury')">Injury-Driven</button>
+      <button class="demo-btn weather-btn" onclick="setMoveType('weather')">Weather</button>
+    </div>
+
+    <!-- MOVE TYPE BADGE ROW -->
+    <div class="move-type-row sharp" id="mtr">
+      <div class="move-type-badge sharp" id="mtb"><span class="move-type-dot sharp"></span><span id="mt-label">Sharp steam detected</span></div>
+      <div class="move-type-info">
+        <div class="move-type-desc" id="mt-desc">Sharp money across 3 books in 40-min window Wed 2pm. Line moves against 72% of public bets.</div>
+      </div>
+      <div class="move-type-weight full" id="mt-weight">Full signal</div>
+    </div>
+
+    <!-- RAW VEGAS DATA -->
+    <div class="vegas-grid">
+      <div class="vstat"><div class="vstat-label">Prop Line</div><div class="vstat-val neutral">87.5 yds</div><div class="vstat-change">Open: 83.0</div></div>
+      <div class="vstat"><div class="vstat-label">Line Move</div><div class="vstat-val pos" id="veg-move">+4.5 yds</div><div class="vstat-change" id="veg-move-sub">Sharp steam</div></div>
+      <div class="vstat"><div class="vstat-label">Juice Shift</div><div class="vstat-val pos">−130 over</div><div class="vstat-change">Was −115</div></div>
+    </div>
+
+    <!-- SIGNAL TEXT -->
+    <div class="signal-text" id="signal-text">
+      Receiving yards prop moved <span class="signal-pos">+4.5</span> since open — <span class="signal-kw">sharp steam detected</span> across three books Wednesday afternoon. Juice shifted from −115 to −130 confirming sharp-side conviction. Nova projection updated at <span class="signal-pos">full signal weight</span>.
+    </div>
+  </div>
+
+  <!-- FLAGS -->
+  <div class="flags-row">
+    <div class="flag-pill flag-amber"><span class="flag-dot amber"></span>Post-Bust Bounce · 71% hist.</div>
+    <div class="flag-pill flag-cyan"><span class="flag-dot cyan"></span>High Game Total</div>
+    <div class="flag-pill flag-green"><span class="flag-dot green"></span>Sharp Over</div>
+  </div>
+
+  <div class="fold-divider">
+    <div class="fold-line"></div><span class="fold-arrow">↓</span>
+    <div class="fold-label">Deeper Analysis</div>
+    <span class="fold-arrow">↓</span><div class="fold-line"></div>
+  </div>
+
+  <!-- CONDITIONING -->
+  <div class="sec" id="sec-cond">
+    <div class="sec-header"><span class="sec-label">Weekly Signal Conditioning</span><span class="help-btn" data-tip="cond">?</span></div>
+    <div class="help-tooltip" id="tip-cond">
+      <div class="help-tooltip-title">Weekly Signal Conditioning</div>
+      <div class="help-tooltip-body">The model adjusts baseline boom/bust probabilities each week based on active signals. These show this week's conditioned output vs. the player's season average.</div>
+    </div>
+    <div class="cond-grid">
+      <div class="cond-card"><div class="cond-card-label">Boom % This Week</div><div class="cond-card-val pos">44% <span style="font-size:9px;color:#2e3d55">vs 31% season avg</span></div><div class="cond-card-sub">+13% above baseline</div></div>
+      <div class="cond-card"><div class="cond-card-label">Bust % This Week</div><div class="cond-card-val neg">9% <span style="font-size:9px;color:#2e3d55">vs 18% season avg</span></div><div class="cond-card-sub">−9% below baseline</div></div>
+      <div class="cond-card"><div class="cond-card-label">Big-Play Dependency</div><div class="cond-card-val">38%</div><div class="cond-card-sub">Moderate — manageable</div></div>
+      <div class="cond-card"><div class="cond-card-label">TD Dependency</div><div class="cond-card-val neg">41%</div><div class="cond-card-sub">Slightly elevated risk</div></div>
+    </div>
+  </div>
+
+  <!-- SIGNAL BREAKDOWN -->
+  <div class="sec" id="sec-sigs">
+    <div class="sec-header"><span class="sec-label">Active Signal Breakdown</span><span class="help-btn" data-tip="sigs">?</span></div>
+    <div class="help-tooltip" id="tip-sigs">
+      <div class="help-tooltip-title">Active Signal Breakdown</div>
+      <div class="help-tooltip-body">Every signal applied to this player's projection this week, ranked by impact. Green bars push boom probability and Nova PPR higher. Red bars suppress ceiling or raise bust risk. Combined net effect produces the +3.2 model edge.</div>
+    </div>
+    <div class="sig-row"><span class="sig-name">Post-bust bounce</span><div class="sig-bar-wrap"><div class="sig-bar pos" style="width:78%"></div></div><span class="sig-impact pos">+8.2%</span></div>
+    <div class="sig-row"><span class="sig-name">High game total (48.5)</span><div class="sig-bar-wrap"><div class="sig-bar pos" style="width:62%"></div></div><span class="sig-impact pos">+5.8%</span></div>
+    <div class="sig-row"><span class="sig-name">Sharp prop move</span><div class="sig-bar-wrap"><div class="sig-bar pos" style="width:55%"></div></div><span class="sig-impact pos">+4.9%</span></div>
+    <div class="sig-row"><span class="sig-name">NYG vs WR1 (rank 8)</span><div class="sig-bar-wrap"><div class="sig-bar pos" style="width:38%"></div></div><span class="sig-impact pos">+2.9%</span></div>
+    <div class="sig-row" style="margin-bottom:0"><span class="sig-name">TD dependency risk</span><div class="sig-bar-wrap"><div class="sig-bar neg" style="width:22%"></div></div><span class="sig-impact neg">−1.6%</span></div>
+  </div>
+
+  <!-- USAGE -->
+  <div class="sec" id="sec-usage">
+    <div class="sec-header"><span class="sec-label">Usage &amp; Role — Last 4 Weeks</span><span class="help-btn" data-tip="usage">?</span></div>
+    <div class="help-tooltip" id="tip-usage">
+      <div class="help-tooltip-title">Usage &amp; Role</div>
+      <div class="help-tooltip-body"><strong>Snap share</strong> — % of offensive snaps. <strong>Target share</strong> — % of team targets. <strong>Air yards share</strong> — leading indicator of deep target opportunity. <strong>RZ targets/gm</strong> — primary predictor of TD upside. Arrows show trend vs. prior 4 weeks.</div>
+    </div>
+    <table class="usage-table">
+      <thead><tr><th style="width:115px">Metric</th><th style="padding-right:8px">4-wk avg</th><th class="r" style="min-width:60px">vs prior 4</th></tr></thead>
+      <tbody id="usage-body"></tbody>
+    </table>
+  </div>
+
+  <!-- HISTORICAL -->
+  <div class="sec" id="sec-hist">
+    <div class="sec-header"><span class="sec-label">Historical Signal Record</span><span class="help-btn" data-tip="hist">?</span></div>
+    <div class="help-tooltip" id="tip-hist">
+      <div class="help-tooltip-title">Historical Signal Record</div>
+      <div class="help-tooltip-body">How this player has performed historically when today's active signals were present. Observation counts of 15+ provide statistical confidence.</div>
+    </div>
+    <table class="hist-table">
+      <tr><td>Post-bust bounce (last 6 instances)</td><td class="good">5–1 · 83%</td></tr>
+      <tr><td>Games with total 48+ pts</td><td class="good">11–4 · 73%</td></tr>
+      <tr><td>vs NYG — career (8 games)</td><td class="good">22.8 avg PPR</td></tr>
+      <tr><td>Sharp over prop hit rate (22 obs)</td><td class="good">68% hit rate</td></tr>
+      <tr><td>Weeks with 3+ red zone targets</td><td class="good">Boom 61%</td></tr>
+      <tr><td>DAL favored by 3+ pts</td><td class="bad">Floor −2.1 pts</td></tr>
+    </table>
+  </div>
+
+  <!-- GAME VARIABLES -->
+  <div class="sec" id="sec-gamevars">
+    <div class="sec-header"><span class="sec-label">Game Variables</span><span class="help-btn" data-tip="gamevars">?</span></div>
+    <div class="help-tooltip" id="tip-gamevars">
+      <div class="help-tooltip-title">Game Variables</div>
+      <div class="help-tooltip-body">Environmental and situational factors active for this game. <strong>Green</strong> = upside. <strong>Red</strong> = suppressive. <strong>Amber</strong> = significant but priced into the Vegas line. Point impacts applied where not already in the prop market.</div>
+    </div>
+    <div class="gamevar-list">
+      <div class="gamevar-item positive"><div class="gamevar-icon pos">↑</div><div><div class="gamevar-title">NYG #28 Pass Defense (DVOA)</div><div class="gamevar-desc">Bottom-5 vs opposing WR1 targets last 4 weeks — 34% of targets allowed to top receiver.</div></div><div class="gamevar-impact pos">+1.4 pts</div></div>
+      <div class="gamevar-item negative"><div class="gamevar-icon neg">↓</div><div><div class="gamevar-title">Wind 18 mph — MetLife Stadium</div><div class="gamevar-desc">Below 20 mph suppression threshold but applies minor deep-target penalty to air yards ceiling.</div></div><div class="gamevar-impact neg">−0.6 pts</div></div>
+      <div class="gamevar-item negative"><div class="gamevar-icon neg">↓</div><div><div class="gamevar-title">2 DAL Starting OL Out (Steele, Smith)</div><div class="gamevar-desc">Increases Dak's pressure rate. Historically reduces deep-ball attempts 12% in comparable weeks.</div></div><div class="gamevar-impact neg">−1.1 pts</div></div>
+      <div class="gamevar-item neutral"><div class="gamevar-icon neu">~</div><div><div class="gamevar-title">NYG #4 Run Defense (DVOA)</div><div class="gamevar-desc">Forces DAL passing script — positive for volume but already reflected in game total and prop line.</div></div><div class="gamevar-impact neu">Priced in</div></div>
+      <div class="gamevar-item positive"><div class="gamevar-icon pos">↑</div><div><div class="gamevar-title">NYG RB1 Questionable</div><div class="gamevar-desc">If inactive, DAL projects 65%+ pass rate. Lamb targets historically +2.1/gm in this game script.</div></div><div class="gamevar-impact pos">+0.8 pts*</div></div>
+    </div>
+    <div class="gamevar-footnote">* Conditional on player being ruled inactive. Check status closer to kickoff.</div>
+  </div>
+
+  <!-- OUTCOME SUMMARY -->
+  <div class="sec" style="border-bottom:none" id="sec-outcome">
+    <div class="sec-header"><span class="sec-label">Outcome Summary</span><span class="help-btn" data-tip="outcome">?</span></div>
+    <div class="help-tooltip" id="tip-outcome">
+      <div class="help-tooltip-title">Outcome Summary</div>
+      <div class="help-tooltip-body"><strong>Nova Projection</strong> is the model's central estimate after all signals. <strong>Vegas Implied</strong> is the raw prop converted to PPR. <strong>Model Edge</strong> is the gap. Low and High are P10/P90 outcomes. Model certainty reflects how tight the distribution is relative to all WR projections this week.</div>
+    </div>
+    <div class="outcome-card">
+      <div class="outcome-header">
+        <span class="outcome-header-label">NovaPredict Outcome Estimate</span>
+        <div class="outcome-conf-wrap">
+          <span class="outcome-conf-badge">74% model certainty</span>
+          <span class="outcome-conf-sub">Tighter than 71% of WR projections this week</span>
+        </div>
+      </div>
+      <div class="outcome-grid">
+        <div class="outcome-cell"><div class="outcome-cell-label">Nova Projection</div><div class="outcome-cell-val main" id="out-nova">22.4</div><div class="outcome-cell-sub">PPR pts</div></div>
+        <div class="outcome-vdiv"></div>
+        <div class="outcome-cell"><div class="outcome-cell-label">Vegas Implied</div><div class="outcome-cell-val" style="color:#5a7a9a" id="out-vegas">19.2</div><div class="outcome-cell-sub">prop baseline</div></div>
+        <div class="outcome-vdiv"></div>
+        <div class="outcome-cell"><div class="outcome-cell-label">Model Edge</div><div class="outcome-cell-val" style="color:#00b4d8" id="out-edge">+3.2</div><div class="outcome-cell-sub">pts above line</div></div>
+      </div>
+      <div class="outcome-prob-row">
+        <div class="outcome-prob-cell"><div class="opc-label">Low · P10</div><div class="opc-val mid" id="out-low">9.2 pts</div></div>
+        <div class="outcome-prob-cell"><div class="opc-label">Boom ≥ 20 pts</div><div class="opc-val boom">44%</div></div>
+        <div class="outcome-prob-cell"><div class="opc-label">High · P90</div><div class="opc-val mid" id="out-high">38.0 pts</div></div>
+      </div>
+      <div class="outcome-footer">
+        <div class="outcome-verdict" id="out-verdict"><strong>Strong start.</strong> Volume floor is secure at 9.2 targets implied. Sharp steam confirmed across three books — this is the highest-quality Vegas signal. Post-bust bounce signal hits 83% historically. Primary risk is TD dependency — toggle TDs off above to stress-test the floor.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+  <div class="footer">
+    <div class="btn-row">
+      <button class="btn btn-primary">Agree · Start</button>
+      <button class="btn btn-secondary">Challenge →</button>
+    </div>
+    <div class="updated">Last updated 14m ago</div>
+  </div>
+
+</div></div>
+
+<script>
+// Move type data
+const moveTypes = {
+  sharp: {
+    rowClass:'sharp', badgeClass:'sharp', dotClass:'sharp',
+    label:'Sharp steam detected',
+    desc:'Sharp money across 3 books in 40-min window Wed 2pm. Line moves against 72% of public bets.',
+    weight:'Full signal', weightClass:'full',
+    moveSub:'Sharp steam', signalText:'Receiving yards prop moved <span class="signal-pos">+4.5</span> since open — <span class="signal-kw">sharp steam detected</span> across three books Wednesday afternoon. Juice shifted from −115 to −130 confirming sharp-side conviction. Nova projection updated at <span class="signal-pos">full signal weight</span>.'
+  },
+  public: {
+    rowClass:'public', badgeClass:'public', dotClass:'public',
+    label:'Public action — low signal',
+    desc:'81% of bets and money on the over. Sunday morning primetime game. Consistent with public sentiment, not sharp information.',
+    weight:'Suppressed · 0.15×', weightClass:'suppressed',
+    moveSub:'Public money', signalText:'Receiving yards prop moved +4.5 Sunday morning — <span class="signal-kw" style="color:#5a6a84">public action identified</span>. 81% of bets and money on the over — consistent with primetime star-player narrative. Nova projection adjusted minimally. <span style="color:#3d4e66">This move reflects sentiment, not sharp information. Our projection is largely unchanged.</span>'
+  },
+  injury: {
+    rowClass:'sharp', badgeClass:'injury', dotClass:'sharp',
+    label:'Injury-driven move',
+    desc:'Line moved within 60 minutes of Friday practice report — CB1 ruled out, reducing coverage quality on Lamb\'s primary route tree.',
+    weight:'Full signal', weightClass:'full',
+    moveSub:'Injury/depth chart', signalText:'Receiving yards prop moved <span class="signal-pos">+4.5</span> — <span class="signal-kw">injury-driven move</span> confirmed. Timing correlates with Friday 4pm practice report: opposing CB1 ruled out. This is a football reality change, not a betting signal. Nova projection updated at <span class="signal-pos">full signal weight</span>.'
+  },
+  weather: {
+    rowClass:'weather', badgeClass:'weather', dotClass:'weather',
+    label:'Weather signal',
+    desc:'Wind forecast updated to 22 mph at MetLife — above the 20 mph suppression threshold. Move timing correlates with forecast update.',
+    weight:'Partial · 0.6×', weightClass:'partial',
+    moveSub:'Weather-driven', signalText:'Receiving yards prop moved −3.0 — <span class="signal-kw" style="color:#c98c2a">weather-driven move</span>. Wind forecast updated to 22 mph, crossing the 20 mph suppression threshold. Nova projection adjusted at <span style="color:#c98c2a">60% signal weight</span>. Deep route ceiling compressed. Floor is more resilient.'
+  }
+};
+
+function setMoveType(type) {
+  const d = moveTypes[type];
+  document.querySelectorAll('.demo-btn').forEach(b=>b.classList.remove('sel'));
+  document.querySelector('.'+type+'-btn').classList.add('sel');
+
+  const mtr = document.getElementById('mtr');
+  mtr.className = 'move-type-row ' + d.rowClass;
+
+  const mtb = document.getElementById('mtb');
+  mtb.className = 'move-type-badge ' + d.badgeClass;
+  mtb.querySelector('.move-type-dot').className = 'move-type-dot ' + d.dotClass;
+  document.getElementById('mt-label').textContent = d.label;
+  document.getElementById('mt-desc').textContent = d.desc;
+
+  const mtw = document.getElementById('mt-weight');
+  mtw.className = 'move-type-weight ' + d.weightClass;
+  mtw.textContent = d.weight;
+
+  document.getElementById('veg-move-sub').textContent = d.moveSub;
+  document.getElementById('signal-text').innerHTML = d.signalText;
+
+  if(type==='weather'){
+    document.getElementById('veg-move').textContent='−3.0 yds';
+    document.getElementById('veg-move').className='vstat-val neg';
+  } else {
+    document.getElementById('veg-move').textContent='+4.5 yds';
+    document.getElementById('veg-move').className='vstat-val pos';
+  }
+}
+
+// TD toggle
+const ON={hVegas:'19.2',hNova:'22.4',hDelta:'↑ +3.2 model edge',hVegasSub:'87.5 yds prop baseline',tdVegas:'+3.60',tdNova:'+4.80',tdEdge:'+1.20',totVegas:'19.2',totNova:'22.4',totDelta:'+3.2',outNova:'22.4',outVegas:'19.2',outEdge:'+3.2',outLow:'9.2 pts',outHigh:'38.0 pts',verdict:'<strong>Strong start.</strong> Volume floor is secure at 9.2 targets implied. Sharp steam confirmed across three books — highest-quality Vegas signal. Post-bust bounce hits 83% historically. Primary risk is TD dependency — toggle TDs off to stress-test the floor.',sub:'22% TD probability · +4.80 Nova pts'};
+const OFF={hVegas:'15.6',hNova:'17.6',hDelta:'↑ +2.0 model edge',hVegasSub:'volume-only baseline (no TDs)',tdVegas:'0.00',tdNova:'0.00',tdEdge:'—',totVegas:'15.6',totNova:'17.6',totDelta:'+2.0',outNova:'17.6',outVegas:'15.6',outEdge:'+2.0',outLow:'8.4 pts',outHigh:'28.5 pts',verdict:'<strong>Volume floor holds.</strong> Without TDs, Lamb still projects 17.6 pts on catches and yards alone — viable given 9.2 targets implied. Ceiling compresses to 28.5 pts without a scoring play.',sub:'TDs excluded · volume floor only'};
+
+function apply(s){
+  document.getElementById('h-vegas').textContent=s.hVegas;
+  document.getElementById('h-nova').textContent=s.hNova;
+  document.getElementById('h-delta').textContent=s.hDelta;
+  document.getElementById('h-vegas-sub').textContent=s.hVegasSub;
+  document.getElementById('td-vegas').textContent=s.tdVegas;
+  document.getElementById('td-nova').textContent=s.tdNova;
+  document.getElementById('td-edge').textContent=s.tdEdge;
+  document.getElementById('tot-vegas').textContent=s.totVegas;
+  document.getElementById('tot-nova').textContent=s.totNova;
+  document.getElementById('tot-delta').textContent=s.totDelta;
+  document.getElementById('out-nova').textContent=s.outNova;
+  document.getElementById('out-vegas').textContent=s.outVegas;
+  document.getElementById('out-edge').textContent=s.outEdge;
+  document.getElementById('out-low').textContent=s.outLow;
+  document.getElementById('out-high').textContent=s.outHigh;
+  document.getElementById('out-verdict').innerHTML=s.verdict;
+  document.getElementById('td-toggle-sub').textContent=s.sub;
+  document.getElementById('veg-nova').textContent=s.hNova;
+}
+
+document.getElementById('td-switch').addEventListener('change',function(){
+  const on=this.checked;
+  document.getElementById('lbl-on').className='toggle-opt'+(on?' active':'');
+  document.getElementById('lbl-off').className='toggle-opt'+(!on?' active-off':'');
+  document.getElementById('td-row-1').classList.toggle('dimmed',!on);
+  apply(on?ON:OFF);
+});
+
+// histogram
+const bins=[{r:'0–4 pts',p:1,t:'low'},{r:'4–8 pts',p:3,t:'low'},{r:'8–12 pts',p:7,t:'low'},{r:'12–16 pts',p:12,t:'low'},{r:'16–20 pts',p:16,t:'mid'},{r:'20–24 pts',p:19,t:'mid'},{r:'24–28 pts',p:17,t:'peak'},{r:'28–32 pts',p:12,t:'peak'},{r:'32–36 pts',p:8,t:'boom'},{r:'36–40 pts',p:5,t:'boom'}];
+const maxP=Math.max(...bins.map(b=>b.p));
+const hist=document.getElementById('hist');
+const tip=document.getElementById('htip');
+Object.assign(tip.style,{position:'absolute',zIndex:'50',pointerEvents:'none',background:'#0a0c13',border:'0.5px solid #253048',borderRadius:'5px',padding:'5px 9px',fontSize:'10px',fontFamily:"'JetBrains Mono',monospace",color:'#c8d8f0',whiteSpace:'nowrap',display:'none'});
+bins.forEach(b=>{
+  const bar=document.createElement('div');
+  bar.className='hbar';
+  bar.style.height=(b.p/maxP*100)+'%';
+  bar.style.background={boom:'rgba(0,210,140,0.52)',peak:'rgba(0,210,140,0.3)',mid:'rgba(0,180,216,0.2)',low:'#141a28'}[b.t];
+  bar.addEventListener('mouseenter',()=>{
+    tip.textContent=b.r+' · '+b.p+'%';tip.style.display='block';
+    const br=bar.getBoundingClientRect(),hr=hist.getBoundingClientRect();
+    tip.style.left=(br.left-hr.left+br.width/2)+'px';tip.style.top=(br.top-hr.top-32)+'px';tip.style.transform='translateX(-50%)';
+  });
+  bar.addEventListener('mouseleave',()=>{tip.style.display='none';});
+  hist.appendChild(bar);
+});
+
+// usage
+[{label:'Snap share',val:'91%',bar:91,delta:'+3.2%',dir:'up'},{label:'Target share',val:'34%',bar:34,delta:'+5.1%',dir:'up'},{label:'Air yards share',val:'48%',bar:48,delta:'−2.0%',dir:'down'},{label:'RZ targets/gm',val:'3.1',bar:62,delta:'+0.8',dir:'up'}].forEach(r=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td class="u-label">${r.label}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="u-bar-wrap" style="flex:1"><div class="u-bar" style="width:${r.bar}%"></div></div><span class="u-val" style="padding:0;min-width:30px;text-align:right">${r.val}</span></div></td><td class="u-trend ${r.dir}">${r.dir==='up'?'↑':'↓'} ${r.delta.replace(/^[+−-]/,'')}</td>`;
+  document.getElementById('usage-body').appendChild(tr);
+});
+
+// help tooltips
+document.querySelectorAll('.help-btn').forEach(btn=>{
+  const tooltip=document.getElementById('tip-'+btn.dataset.tip);
+  if(!tooltip)return;
+  btn.addEventListener('click',e=>{
+    e.stopPropagation();
+    const open=tooltip.classList.contains('visible');
+    document.querySelectorAll('.help-tooltip').forEach(t=>t.classList.remove('visible'));
+    document.querySelectorAll('.help-btn').forEach(b=>b.classList.remove('active'));
+    if(!open){tooltip.classList.add('visible');btn.classList.add('active');}
+  });
+});
+document.addEventListener('click',()=>{
+  document.querySelectorAll('.help-tooltip').forEach(t=>t.classList.remove('visible'));
+  document.querySelectorAll('.help-btn').forEach(b=>b.classList.remove('active'));
+});
+</script>

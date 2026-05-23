@@ -1,0 +1,548 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  .shell{background:#090b11;font-family:'Inter',system-ui,sans-serif;color:#e2e8f0;max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:90px;}
+
+  .status-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px 8px;background:#0d1018;}
+  .sb-time{font-size:13px;font-weight:600;color:#f0f4ff;}
+  .sb-icons{font-size:10px;color:#f0f4ff;}
+
+  .navbar{display:flex;align-items:center;justify-content:space-between;padding:8px 20px 12px;background:#0d1018;border-bottom:0.5px solid #161b27;}
+  .nav-logo{font-size:15px;font-weight:600;color:#f0f4ff;letter-spacing:-0.02em;}
+  .nav-logo span{color:#00d28c;}
+  .nav-lock{display:flex;align-items:center;gap:5px;font-size:9px;font-family:'JetBrains Mono',monospace;color:#c98c2a;background:rgba(186,117,23,0.06);border:0.5px solid rgba(186,117,23,0.18);padding:4px 8px;border-radius:4px;}
+  .lock-dot{width:5px;height:5px;background:#c98c2a;border-radius:50%;animation:lpulse 2s infinite;}
+  @keyframes lpulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+  .tab-bar{display:grid;grid-template-columns:repeat(3,1fr);background:#0d1018;border-bottom:0.5px solid #161b27;}
+  .tab{padding:10px 0;text-align:center;font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;color:#2e3d55;border-bottom:2px solid transparent;transition:all 0.15s;}
+  .tab.active{color:#00d28c;border-bottom-color:#00d28c;}
+  .tab-badge{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;background:#e05050;border-radius:50%;font-size:7px;font-weight:700;color:#fff;margin-left:5px;vertical-align:middle;}
+
+  .sum-bar{background:#0a0c13;border-bottom:0.5px solid #161b27;display:grid;grid-template-columns:repeat(4,1fr);}
+  .sum-cell{padding:10px 0;text-align:center;border-right:0.5px solid #161b27;}
+  .sum-cell:last-child{border-right:none;}
+  .sum-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;line-height:1;margin-bottom:2px;}
+  .sv-green{color:#00d28c;} .sv-cyan{color:#00b4d8;} .sv-gray{color:#3d4e66;} .sv-amber{color:#c98c2a;}
+  .sum-label{font-size:8px;color:#2e3d55;text-transform:uppercase;letter-spacing:0.06em;}
+
+  .agree-bar{padding:10px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #111520;}
+  .agree-bar-label{font-size:10px;color:#3d4e66;}
+  .agree-bar-btn{font-size:9px;font-weight:500;padding:5px 12px;border-radius:5px;cursor:pointer;border:0.5px solid #253048;background:transparent;color:#4a6080;font-family:'Inter',sans-serif;transition:all 0.15s;}
+  .agree-bar-btn:hover{background:#0f1320;border-color:#3a5070;color:#8a9ebb;}
+
+  .pos-group{padding:0 20px;}
+  .pos-group-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 0 8px;}
+  .pos-group-label{font-size:8.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#2e3d55;}
+  .pos-group-count{font-size:8.5px;color:#1e2a3f;font-family:'JetBrains Mono',monospace;}
+
+  .pick-card{background:#0f1118;border:0.5px solid #1a1f2e;border-radius:10px;margin-bottom:8px;overflow:hidden;transition:border-color 0.2s;}
+  .pick-card.agreed{border-color:rgba(0,210,140,0.22);}
+  .pick-card.overridden{border-color:rgba(0,180,216,0.25);}
+  .pick-card.skipped{opacity:0.5;}
+
+  .card-top{display:flex;align-items:center;gap:10px;padding:11px 14px 10px;}
+
+  .pb{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;}
+  .pb.qb{background:rgba(186,117,23,0.1);color:#c98c2a;border:0.5px solid rgba(186,117,23,0.2);}
+  .pb.rb{background:rgba(0,210,140,0.1);color:#00d28c;border:0.5px solid rgba(0,210,140,0.2);}
+  .pb.wr{background:rgba(0,180,216,0.1);color:#00b4d8;border:0.5px solid rgba(0,180,216,0.2);}
+  .pb.te{background:rgba(163,107,200,0.1);color:#a36bc8;border:0.5px solid rgba(163,107,200,0.2);}
+
+  .pi{flex:1;min-width:0;}
+  .pi-name{font-size:12px;font-weight:500;color:#c8d8f0;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pi-meta{font-size:9px;color:#2e3d55;white-space:nowrap;}
+
+  .proj-block{text-align:right;flex-shrink:0;}
+  .proj-num{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;color:#00d28c;line-height:1;}
+  .proj-sub{font-size:8px;color:#1e2a3f;text-align:right;margin-top:1px;}
+
+  .dist-strip{display:flex;align-items:center;gap:8px;padding:0 14px 9px;}
+  .dl{font-size:8.5px;font-family:'JetBrains Mono',monospace;color:#2e3d55;white-space:nowrap;flex-shrink:0;width:30px;}
+  .dt{flex:1;height:3px;background:#141a28;border-radius:2px;position:relative;}
+  .df{position:absolute;height:100%;border-radius:2px;background:linear-gradient(90deg,rgba(0,180,216,0.3),rgba(0,210,140,0.7),rgba(0,180,216,0.3));}
+  .dp{position:absolute;top:-3px;width:1.5px;height:9px;background:#00d28c;border-radius:1px;}
+  .bb-mini-row{display:flex;gap:5px;flex-shrink:0;}
+  .bbm{font-size:9px;font-family:'JetBrains Mono',monospace;font-weight:500;}
+  .bbm.boom{color:#00d28c;} .bbm.bust{color:#e05050;}
+
+  .sig-row{display:flex;gap:5px;padding:0 14px 9px;flex-wrap:wrap;}
+  .sig{display:inline-flex;align-items:center;gap:3px;font-size:8.5px;font-weight:500;padding:2px 7px;border-radius:3px;border:0.5px solid;}
+  .sig.sharp{background:rgba(0,210,140,0.06);border-color:rgba(0,210,140,0.18);color:#00d28c;}
+  .sig.amber{background:rgba(186,117,23,0.06);border-color:rgba(186,117,23,0.18);color:#c98c2a;}
+  .sig.cyan{background:rgba(0,180,216,0.06);border-color:rgba(0,180,216,0.15);color:#00b4d8;}
+  .sig.red{background:rgba(224,80,80,0.06);border-color:rgba(224,80,80,0.18);color:#e05050;}
+
+  .action-row{display:flex;gap:0;border-top:0.5px solid #161b27;}
+  .action-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:9px 4px;cursor:pointer;border:none;background:transparent;transition:background 0.15s;font-family:'Inter',sans-serif;border-right:0.5px solid #161b27;}
+  .action-btn:last-child{border-right:none;}
+  .action-btn:hover{background:#111520;}
+  .action-btn.sel-agree{background:rgba(0,210,140,0.06);}
+  .action-btn.sel-override{background:rgba(0,180,216,0.06);}
+  .action-btn.sel-skip{background:rgba(255,255,255,0.02);}
+  .ai{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;border:1px solid #253048;color:#3d4e66;margin-bottom:1px;transition:all 0.15s;}
+  .sel-agree .ai.agree-i{background:rgba(0,210,140,0.12);border-color:rgba(0,210,140,0.35);color:#00d28c;}
+  .sel-override .ai.override-i{background:rgba(0,180,216,0.12);border-color:rgba(0,180,216,0.35);color:#00b4d8;}
+  .sel-skip .ai.skip-i{background:rgba(255,255,255,0.05);border-color:#253048;color:#3d4e66;}
+  .al{font-size:8px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:#2e3d55;transition:color 0.15s;}
+  .sel-agree .agree-l{color:#00d28c;}
+  .sel-override .override-l{color:#00b4d8;}
+
+  .override-panel{display:none;padding:10px 14px;border-top:0.5px solid #161b27;background:#0a0c13;animation:slideDown 0.15s ease;}
+  .override-panel.open{display:block;}
+  @keyframes slideDown{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+  .ov-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .ov-label{font-size:10px;color:#5a6a84;white-space:nowrap;}
+  .ov-input{flex:1;background:#0d1018;border:0.5px solid #253048;border-radius:5px;padding:6px 10px;font-size:13px;font-family:'JetBrains Mono',monospace;color:#c8d8f0;outline:none;transition:border-color 0.15s;max-width:90px;}
+  .ov-input:focus{border-color:#00b4d8;}
+  .ov-unit{font-size:10px;color:#3d4e66;}
+  .reason-label{font-size:9px;color:#2e3d55;margin-bottom:5px;}
+  .reason-pills{display:flex;gap:5px;flex-wrap:wrap;}
+  .rp{font-size:8.5px;padding:3px 8px;border-radius:4px;border:0.5px solid #1e2538;color:#3d4e66;cursor:pointer;transition:all 0.15s;background:transparent;}
+  .rp:hover{border-color:#253048;color:#5a6a84;}
+  .rp.sel{border-color:rgba(0,180,216,0.35);color:#00b4d8;background:rgba(0,180,216,0.06);}
+
+  .locked-bar{display:flex;align-items:center;justify-content:center;gap:6px;padding:7px;background:rgba(186,117,23,0.05);border-top:0.5px solid rgba(186,117,23,0.15);}
+  .locked-txt{font-size:9px;color:#7a6030;font-family:'JetBrains Mono',monospace;}
+
+  /* SCORE CARD TAB */
+  .score-wrap{padding:20px;}
+  .sc-eyebrow{font-size:8.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#2e3d55;margin-bottom:10px;}
+  .sc-headline{font-size:18px;font-weight:500;color:#f0f4ff;letter-spacing:-0.01em;margin-bottom:4px;}
+  .sc-sub{font-size:11px;color:#3d4e66;margin-bottom:18px;}
+
+  .sc-card{background:#0a0c13;border:0.5px solid #1e2538;border-radius:10px;overflow:hidden;margin-bottom:12px;}
+  .sc-card-hdr{padding:10px 14px;border-bottom:0.5px solid #161b27;display:flex;align-items:center;justify-content:space-between;}
+  .sc-card-title{font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#2e3d55;}
+  .sc-card-sub{font-size:9px;color:#1e2a3f;font-family:'JetBrains Mono',monospace;}
+
+  .sc-3grid{display:grid;grid-template-columns:1fr 0.5px 1fr 0.5px 1fr;}
+  .sc-vdiv{background:#161b27;}
+  .sc-cell{padding:14px 10px;text-align:center;}
+  .sc-cell-label{font-size:8px;color:#2e3d55;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
+  .sc-cell-val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:500;line-height:1;margin-bottom:3px;}
+  .sc-cell-val.you{color:#00d28c;}
+  .sc-cell-val.model{color:#4a6a8a;}
+  .sc-cell-val.community{color:#a36bc8;}
+  .sc-cell-sub{font-size:8.5px;color:#2e3d55;font-family:'JetBrains Mono',monospace;}
+
+  .sc-bars{padding:0 14px 12px;}
+  .sc-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .sc-bar-lbl{font-size:9px;width:76px;flex-shrink:0;font-weight:500;}
+  .sc-bar-lbl.you{color:rgba(0,210,140,0.6);}
+  .sc-bar-lbl.model{color:#4a6a8a;}
+  .sc-bar-lbl.community{color:rgba(163,107,200,0.6);}
+  .sc-bar-track{flex:1;height:3px;background:#141a28;border-radius:2px;overflow:hidden;}
+  .sc-bar-fill{height:100%;border-radius:2px;}
+  .sc-bar-fill.you{background:linear-gradient(90deg,#004d30,#00d28c);}
+  .sc-bar-fill.model{background:linear-gradient(90deg,#0a1e30,#4a6a8a);}
+  .sc-bar-fill.community{background:linear-gradient(90deg,#1a0a30,#a36bc8);}
+  .sc-bar-val{font-family:'JetBrains Mono',monospace;font-size:9px;width:36px;text-align:right;flex-shrink:0;}
+  .sc-bar-val.you{color:#00d28c;}
+  .sc-bar-val.model{color:#4a6a8a;}
+  .sc-bar-val.community{color:rgba(163,107,200,0.7);}
+
+  .call-wrap{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+  .call-card{background:#0a0c13;border:0.5px solid #1e2538;border-radius:8px;padding:10px 12px;}
+  .call-hdr{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+  .call-badge{font-size:8px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;padding:2px 6px;border-radius:3px;}
+  .cb-win{background:rgba(0,210,140,0.1);color:#00d28c;border:0.5px solid rgba(0,210,140,0.2);}
+  .cb-model{background:rgba(74,106,138,0.1);color:#4a6a8a;border:0.5px solid rgba(74,106,138,0.2);}
+  .cb-comm{background:rgba(163,107,200,0.08);color:#a36bc8;border:0.5px solid rgba(163,107,200,0.18);}
+  .call-player{font-size:11px;font-weight:500;color:#8a9ebb;}
+  .call-detail{font-size:10px;color:#3d4e66;line-height:1.5;}
+  .call-detail strong{color:#5a6a84;font-weight:500;}
+
+  .or-card{background:#0a0c13;border:0.5px solid #1e2538;border-radius:8px;overflow:hidden;}
+  .or-hdr{padding:9px 12px;border-bottom:0.5px solid #161b27;display:flex;align-items:center;justify-content:space-between;}
+  .or-title{font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#2e3d55;}
+  .or-record{font-family:'JetBrains Mono',monospace;font-size:11px;color:#00d28c;}
+  .or-row{display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:0.5px solid #111520;transition:background 0.12s;cursor:default;}
+  .or-row:last-child{border-bottom:none;}
+  .or-row:hover{background:#0d1120;}
+  .or-reason{font-size:10px;color:#5a6a84;flex:1;}
+  .or-wl{font-family:'JetBrains Mono',monospace;font-size:10px;color:#3d4e66;white-space:nowrap;}
+  .or-pct{font-family:'JetBrains Mono',monospace;font-size:10px;white-space:nowrap;}
+  .or-pct.good{color:#00d28c;} .or-pct.bad{color:#e05050;} .or-pct.ok{color:#c98c2a;}
+
+  /* MY RECORD */
+  .edge-section{margin-bottom:14px;}
+  .edge-hdr{font-size:8.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#2e3d55;margin-bottom:10px;}
+  .edge-card{background:#0a0c13;border:0.5px solid #1e2538;border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;transition:border-color 0.15s,transform 0.15s;cursor:default;}
+  .edge-card:hover{border-color:#2d3f5a;transform:translateX(2px);}
+  .edge-badge{font-size:8px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+  .eb-elite{background:rgba(255,215,0,0.08);color:#e6c200;border:0.5px solid rgba(255,215,0,0.2);}
+  .eb-confirmed{background:rgba(0,210,140,0.1);color:#00d28c;border:0.5px solid rgba(0,210,140,0.25);}
+  .eb-trending{background:rgba(186,117,23,0.1);color:#c98c2a;border:0.5px solid rgba(186,117,23,0.25);}
+  .edge-info{flex:1;min-width:0;}
+  .edge-name{font-size:10px;font-weight:500;color:#8a9ebb;margin-bottom:2px;}
+  .edge-stat{font-size:9px;color:#3d4e66;}
+  .edge-rate{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;flex-shrink:0;}
+  .er-elite{color:#e6c200;} .er-confirmed{color:#00d28c;} .er-trending{color:#c98c2a;}
+
+  /* BOTTOM NAV */
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;background:#0d1018;border-top:0.5px solid #161b27;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 0 20px;z-index:50;}
+  .bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:opacity 0.15s;}
+  .bnav-item:hover{opacity:0.8;}
+  .bnav-icon svg{width:20px;height:20px;fill:none;stroke:#2e3d55;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+  .bnav-icon.active svg{stroke:#00d28c;}
+  .bnav-label{font-size:8px;color:#2e3d55;}
+  .bnav-label.active{color:#00d28c;}
+  .bnav-wrap{position:relative;}
+  .bnav-dot{width:5px;height:5px;background:#e05050;border-radius:50%;position:absolute;top:-1px;right:-2px;border:1px solid #0d1018;}
+</style>
+
+<div class="shell">
+
+  <div class="status-bar">
+    <div class="sb-time">9:41</div>
+    <div class="sb-icons">●●●● WiFi 🔋</div>
+  </div>
+
+  <div class="navbar">
+    <div class="nav-logo">Nova<span>Predict</span></div>
+    <div class="nav-lock"><span class="lock-dot"></span>Week 7 · 31h 14m</div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab active" id="tab-slate" onclick="showTab('slate')">Pick Slate<span class="tab-badge" id="pb">26</span></div>
+    <div class="tab" id="tab-score" onclick="showTab('score')">Score Card</div>
+    <div class="tab" id="tab-record" onclick="showTab('record')">My Record</div>
+  </div>
+
+  <!-- PICK SLATE -->
+  <div id="view-slate">
+    <div class="sum-bar">
+      <div class="sum-cell"><div class="sum-val sv-green" id="s-a">4</div><div class="sum-label">Agreed</div></div>
+      <div class="sum-cell"><div class="sum-val sv-cyan" id="s-o">0</div><div class="sum-label">Override</div></div>
+      <div class="sum-cell"><div class="sum-val sv-gray" id="s-s">0</div><div class="sum-label">Skipped</div></div>
+      <div class="sum-cell"><div class="sum-val sv-amber" id="s-r">26</div><div class="sum-label">Left</div></div>
+    </div>
+    <div class="agree-bar">
+      <span class="agree-bar-label">Agree with all remaining picks</span>
+      <button class="agree-bar-btn" onclick="agreeAll()">Agree with model →</button>
+    </div>
+
+    <!-- QB -->
+    <div class="pos-group">
+      <div class="pos-group-hdr"><span class="pos-group-label">Quarterbacks</span><span class="pos-group-count">2 players</span></div>
+
+      <div class="pick-card agreed" id="c0">
+        <div class="card-top">
+          <div class="pb qb">QB</div>
+          <div class="pi"><div class="pi-name">Jayden Daniels</div><div class="pi-meta">WAS · vs CHI · Sun 1pm · On roster</div></div>
+          <div class="proj-block"><div class="proj-num">24.6</div><div class="proj-sub">Nova PPR</div></div>
+        </div>
+        <div class="dist-strip">
+          <span class="dl">11.2</span>
+          <div class="dt"><div class="df" style="left:0;right:15%"></div><div class="dp" style="left:52%"></div></div>
+          <span class="dl" style="text-align:right">38.4</span>
+          <div class="bb-mini-row"><span class="bbm boom">B 52%</span><span class="bbm bust">St 8%</span></div>
+        </div>
+        <div class="sig-row"><span class="sig sharp">↑ Sharp steam</span><span class="sig cyan">Total 50.5</span></div>
+        <div class="action-row">
+          <button class="action-btn sel-agree" onclick="pick(0,'agree')"><div class="ai agree-i">✓</div><span class="al agree-l">Agree</span></button>
+          <button class="action-btn" onclick="pick(0,'override')"><div class="ai override-i">↗</div><span class="al override-l">Override</span></button>
+          <button class="action-btn" onclick="pick(0,'skip')"><div class="ai skip-i">—</div><span class="al">Skip</span></button>
+        </div>
+        <div class="override-panel" id="op0"><div class="ov-row"><span class="ov-label">My projection:</span><input type="number" class="ov-input" placeholder="24.6" step="0.5"><span class="ov-unit">PPR</span></div><div class="reason-label">Reason (required)</div><div class="reason-pills"><span class="rp" onclick="sr(this)">Vegas line moved late</span><span class="rp" onclick="sr(this)">Injury / practice report</span><span class="rp" onclick="sr(this)">Historical signal</span><span class="rp" onclick="sr(this)">Matchup read</span><span class="rp" onclick="sr(this)">Gut / other</span></div></div>
+      </div>
+
+      <div class="pick-card" id="c1">
+        <div class="card-top">
+          <div class="pb qb">QB</div>
+          <div class="pi"><div class="pi-name">Josh Allen</div><div class="pi-meta">BUF · at MIA · Sun 4pm</div></div>
+          <div class="proj-block"><div class="proj-num">28.2</div><div class="proj-sub">Nova PPR</div></div>
+        </div>
+        <div class="dist-strip">
+          <span class="dl">12.4</span>
+          <div class="dt"><div class="df" style="left:0;right:10%"></div><div class="dp" style="left:54%"></div></div>
+          <span class="dl" style="text-align:right">44.1</span>
+          <div class="bb-mini-row"><span class="bbm boom">B 61%</span><span class="bbm bust">St 5%</span></div>
+        </div>
+        <div class="sig-row"><span class="sig cyan">Total 52.0</span><span class="sig amber">Post-bust bounce</span></div>
+        <div class="action-row">
+          <button class="action-btn" onclick="pick(1,'agree')"><div class="ai agree-i">✓</div><span class="al agree-l">Agree</span></button>
+          <button class="action-btn" onclick="pick(1,'override')"><div class="ai override-i">↗</div><span class="al override-l">Override</span></button>
+          <button class="action-btn" onclick="pick(1,'skip')"><div class="ai skip-i">—</div><span class="al">Skip</span></button>
+        </div>
+        <div class="override-panel" id="op1"><div class="ov-row"><span class="ov-label">My projection:</span><input type="number" class="ov-input" placeholder="28.2" step="0.5"><span class="ov-unit">PPR</span></div><div class="reason-label">Reason (required)</div><div class="reason-pills"><span class="rp" onclick="sr(this)">Vegas line moved late</span><span class="rp" onclick="sr(this)">Injury / practice report</span><span class="rp" onclick="sr(this)">Historical signal</span><span class="rp" onclick="sr(this)">Matchup read</span><span class="rp" onclick="sr(this)">Gut / other</span></div></div>
+      </div>
+    </div>
+
+    <!-- RB -->
+    <div class="pos-group">
+      <div class="pos-group-hdr"><span class="pos-group-label">Running Backs</span><span class="pos-group-count">4 players</span></div>
+
+      <div class="pick-card agreed" id="c2">
+        <div class="card-top">
+          <div class="pb rb">RB</div>
+          <div class="pi"><div class="pi-name">Bijan Robinson</div><div class="pi-meta">ATL · vs SEA · Sun 1pm</div></div>
+          <div class="proj-block"><div class="proj-num">22.8</div><div class="proj-sub">Nova PPR</div></div>
+        </div>
+        <div class="dist-strip"><span class="dl">8.4</span><div class="dt"><div class="df" style="left:0;right:18%"></div><div class="dp" style="left:49%"></div></div><span class="dl" style="text-align:right">36.2</span><div class="bb-mini-row"><span class="bbm boom">B 48%</span><span class="bbm bust">St 11%</span></div></div>
+        <div class="sig-row"><span class="sig sharp">↑ Sharp steam</span><span class="sig amber">Bye return +2.1</span></div>
+        <div class="action-row">
+          <button class="action-btn sel-agree" onclick="pick(2,'agree')"><div class="ai agree-i">✓</div><span class="al agree-l">Agree</span></button>
+          <button class="action-btn" onclick="pick(2,'override')"><div class="ai override-i">↗</div><span class="al override-l">Override</span></button>
+          <button class="action-btn" onclick="pick(2,'skip')"><div class="ai skip-i">—</div><span class="al">Skip</span></button>
+        </div>
+        <div class="override-panel" id="op2"><div class="ov-row"><span class="ov-label">My projection:</span><input type="number" class="ov-input" placeholder="22.8" step="0.5"><span class="ov-unit">PPR</span></div><div class="reason-label">Reason (required)</div><div class="reason-pills"><span class="rp" onclick="sr(this)">Vegas line moved late</span><span class="rp" onclick="sr(this)">Injury / practice report</span><span class="rp" onclick="sr(this)">Historical signal</span><span class="rp" onclick="sr(this)">Matchup read</span><span class="rp" onclick="sr(this)">Gut / other</span></div></div>
+      </div>
+
+      <div class="pick-card" id="c3" style="border-color:rgba(186,117,23,0.22)">
+        <div class="card-top">
+          <div class="pb rb">RB</div>
+          <div class="pi"><div class="pi-name">Saquon Barkley</div><div class="pi-meta">PHI · at NYG · <span style="color:#c98c2a">Nova caution</span></div></div>
+          <div class="proj-block"><div class="proj-num" style="color:#c98c2a">14.6</div><div class="proj-sub">Nova PPR</div></div>
+        </div>
+        <div class="dist-strip"><span class="dl">4.2</span><div class="dt"><div class="df" style="left:0;right:28%"></div><div class="dp" style="left:44%"></div></div><span class="dl" style="text-align:right">28.8</span><div class="bb-mini-row"><span class="bbm boom">B 28%</span><span class="bbm bust" style="color:#e05050">St 22%</span></div></div>
+        <div class="sig-row"><span class="sig amber">Post-boom regress · 71%</span><span class="sig red">NYG #4 run D</span><span class="sig red">Public action</span></div>
+        <div class="action-row">
+          <button class="action-btn" onclick="pick(3,'agree')"><div class="ai agree-i">✓</div><span class="al agree-l">Agree</span></button>
+          <button class="action-btn" onclick="pick(3,'override')"><div class="ai override-i">↗</div><span class="al override-l">Override</span></button>
+          <button class="action-btn" onclick="pick(3,'skip')"><div class="ai skip-i">—</div><span class="al">Skip</span></button>
+        </div>
+        <div class="override-panel" id="op3"><div class="ov-row"><span class="ov-label">My projection:</span><input type="number" class="ov-input" placeholder="14.6" step="0.5"><span class="ov-unit">PPR</span></div><div class="reason-label">Reason (required)</div><div class="reason-pills"><span class="rp" onclick="sr(this)">Vegas line moved late</span><span class="rp" onclick="sr(this)">Injury / practice report</span><span class="rp" onclick="sr(this)">Historical signal</span><span class="rp" onclick="sr(this)">Matchup read</span><span class="rp" onclick="sr(this)">Gut / other</span></div></div>
+      </div>
+
+      <div class="pick-card agreed" id="c4">
+        <div class="card-top">
+          <div class="pb rb">RB</div>
+          <div class="pi"><div class="pi-name">Jonathan Taylor</div><div class="pi-meta">IND · at HOU · On roster</div></div>
+          <div class="proj-block"><div class="proj-num">14.2</div><div class="proj-sub">Nova PPR</div></div>
+        </div>
+        <div class="dist-strip"><span class="dl">3.8</span><div class="dt"><div class="df" style="left:0;right:30%"></div><div class="dp" style="left:42%"></div></div><span class="dl" style="text-align:right">26.4</span><div class="bb-mini-row"><span class="bbm boom">B 24%</span><span class="bbm bust" style="color:#e05050">St 19%</span></div></div>
+        <div class="sig-row"><span class="sig red">HOU #3 run D</span><span class="sig amber">Usage trending ↓</span></div>
+        <div class="action-row">
+          <button class="action-btn sel-agree" onclick="pick(4,'agree')"><div class="ai agree-i">✓</div><span class="al agree-l">Agree</span></button>
+          <button class="action-btn" onclick="pick(4,'override')"><div class="ai override-i">↗</div><span class="al override-l">Override</span></button>
+          <button class="action-btn" onclick="pick(4,'skip')"><div class="ai skip-i">—</div><span class="al">Skip</span></button>
+        </div>
+        <div class="override-panel" id="op4"><div class="ov-row"><span class="ov-label">My projection:</span><input type="number" class="ov-input" placeholder="14.2" step="0.5"><span class="ov-unit">PPR</span></div><div class="reason-label">Reason (required)</div><div class="reason-pills"><span class="rp" onclick="sr(this)">Vegas line moved late</span><span class="rp" onclick="sr(this)">Injury / practice report</span><span class="rp" onclick="sr(this)">Historical signal</span><span class="rp" onclick="sr(this)">Matchup read</span><span class="rp" onclick="sr(this)">Gut / other</span></div></div>
+      </div>
+
+      <div class="pick-card" id="c5" style="opacity:0.5">
+        <div class="card-top"><div class="pb rb">RB</div><div class="pi"><div class="pi-name">James Cook</div><div class="pi-meta">BUF · at MIA · Sun 4pm</div></div><div class="proj-block"><div class="proj-num">16.4</div><div class="proj-sub">Nova PPR</div></div></div>
+        <div class="locked-bar"><span class="locked-txt">🔒 Locked — agreed before kickoff</span></div>
+      </div>
+    </div>
+
+    <!-- WR -->
+    <div class="pos-group">
+      <div class="pos-group-hdr"><span class="pos-group-label">Wide Receivers</span><span class="pos-group-count">4 shown</span></div>
+
+      <div class="pick-card" id="c6">
+        <div class="card-top"><div class="pb wr">WR</div><div class="pi"><div class="pi-name">CeeDee Lamb</div><div class="pi-meta">DAL · at NYG · On roster</div></div><div class="proj-block"><div class="proj-num">22.4</div><div class="proj-sub">Nova PPR</div></div></div>
+        <div class="dist-strip"><span class="dl">9.2</span><div class="dt"><div class="df" style="left:0;right:12%"></div><div class="dp" style="left:51%"></div></div><span class="dl" style="text-align:right">38.0</span><div class="bb-mini-row"><span class="bbm boom">B 44%</span><span class="bbm bust">St 9%</span></div></div>
+        <div class="sig-row"><span class="sig sharp">↑ Sharp steam +4.5</span><span class="sig amber">Post-bust · 71%</span></div>
+        <div class="action-row">
+          <button class="action-btn" onclick="pick(6,'agree')"><div class="ai agree-i">✓</div><span class="al agree-l">Agree</span></button>
+          <button class="action-btn" onclick="pick(6,'override')"><div class="ai override-i">↗</div><span class="al override-l">Override</span></button>
+          <button class="action-btn" onclick="pick(6,'skip')"><div class="ai skip-i">—</div><span class="al">Skip</span></button>
+        </div>
+        <div class="override-panel" id="op6"><div class="ov-row"><span class="ov-label">My projection:</span><input type="number" class="ov-input" placeholder="22.4" step="0.5"><span class="ov-unit">PPR</span></div><div class="reason-label">Reason (required)</div><div class="reason-pills"><span class="rp" onclick="sr(this)">Vegas line moved late</span><span class="rp" onclick="sr(this)">Injury / practice report</span><span class="rp" onclick="sr(this)">Historical signal</span><span class="rp" onclick="sr(this)">Matchup read</span><span class="rp" onclick="sr(this)">Gut / other</span></div></div>
+      </div>
+
+      <div class="pick-card agreed" id="c7">
+        <div class="card-top"><div class="pb wr">WR</div><div class="pi"><div class="pi-name">Puka Nacua</div><div class="pi-meta">LAR · vs SF · On roster</div></div><div class="proj-block"><div class="proj-num">21.8</div><div class="proj-sub">Nova PPR</div></div></div>
+        <div class="dist-strip"><span class="dl">8.6</span><div class="dt"><div class="df" style="left:0;right:14%"></div><div class="dp" style="left:50%"></div></div><span class="dl" style="text-align:right">36.4</span><div class="bb-mini-row"><span class="bbm boom">B 41%</span><span class="bbm bust">St 10%</span></div></div>
+        <div class="sig-row"><span class="sig sharp">↑ Prop +5.5 overnight</span><span class="sig cyan">SF weak secondary</span></div>
+        <div class="action-row">
+          <button class="action-btn sel-agree" onclick="pick(7,'agree')"><div class="ai agree-i">✓</div><span class="al agree-l">Agree</span></button>
+          <button class="action-btn" onclick="pick(7,'override')"><div class="ai override-i">↗</div><span class="al override-l">Override</span></button>
+          <button class="action-btn" onclick="pick(7,'skip')"><div class="ai skip-i">—</div><span class="al">Skip</span></button>
+        </div>
+        <div class="override-panel" id="op7"><div class="ov-row"><span class="ov-label">My projection:</span><input type="number" class="ov-input" placeholder="21.8" step="0.5"><span class="ov-unit">PPR</span></div><div class="reason-label">Reason (required)</div><div class="reason-pills"><span class="rp" onclick="sr(this)">Vegas line moved late</span><span class="rp" onclick="sr(this)">Injury / practice report</span><span class="rp" onclick="sr(this)">Historical signal</span><span class="rp" onclick="sr(this)">Matchup read</span><span class="rp" onclick="sr(this)">Gut / other</span></div></div>
+      </div>
+
+      <div class="pick-card agreed" id="c8">
+        <div class="card-top"><div class="pb wr">WR</div><div class="pi"><div class="pi-name">Jaxon Smith-Njigba</div><div class="pi-meta">SEA · at ATL · On roster</div></div><div class="proj-block"><div class="proj-num">18.4</div><div class="proj-sub">Nova PPR</div></div></div>
+        <div class="dist-strip"><span class="dl">7.2</span><div class="dt"><div class="df" style="left:0;right:20%"></div><div class="dp" style="left:48%"></div></div><span class="dl" style="text-align:right">30.8</span><div class="bb-mini-row"><span class="bbm boom">B 36%</span><span class="bbm bust">St 12%</span></div></div>
+        <div class="sig-row"><span class="sig cyan">Target share 35%</span><span class="sig amber">ATL coverage</span></div>
+        <div class="action-row">
+          <button class="action-btn sel-agree" onclick="pick(8,'agree')"><div class="ai agree-i">✓</div><span class="al agree-l">Agree</span></button>
+          <button class="action-btn" onclick="pick(8,'override')"><div class="ai override-i">↗</div><span class="al override-l">Override</span></button>
+          <button class="action-btn" onclick="pick(8,'skip')"><div class="ai skip-i">—</div><span class="al">Skip</span></button>
+        </div>
+        <div class="override-panel" id="op8"><div class="ov-row"><span class="ov-label">My projection:</span><input type="number" class="ov-input" placeholder="18.4" step="0.5"><span class="ov-unit">PPR</span></div><div class="reason-label">Reason (required)</div><div class="reason-pills"><span class="rp" onclick="sr(this)">Vegas line moved late</span><span class="rp" onclick="sr(this)">Injury / practice report</span><span class="rp" onclick="sr(this)">Historical signal</span><span class="rp" onclick="sr(this)">Matchup read</span><span class="rp" onclick="sr(this)">Gut / other</span></div></div>
+      </div>
+
+    </div>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- SCORE CARD -->
+  <div id="view-score" style="display:none">
+    <div class="score-wrap">
+      <div class="sc-eyebrow">Week 6 Results · Final</div>
+      <div class="sc-headline">Model wins — you found an edge</div>
+      <div class="sc-sub">Start/Sit record · 32 players · all positions</div>
+
+      <div class="sc-card">
+        <div class="sc-card-hdr"><span class="sc-card-title">Start/Sit Accuracy</span><span class="sc-card-sub">Wk 6 · 32 picks</span></div>
+        <div class="sc-3grid">
+          <div class="sc-cell"><div class="sc-cell-label">You</div><div class="sc-cell-val you">69.2%</div><div class="sc-cell-sub">22/32 correct</div></div>
+          <div class="sc-vdiv"></div>
+          <div class="sc-cell"><div class="sc-cell-label">Model</div><div class="sc-cell-val model">76.9%</div><div class="sc-cell-sub">24.6/32</div></div>
+          <div class="sc-vdiv"></div>
+          <div class="sc-cell"><div class="sc-cell-label">Community</div><div class="sc-cell-val community">71.4%</div><div class="sc-cell-sub">22.8/32</div></div>
+        </div>
+        <div class="sc-bars" style="padding-top:12px;">
+          <div class="sc-bar-row"><span class="sc-bar-lbl you">You</span><div class="sc-bar-track"><div class="sc-bar-fill you" style="width:69.2%"></div></div><span class="sc-bar-val you">69.2%</span></div>
+          <div class="sc-bar-row"><span class="sc-bar-lbl model">Model</span><div class="sc-bar-track"><div class="sc-bar-fill model" style="width:76.9%"></div></div><span class="sc-bar-val model">76.9%</span></div>
+          <div class="sc-bar-row"><span class="sc-bar-lbl community">Community</span><div class="sc-bar-track"><div class="sc-bar-fill community" style="width:71.4%"></div></div><span class="sc-bar-val community">71.4%</span></div>
+        </div>
+      </div>
+
+      <div class="sc-card" style="margin-bottom:14px">
+        <div class="sc-card-hdr"><span class="sc-card-title">Projection MAE</span><span class="sc-card-sub">Lower = better</span></div>
+        <div class="sc-3grid">
+          <div class="sc-cell"><div class="sc-cell-label">You</div><div class="sc-cell-val you">6.82</div><div class="sc-cell-sub">avg pts off</div></div>
+          <div class="sc-vdiv"></div>
+          <div class="sc-cell"><div class="sc-cell-label">Model</div><div class="sc-cell-val model">5.94</div><div class="sc-cell-sub">avg pts off</div></div>
+          <div class="sc-vdiv"></div>
+          <div class="sc-cell"><div class="sc-cell-label">Community</div><div class="sc-cell-val community">7.21</div><div class="sc-cell-sub">avg pts off</div></div>
+        </div>
+      </div>
+
+      <div class="sc-eyebrow" style="margin-bottom:10px">Notable Calls</div>
+      <div class="call-wrap">
+        <div class="call-card"><div class="call-hdr"><span class="call-badge cb-win">Your best call</span><span class="call-player">Davante Adams · WR</span></div><div class="call-detail">You projected <strong>12.4</strong> · Actual <strong>14.1</strong> · Model had <strong>9.8</strong>. Correctly identified the short-week penalty was overstated. Override win.</div></div>
+        <div class="call-card"><div class="call-hdr"><span class="call-badge cb-model">Model's best call</span><span class="call-player">CeeDee Lamb · WR</span></div><div class="call-detail">Model <strong>22.1</strong> · Actual <strong>24.8</strong> · You had <strong>18.5</strong>. Model correctly weighted the sharp steam signal. MAE: 2.7 vs your 6.3.</div></div>
+        <div class="call-card"><div class="call-hdr"><span class="call-badge cb-comm">Community miss</span><span class="call-player">Saquon Barkley · RB</span></div><div class="call-detail">Community avg <strong>21.4</strong> · Actual <strong>12.8</strong>. Model and you both flagged post-boom regression. Community chased hype. Nova had flagged <strong>Public action — low signal</strong>.</div></div>
+      </div>
+
+      <div class="or-card">
+        <div class="or-hdr"><span class="or-title">Override Record · Wk 6</span><span class="or-record">3W · 2L</span></div>
+        <div class="or-row"><span class="or-reason">Adams short week</span><span class="or-wl">Win</span><span class="or-pct good">+4.3 pts</span></div>
+        <div class="or-row"><span class="or-reason">Kelce matchup read</span><span class="or-wl">Win</span><span class="or-pct good">+2.1 pts</span></div>
+        <div class="or-row"><span class="or-reason">Higgins injury report</span><span class="or-wl">Win</span><span class="or-pct good">+1.8 pts</span></div>
+        <div class="or-row"><span class="or-reason">Hill historical signal</span><span class="or-wl">Loss</span><span class="or-pct bad">−3.2 pts</span></div>
+        <div class="or-row"><span class="or-reason">Henry gut / other</span><span class="or-wl">Loss</span><span class="or-pct bad">−1.9 pts</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY RECORD -->
+  <div id="view-record" style="display:none">
+    <div class="score-wrap">
+      <div class="sc-eyebrow">Season Record · Weeks 1–6</div>
+      <div class="sc-headline">Top 28% of users</div>
+      <div class="sc-sub">Season SS% vs model and community · 188 picks</div>
+
+      <div class="sc-card">
+        <div class="sc-card-hdr"><span class="sc-card-title">Season SS%</span><span class="sc-card-sub">188 total picks</span></div>
+        <div class="sc-3grid">
+          <div class="sc-cell"><div class="sc-cell-label">You</div><div class="sc-cell-val you">68.4%</div><div class="sc-cell-sub">top 28%</div></div>
+          <div class="sc-vdiv"></div>
+          <div class="sc-cell"><div class="sc-cell-label">Model</div><div class="sc-cell-val model">72.1%</div><div class="sc-cell-sub">−3.7% ahead</div></div>
+          <div class="sc-vdiv"></div>
+          <div class="sc-cell"><div class="sc-cell-label">Community</div><div class="sc-cell-val community">65.8%</div><div class="sc-cell-sub">you beat them</div></div>
+        </div>
+        <div class="sc-bars" style="padding-top:12px;">
+          <div class="sc-bar-row"><span class="sc-bar-lbl you">You</span><div class="sc-bar-track"><div class="sc-bar-fill you" style="width:68.4%"></div></div><span class="sc-bar-val you">68.4%</span></div>
+          <div class="sc-bar-row"><span class="sc-bar-lbl model">Model</span><div class="sc-bar-track"><div class="sc-bar-fill model" style="width:72.1%"></div></div><span class="sc-bar-val model">72.1%</span></div>
+          <div class="sc-bar-row"><span class="sc-bar-lbl community">Community</span><div class="sc-bar-track"><div class="sc-bar-fill community" style="width:65.8%"></div></div><span class="sc-bar-val community">65.8%</span></div>
+        </div>
+      </div>
+
+      <div class="edge-section">
+        <div class="edge-hdr">Edge Finder — Your Pattern Edges</div>
+        <div class="edge-card"><div class="edge-badge eb-elite">Elite Edge</div><div class="edge-info"><div class="edge-name">WR2 short-week signal</div><div class="edge-stat">52 obs · you beat the model here</div></div><div class="edge-rate er-elite">78.8%</div></div>
+        <div class="edge-card"><div class="edge-badge eb-confirmed">Edge Detected</div><div class="edge-info"><div class="edge-name">Post-injury-return RB</div><div class="edge-stat">34 obs · confirmed systematic edge</div></div><div class="edge-rate er-confirmed">71.2%</div></div>
+        <div class="edge-card"><div class="edge-badge eb-confirmed">Edge Detected</div><div class="edge-info"><div class="edge-name">Bad weather + elite floor WR</div><div class="edge-stat">22 obs · floors hold vs projection</div></div><div class="edge-rate er-confirmed">68.4%</div></div>
+        <div class="edge-card"><div class="edge-badge eb-trending">Trending</div><div class="edge-info"><div class="edge-name">Dome QB vs outdoor adjusted</div><div class="edge-stat">18 obs · emerging · more data needed</div></div><div class="edge-rate er-trending">64.1%</div></div>
+      </div>
+
+      <div class="or-card">
+        <div class="or-hdr"><span class="or-title">Season Override Record</span><span class="or-record">34W · 18L · 65.4%</span></div>
+        <div class="or-row"><span class="or-reason">Vegas line moved late</span><span class="or-wl">12W · 4L</span><span class="or-pct good">75.0%</span></div>
+        <div class="or-row"><span class="or-reason">Injury / practice report</span><span class="or-wl">10W · 3L</span><span class="or-pct good">76.9%</span></div>
+        <div class="or-row"><span class="or-reason">Historical signal</span><span class="or-wl">7W · 5L</span><span class="or-pct ok">58.3%</span></div>
+        <div class="or-row"><span class="or-reason">Matchup read</span><span class="or-wl">3W · 4L</span><span class="or-pct bad">42.9%</span></div>
+        <div class="or-row"><span class="or-reason">Gut / other</span><span class="or-wl">2W · 2L</span><span class="or-pct ok">50.0%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="bnav-item"><div class="bnav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div><div class="bnav-label">Home</div></div>
+    <div class="bnav-item"><div class="bnav-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div><div class="bnav-label">Players</div></div>
+    <div class="bnav-item">
+      <div class="bnav-wrap"><div class="bnav-icon active"><svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg></div><div class="bnav-dot"></div></div>
+      <div class="bnav-label active">Challenge</div>
+    </div>
+    <div class="bnav-item"><div class="bnav-icon"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div><div class="bnav-label">Research</div></div>
+    <div class="bnav-item"><div class="bnav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div><div class="bnav-label">Reports</div></div>
+  </div>
+
+</div>
+
+<script>
+const state={};
+let ag=4,ov=0,sk=0;
+const TOTAL=30;
+
+function upd(){
+  document.getElementById('s-a').textContent=ag;
+  document.getElementById('s-o').textContent=ov;
+  document.getElementById('s-s').textContent=sk;
+  const rem=Math.max(0,TOTAL-ag-ov-sk);
+  document.getElementById('s-r').textContent=rem;
+  document.getElementById('pb').textContent=rem;
+}
+
+function pick(id,action){
+  const card=document.getElementById('c'+id);
+  const prev=state[id];
+  if(prev==='agree')ag--;
+  else if(prev==='override')ov--;
+  else if(prev==='skip')sk--;
+  state[id]=action;
+  if(action==='agree')ag++;
+  else if(action==='override')ov++;
+  else if(action==='skip')sk++;
+
+  card.className='pick-card'+(action==='agree'?' agreed':action==='override'?' overridden':action==='skip'?' skipped':'');
+  const btns=card.querySelectorAll('.action-btn');
+  btns.forEach(b=>b.className='action-btn');
+  if(action==='agree')btns[0].classList.add('sel-agree');
+  else if(action==='override')btns[1].classList.add('sel-override');
+  else if(action==='skip')btns[2].classList.add('sel-skip');
+
+  const op=document.getElementById('op'+id);
+  if(op)op.className='override-panel'+(action==='override'?' open':'');
+  upd();
+}
+
+function agreeAll(){
+  [1,3,6,9].forEach(id=>{
+    if(!state[id]){state[id]='agree';ag++;
+      const card=document.getElementById('c'+id);
+      if(card){card.className='pick-card agreed';
+        const btns=card.querySelectorAll('.action-btn');
+        if(btns.length)btns[0].classList.add('sel-agree');}
+    }
+  });
+  upd();
+}
+
+function sr(el){
+  el.closest('.reason-pills').querySelectorAll('.rp').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function showTab(t){
+  document.getElementById('view-slate').style.display=t==='slate'?'block':'none';
+  document.getElementById('view-score').style.display=t==='score'?'block':'none';
+  document.getElementById('view-record').style.display=t==='record'?'block':'none';
+  ['slate','score','record'].forEach(n=>{
+    document.getElementById('tab-'+n).className='tab'+(n===t?' active':'');
+  });
+}
+upd();
+</script>

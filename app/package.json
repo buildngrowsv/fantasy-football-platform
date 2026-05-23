@@ -1,0 +1,41 @@
+{
+  "name": "app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 4827 -H 127.0.0.1",
+    "dev:cf": "wrangler dev",
+    "build": "next build",
+    "prebuild:cf": "node scripts/generate-env-production-from-wrangler-vars.mjs",
+    "build:cf": "node ./node_modules/@opennextjs/cloudflare/dist/cli/index.js build",
+    "deploy:cf": "node ./node_modules/@opennextjs/cloudflare/dist/cli/index.js deploy",
+    "deploy:cf:full": "bash scripts/deploy-cloudflare-locally.sh",
+    "deploy:cf:full:fast": "bash scripts/deploy-cloudflare-locally.sh --skip-install --skip-tests",
+    "db:seed": "node scripts/seed-database.mjs",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "@opennextjs/cloudflare": "^1.19.11",
+    "drizzle-orm": "^0.45.2",
+    "lucide-react": "^1.16.0",
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260523.1",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "wrangler": "^4.94.0"
+  }
+}

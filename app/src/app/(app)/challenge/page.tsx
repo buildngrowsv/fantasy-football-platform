@@ -1,0 +1,70 @@
+import { getNovaPredictHomepageMetrics } from "@/lib/db/queries";
+
+export default async function ChallengePage() {
+  const metrics = await getNovaPredictHomepageMetrics();
+
+  return (
+    <section style={{ display: "grid", gap: "1rem" }}>
+      <article className="np-card" style={{ padding: "1.4rem" }}>
+        <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.65rem", letterSpacing: "-0.03em" }}>Challenge The Model</h1>
+        <p style={{ marginTop: "0.5rem", color: "var(--np-text-muted)", lineHeight: 1.7 }}>
+          Override NovaPredict with your own projection, track your record by reason code, and discover where your instincts outperform both consensus and model output.
+        </p>
+      </article>
+
+      <article className="np-card" style={{ padding: "1rem", display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: "0.85rem" }}>
+        <div className="np-card-muted" style={{ padding: "0.95rem" }}>
+          <div style={{ color: "var(--np-text-strong)", fontWeight: 600, marginBottom: "0.45rem" }}>Weekly Challenge Scorecard</div>
+          <p style={{ color: "var(--np-text-muted)", margin: 0, lineHeight: 1.65, fontSize: "0.88rem" }}>
+            Submit your own start/sit calls before lock, then compare your finished week against model and community outcomes. Rankings are normalized by lineup difficulty and slate size.
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.45rem", marginTop: "0.75rem" }}>
+            <div className="np-card-muted" style={{ padding: "0.5rem" }}>
+              <div style={{ color: "var(--np-text-dim)", fontSize: "0.63rem" }}>You</div>
+              <div style={{ color: "var(--np-accent)", fontFamily: "var(--font-jetbrains-mono)" }}>69.2%</div>
+            </div>
+            <div className="np-card-muted" style={{ padding: "0.5rem" }}>
+              <div style={{ color: "var(--np-text-dim)", fontSize: "0.63rem" }}>Model</div>
+              <div style={{ color: "#7196ba", fontFamily: "var(--font-jetbrains-mono)" }}>76.9%</div>
+            </div>
+            <div className="np-card-muted" style={{ padding: "0.5rem" }}>
+              <div style={{ color: "var(--np-text-dim)", fontSize: "0.63rem" }}>Community</div>
+              <div style={{ color: "#a36bc8", fontFamily: "var(--font-jetbrains-mono)" }}>71.4%</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="np-card-muted" style={{ padding: "0.95rem" }}>
+          <div style={{ color: "var(--np-text-strong)", fontWeight: 600, marginBottom: "0.5rem" }}>Reason-Coded Override Log</div>
+          <div style={{ display: "grid", gap: "0.45rem" }}>
+            {[
+              ["Vegas moved late", "12W · 4L", "75%"],
+              ["Injury report", "10W · 3L", "77%"],
+              ["Historical pattern", "7W · 5L", "58%"],
+              ["Gut / other", "2W · 2L", "50%"],
+            ].map(([reason, record, hitRate]) => (
+              <div key={reason} className="np-card-muted" style={{ padding: "0.45rem 0.55rem", display: "grid", gridTemplateColumns: "1fr auto auto", gap: "0.5rem", alignItems: "center" }}>
+                <span style={{ color: "var(--np-text-muted)", fontSize: "0.78rem" }}>{reason}</span>
+                <span style={{ color: "var(--np-text-dim)", fontFamily: "var(--font-jetbrains-mono)", fontSize: "0.73rem" }}>{record}</span>
+                <span style={{ color: "var(--np-cyan)", fontFamily: "var(--font-jetbrains-mono)", fontSize: "0.73rem" }}>{hitRate}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </article>
+
+      <article className="np-card" style={{ padding: "1rem" }}>
+        <div style={{ marginBottom: "0.7rem", color: "var(--np-text-strong)", fontWeight: 600 }}>Platform Benchmarks</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "0.45rem" }}>
+          {metrics.map((metric) => (
+            <div key={metric.label} className="np-card-muted" style={{ padding: "0.55rem 0.6rem" }}>
+              <div style={{ color: "var(--np-text-strong)", fontFamily: "var(--font-jetbrains-mono)" }}>{metric.value}</div>
+              <div style={{ color: "var(--np-text-dim)", fontSize: "0.62rem", marginTop: 2 }}>{metric.label}</div>
+            </div>
+          ))}
+        </div>
+      </article>
+    </section>
+  );
+}

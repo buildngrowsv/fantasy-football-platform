@@ -1,0 +1,502 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  .page{font-family:'Inter',system-ui,sans-serif;background:#090b11;color:#e2e8f0;max-width:860px;margin:0 auto;padding:0 0 60px;}
+
+  /* SITE HEADER */
+  .site-header{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:0.5px solid #161b27;background:#0d1018;position:sticky;top:0;z-index:50;}
+  .site-logo{font-size:16px;font-weight:600;color:#f0f4ff;letter-spacing:-0.02em;}
+  .site-logo span{color:#00d28c;}
+  .site-nav{display:flex;align-items:center;gap:24px;}
+  .site-nav a{font-size:11px;color:#3d4e66;text-decoration:none;transition:color 0.15s;cursor:pointer;}
+  .site-nav a:hover{color:#8a9ebb;}
+  .site-nav a.active{color:#00d28c;}
+  .header-cta{font-size:10px;font-weight:500;padding:6px 14px;border-radius:6px;background:linear-gradient(135deg,#00553a,#009060);color:#a8ffd4;border:0.5px solid rgba(0,210,140,0.28);cursor:pointer;transition:filter 0.15s;}
+  .header-cta:hover{filter:brightness(1.1);}
+
+  /* HERO */
+  .hero{padding:60px 40px 48px;border-bottom:0.5px solid #161b27;}
+  .hero-eyebrow{font-size:9px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#00d28c;margin-bottom:14px;}
+  .hero-title{font-size:38px;font-weight:600;color:#f0f4ff;letter-spacing:-0.03em;line-height:1.1;margin-bottom:14px;max-width:560px;}
+  .hero-title span{color:#00d28c;}
+  .hero-sub{font-size:14px;color:#5a6a84;line-height:1.7;max-width:520px;margin-bottom:28px;}
+  .hero-meta{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+  .hero-meta-item{font-size:11px;color:#2e3d55;}
+  .hero-meta-item strong{color:#5a6a84;font-weight:500;}
+  .hero-meta-dot{width:3px;height:3px;background:#1e2538;border-radius:50%;}
+
+  /* SEASON ACCURACY STRIP */
+  .accuracy-strip{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:0.5px solid #161b27;}
+  .acc-cell{padding:20px 0;text-align:center;border-right:0.5px solid #161b27;transition:background 0.15s;cursor:default;}
+  .acc-cell:last-child{border-right:none;}
+  .acc-cell:hover{background:#0f1320;}
+  .acc-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500;line-height:1;margin-bottom:4px;}
+  .acc-val.primary{color:#00d28c;}
+  .acc-val.secondary{color:#5a7a9a;}
+  .acc-val.amber{color:#c98c2a;}
+  .acc-label{font-size:8.5px;color:#2e3d55;text-transform:uppercase;letter-spacing:0.08em;}
+  .acc-sub{font-size:9px;color:#1e2a3f;font-family:'JetBrains Mono',monospace;margin-top:3px;}
+
+  /* MAIN LAYOUT */
+  .main{display:grid;grid-template-columns:1fr 280px;gap:0;align-items:start;}
+  .content{padding:40px;border-right:0.5px solid #161b27;}
+  .sidebar{padding:32px 24px;position:sticky;top:54px;}
+
+  /* WEEK SELECTOR */
+  .week-selector{display:flex;gap:6px;margin-bottom:32px;flex-wrap:wrap;}
+  .week-btn{font-size:9px;font-weight:500;letter-spacing:0.06em;padding:5px 11px;border-radius:5px;cursor:pointer;border:0.5px solid #1e2538;background:transparent;color:#3d4e66;font-family:'Inter',sans-serif;transition:all 0.15s;}
+  .week-btn:hover{border-color:#253048;color:#5a6a84;}
+  .week-btn.active{border-color:rgba(0,210,140,0.35);color:#00d28c;background:rgba(0,210,140,0.06);}
+
+  /* REPORT SECTIONS */
+  .report-section{margin-bottom:40px;}
+  .rs-label{font-size:8.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#2e3d55;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+  .rs-rule{flex:1;height:0.5px;background:#161b27;}
+
+  /* WEEK HEADLINE */
+  .week-headline{margin-bottom:24px;}
+  .wh-title{font-size:22px;font-weight:600;color:#f0f4ff;letter-spacing:-0.02em;margin-bottom:6px;}
+  .wh-sub{font-size:12px;color:#3d4e66;line-height:1.6;}
+
+  /* ACCURACY TABLE */
+  .acc-table{width:100%;border-collapse:collapse;margin-bottom:4px;}
+  .acc-table th{font-size:8px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#2e3d55;padding:0 0 10px;text-align:left;}
+  .acc-table th.r{text-align:right;}
+  .acc-table td{padding:9px 0;border-top:0.5px solid #111520;font-size:11px;vertical-align:middle;}
+  .acc-table tr{transition:background 0.12s;cursor:default;}
+  .acc-table tr:hover td{background:#0f1320;}
+  .acc-table td.metric{color:#6a7d9a;}
+  .acc-table td.val{font-family:'JetBrains Mono',monospace;text-align:right;color:#8a9ebb;}
+  .acc-table td.val.good{color:#00d28c;}
+  .acc-table td.val.ok{color:#c98c2a;}
+  .acc-table td.val.bad{color:#e05050;}
+  .acc-table td.community{font-family:'JetBrains Mono',monospace;text-align:right;color:rgba(163,107,200,0.7);}
+
+  /* CORRECT CALL */
+  .call-card{background:#0a0c13;border:0.5px solid #1a1f2e;border-radius:10px;padding:16px 18px;margin-bottom:10px;transition:border-color 0.15s;cursor:default;}
+  .call-card:hover{border-color:#253048;}
+  .call-card.correct{border-left:2px solid rgba(0,210,140,0.4);}
+  .call-card.miss{border-left:2px solid rgba(224,80,80,0.35);}
+  .call-card.variance{border-left:2px solid rgba(186,117,23,0.35);}
+  .call-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;}
+  .call-player{font-size:13px;font-weight:500;color:#c8d8f0;}
+  .call-player-meta{font-size:10px;color:#2e3d55;margin-top:2px;}
+  .call-badge{font-size:8px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+  .call-badge.correct{background:rgba(0,210,140,0.08);color:#00d28c;border:0.5px solid rgba(0,210,140,0.2);}
+  .call-badge.miss{background:rgba(224,80,80,0.07);color:#e05050;border:0.5px solid rgba(224,80,80,0.18);}
+  .call-badge.variance{background:rgba(186,117,23,0.07);color:#c98c2a;border:0.5px solid rgba(186,117,23,0.2);}
+  .call-numbers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+  .cn-cell{background:#0d1018;border:0.5px solid #161b27;border-radius:6px;padding:8px 10px;text-align:center;}
+  .cn-label{font-size:8px;color:#2e3d55;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
+  .cn-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;}
+  .cn-val.proj{color:#5a7a9a;}
+  .cn-val.actual.up{color:#00d28c;}
+  .cn-val.actual.down{color:#e05050;}
+  .cn-val.actual.ok{color:#c8d8f0;}
+  .cn-val.err.good{color:#00d28c;}
+  .cn-val.err.bad{color:#e05050;}
+  .call-body{font-size:11px;color:#4a5a70;line-height:1.7;}
+  .call-body strong{color:#6a7d9a;font-weight:500;}
+  .call-signal{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:0.5px solid #111520;}
+  .call-signal-label{font-size:8.5px;color:#2e3d55;letter-spacing:0.06em;}
+  .call-signal-badge{font-size:8.5px;font-weight:500;padding:2px 7px;border-radius:3px;}
+  .call-signal-badge.sharp{background:rgba(0,210,140,0.07);color:#00d28c;border:0.5px solid rgba(0,210,140,0.2);}
+  .call-signal-badge.volume{background:rgba(0,180,216,0.07);color:#00b4d8;border:0.5px solid rgba(0,180,216,0.18);}
+  .call-signal-badge.historical{background:rgba(163,107,200,0.07);color:#a36bc8;border:0.5px solid rgba(163,107,200,0.18);}
+  .call-signal-badge.public{background:rgba(90,106,132,0.07);color:#5a6a84;border:0.5px solid rgba(90,106,132,0.18);}
+
+  /* MODEL IMPROVEMENT */
+  .model-notes{background:#0a0c13;border:0.5px solid #1a1f2e;border-radius:10px;padding:18px;}
+  .mn-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .mn-title{font-size:11px;font-weight:600;color:#8a9ebb;}
+  .mn-badge{font-size:8px;background:rgba(186,117,23,0.08);color:#c98c2a;border:0.5px solid rgba(186,117,23,0.2);padding:2px 7px;border-radius:3px;}
+  .mn-body{font-size:11px;color:#4a5a70;line-height:1.8;}
+  .mn-body strong{color:#6a7d9a;font-weight:500;}
+  .mn-change{display:flex;align-items:flex-start;gap:8px;margin-top:12px;padding-top:12px;border-top:0.5px solid #111520;}
+  .mn-change-icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:1px;}
+  .mn-change-icon.applied{background:rgba(0,210,140,0.1);color:#00d28c;}
+  .mn-change-icon.pending{background:rgba(186,117,23,0.1);color:#c98c2a;}
+  .mn-change-text{font-size:10px;color:#3d4e66;line-height:1.5;}
+  .mn-change-text strong{color:#5a6a84;font-weight:500;}
+
+  /* MISS CLASSIFICATION */
+  .miss-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:20px;}
+  .mb-cell{background:#0a0c13;border:0.5px solid #1a1f2e;border-radius:7px;padding:10px 12px;display:flex;align-items:center;gap:10px;transition:border-color 0.15s;cursor:default;}
+  .mb-cell:hover{border-color:#253048;}
+  .mb-bar-wrap{flex:1;height:3px;background:#141a28;border-radius:2px;overflow:hidden;}
+  .mb-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,#0a1e30,#5a7a9a);}
+  .mb-label{font-size:9px;color:#3d4e66;margin-bottom:4px;}
+  .mb-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a7a9a;white-space:nowrap;}
+
+  /* SIDEBAR */
+  .sidebar-card{background:#0a0c13;border:0.5px solid #1a1f2e;border-radius:10px;padding:16px;margin-bottom:14px;}
+  .sc-title{font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#2e3d55;margin-bottom:12px;}
+  .sc-stat-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:0.5px solid #111520;}
+  .sc-stat-row:last-child{border-bottom:none;}
+  .sc-stat-label{font-size:10px;color:#3d4e66;}
+  .sc-stat-val{font-family:'JetBrains Mono',monospace;font-size:11px;}
+  .sc-stat-val.g{color:#00d28c;} .sc-stat-val.a{color:#c98c2a;} .sc-stat-val.b{color:#5a7a9a;}
+
+  .subscribe-card{background:linear-gradient(145deg,#0d1a10,#0a1518);border:0.5px solid rgba(0,210,140,0.2);border-radius:10px;padding:18px;}
+  .sub-title{font-size:13px;font-weight:600;color:#f0f4ff;margin-bottom:6px;letter-spacing:-0.01em;}
+  .sub-body{font-size:10px;color:#3d4e66;line-height:1.6;margin-bottom:14px;}
+  .sub-btn{width:100%;padding:9px;border-radius:7px;background:linear-gradient(135deg,#00553a,#009060);color:#a8ffd4;font-size:10px;font-weight:500;border:0.5px solid rgba(0,210,140,0.28);cursor:pointer;transition:filter 0.15s;font-family:'Inter',sans-serif;letter-spacing:0.03em;}
+  .sub-btn:hover{filter:brightness(1.1);}
+  .sub-note{font-size:9px;color:#1e2a3f;text-align:center;margin-top:8px;}
+
+  .methodology-note{background:#0a0c13;border:0.5px solid #1a1f2e;border-radius:8px;padding:12px 14px;}
+  .mn-note-title{font-size:9px;font-weight:600;color:#3d4e66;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+  .mn-note-body{font-size:9.5px;color:#2e3d55;line-height:1.6;}
+  .mn-note-body a{color:#00b4d8;}
+
+  /* SEASON CHART */
+  .season-chart{margin-bottom:20px;}
+  .sc-bars{display:flex;align-items:flex-end;gap:3px;height:60px;margin-bottom:6px;}
+  .sc-wk-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;}
+  .sc-wk-fill{width:100%;border-radius:2px 2px 0 0;transition:filter 0.15s;cursor:default;}
+  .sc-wk-fill:hover{filter:brightness(1.4);}
+  .sc-wk-label{font-size:7.5px;color:#1e2a3f;font-family:'JetBrains Mono',monospace;}
+  .sc-legend{display:flex;gap:12px;}
+  .sc-leg-item{display:flex;align-items:center;gap:4px;font-size:8.5px;color:#2e3d55;}
+  .sc-leg-dot{width:6px;height:6px;border-radius:50%;}
+</style>
+
+<div class="page">
+
+  <!-- SITE HEADER -->
+  <div class="site-header">
+    <div class="site-logo">Nova<span>Predict</span></div>
+    <div class="site-nav">
+      <a>Players</a>
+      <a>Research</a>
+      <a class="active">Accountability</a>
+      <a>Pricing</a>
+    </div>
+    <div class="header-cta">Start Free Trial</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Weekly Accountability Report</div>
+    <div class="hero-title">Every call. Every miss.<br><span>No spin.</span></div>
+    <div class="hero-sub">NovaPredict publishes the complete record of every projection we make — what we said, what actually happened, and exactly why we were wrong when we were wrong. No other fantasy tool does this. This is the accountability page.</div>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><strong>Season 2025</strong> · NFL</div>
+      <div class="hero-meta-dot"></div>
+      <div class="hero-meta-item">Updated every <strong>Monday 8am ET</strong></div>
+      <div class="hero-meta-dot"></div>
+      <div class="hero-meta-item">All projections use <strong>PPR scoring</strong></div>
+      <div class="hero-meta-dot"></div>
+      <div class="hero-meta-item">Start/Sit scored on <strong>binary correct/incorrect</strong></div>
+    </div>
+  </div>
+
+  <!-- SEASON ACCURACY STRIP -->
+  <div class="accuracy-strip">
+    <div class="acc-cell">
+      <div class="acc-val primary">71.8%</div>
+      <div class="acc-label">Season SS%</div>
+      <div class="acc-sub">6 weeks · 1,128 picks</div>
+    </div>
+    <div class="acc-cell">
+      <div class="acc-val secondary">6.24</div>
+      <div class="acc-label">Season MAE</div>
+      <div class="acc-sub">avg pts off · all pos</div>
+    </div>
+    <div class="acc-cell">
+      <div class="acc-val amber">73.4%</div>
+      <div class="acc-label">QB Accuracy</div>
+      <div class="acc-sub">highest position</div>
+    </div>
+    <div class="acc-cell">
+      <div class="acc-val secondary">68.2%</div>
+      <div class="acc-label">RB Accuracy</div>
+      <div class="acc-sub">hardest position</div>
+    </div>
+    <div class="acc-cell">
+      <div class="acc-val primary">82%</div>
+      <div class="acc-label">Sharp Signal Hit</div>
+      <div class="acc-sub">when we flag sharp steam</div>
+    </div>
+  </div>
+
+  <!-- MAIN + SIDEBAR -->
+  <div class="main">
+
+    <!-- CONTENT COLUMN -->
+    <div class="content">
+
+      <!-- WEEK SELECTOR -->
+      <div class="week-selector">
+        <button class="week-btn">Wk 1</button>
+        <button class="week-btn">Wk 2</button>
+        <button class="week-btn">Wk 3</button>
+        <button class="week-btn">Wk 4</button>
+        <button class="week-btn">Wk 5</button>
+        <button class="week-btn active">Wk 6</button>
+        <button class="week-btn" style="color:#1e2a3f;border-color:#111520">Wk 7 →</button>
+      </div>
+
+      <!-- WEEK HEADLINE -->
+      <div class="week-headline">
+        <div class="wh-title">Week 6 — 76.9% Start/Sit Accuracy</div>
+        <div class="wh-sub">188 players projected · 32 material misses · 4 variance events · Sharp steam signal hit rate 84%</div>
+      </div>
+
+      <!-- ACCURACY TABLE -->
+      <div class="report-section">
+        <div class="rs-label">Week 6 Accuracy by Position <div class="rs-rule"></div></div>
+        <table class="acc-table">
+          <thead><tr>
+            <th style="width:120px">Position</th>
+            <th class="r">SS%</th>
+            <th class="r">MAE</th>
+            <th class="r">Community</th>
+            <th class="r">Picks</th>
+          </tr></thead>
+          <tbody>
+            <tr><td class="metric">Quarterback</td><td class="val good">81.2%</td><td class="val good">5.14</td><td class="community">74.3%</td><td class="val">32</td></tr>
+            <tr><td class="metric">Running Back</td><td class="val ok">68.4%</td><td class="val ok">7.82</td><td class="community">62.1%</td><td class="val">54</td></tr>
+            <tr><td class="metric">Wide Receiver</td><td class="val good">78.6%</td><td class="val good">5.94</td><td class="community">71.8%</td><td class="val">64</td></tr>
+            <tr><td class="metric">Tight End</td><td class="val ok">71.4%</td><td class="val ok">6.42</td><td class="community">66.2%</td><td class="val">28</td></tr>
+            <tr><td class="metric" style="color:#8a9ebb;font-weight:500">All Positions</td><td class="val good" style="font-weight:500">76.9%</td><td class="val good" style="font-weight:500">6.08</td><td class="community" style="font-weight:500">71.4%</td><td class="val" style="color:#8a9ebb;font-weight:500">188</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CORRECT CALLS -->
+      <div class="report-section">
+        <div class="rs-label">Correct Calls — Notable Picks <div class="rs-rule"></div></div>
+
+        <div class="call-card correct">
+          <div class="call-header">
+            <div><div class="call-player">CeeDee Lamb · WR · DAL</div><div class="call-player-meta">vs NFC East opponent · Week 6 game</div></div>
+            <div class="call-badge correct">Correct · Vegas Signal</div>
+          </div>
+          <div class="call-numbers">
+            <div class="cn-cell"><div class="cn-label">Projection</div><div class="cn-val proj">22.1</div></div>
+            <div class="cn-cell"><div class="cn-label">Actual</div><div class="cn-val actual up">24.8</div></div>
+            <div class="cn-cell"><div class="cn-label">MAE</div><div class="cn-val err good">2.7 pts</div></div>
+          </div>
+          <div class="call-body">Receiving yards prop moved +5.5 yards Wednesday on confirmed sharp steam across four books. We applied the move at full signal weight. Lamb finished with 94 yards and one touchdown, 2.7 points above our median. The sharp signal was directionally correct and our distribution captured the actual outcome within the P75 range.</div>
+          <div class="call-signal">
+            <span class="call-signal-label">Primary signal:</span>
+            <span class="call-signal-badge sharp">Sharp steam · full weight</span>
+          </div>
+        </div>
+
+        <div class="call-card correct">
+          <div class="call-header">
+            <div><div class="call-player">Jayden Daniels · QB · WAS</div><div class="call-player-meta">vs NFC South opponent · Week 6</div></div>
+            <div class="call-badge correct">Correct · Volume Model</div>
+          </div>
+          <div class="call-numbers">
+            <div class="cn-cell"><div class="cn-label">Projection</div><div class="cn-val proj">23.8</div></div>
+            <div class="cn-cell"><div class="cn-label">Actual</div><div class="cn-val actual up">26.1</div></div>
+            <div class="cn-cell"><div class="cn-label">MAE</div><div class="cn-val err good">2.3 pts</div></div>
+          </div>
+          <div class="call-body">Game total moved to 50.5 mid-week. Daniels rushing prop also elevated. Our volume model correctly allocated the extra implied points across passing and rushing components. Actual outcome fell within our P25–P75 range. The rushing floor was the differentiator — our model weights Daniels' legs more aggressively than the consensus.</div>
+          <div class="call-signal">
+            <span class="call-signal-label">Primary signal:</span>
+            <span class="call-signal-badge volume">Volume model · game total</span>
+          </div>
+        </div>
+
+        <div class="call-card correct">
+          <div class="call-header">
+            <div><div class="call-player">Davante Adams · WR · LV</div><div class="call-player-meta">Short week · Week 6</div></div>
+            <div class="call-badge correct">Correct · Historical Signal</div>
+          </div>
+          <div class="call-numbers">
+            <div class="cn-cell"><div class="cn-label">Projection</div><div class="cn-val proj">9.8</div></div>
+            <div class="cn-cell"><div class="cn-label">Actual</div><div class="cn-val actual ok">11.2</div></div>
+            <div class="cn-cell"><div class="cn-label">MAE</div><div class="cn-val err good">1.4 pts</div></div>
+          </div>
+          <div class="call-body">WR1 short-week historical signal applied — 34 observations showing a −3.8% production reduction for WR1 players in short-week situations. Public prop moved upward on name recognition. We identified the move as public action (82% of bets and money on the over, no sharp signature) and suppressed it. Our 9.8 projection was closer to the 11.2 actual than the market-implied 13.4.</div>
+          <div class="call-signal">
+            <span class="call-signal-label">Primary signal:</span>
+            <span class="call-signal-badge historical">Historical · WR1 short week</span>
+            <span class="call-signal-badge public">Public move suppressed</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MISSES -->
+      <div class="report-section">
+        <div class="rs-label">Material Misses — Full Diagnosis <div class="rs-rule"></div></div>
+
+        <div class="call-card miss">
+          <div class="call-header">
+            <div><div class="call-player">Saquon Barkley · RB · PHI</div><div class="call-player-meta">vs NYG · Week 6</div></div>
+            <div class="call-badge miss">Miss · Game Script</div>
+          </div>
+          <div class="call-numbers">
+            <div class="cn-cell"><div class="cn-label">Projection</div><div class="cn-val proj">18.4</div></div>
+            <div class="cn-cell"><div class="cn-label">Actual</div><div class="cn-val actual down">12.8</div></div>
+            <div class="cn-cell"><div class="cn-label">Error</div><div class="cn-val err bad">−5.6 pts</div></div>
+          </div>
+          <div class="call-body">We projected 18.4 based on a favorable game script and RB1 volume. Philadelphia built a 21-point halftime lead and shifted to a pure clock-killing approach in the second half, eliminating pass-game opportunities that account for approximately 6 points of Barkley's typical PPR floor. Our game script model underweighted the probability of a blowout vs a divisional opponent playing with nothing to lose. <strong>Model action: adjusting blowout game script coefficient for divisional matchups with 8+ point spreads.</strong></div>
+          <div class="call-signal">
+            <span class="call-signal-label">Classification:</span>
+            <span class="call-signal-badge" style="background:rgba(224,80,80,0.07);color:#e05050;border:0.5px solid rgba(224,80,80,0.18);">Game Script Miss</span>
+          </div>
+        </div>
+
+        <div class="call-card miss">
+          <div class="call-header">
+            <div><div class="call-player">Travis Kelce · TE · KC</div><div class="call-player-meta">vs LV · Week 6</div></div>
+            <div class="call-badge miss">Miss · Role</div>
+          </div>
+          <div class="call-numbers">
+            <div class="cn-cell"><div class="cn-label">Projection</div><div class="cn-val proj">16.2</div></div>
+            <div class="cn-cell"><div class="cn-label">Actual</div><div class="cn-val actual down">8.4</div></div>
+            <div class="cn-cell"><div class="cn-label">Error</div><div class="cn-val err bad">−7.8 pts</div></div>
+          </div>
+          <div class="call-body">The Thursday practice report showed Kelce as limited but participating. We applied a 12% production reduction — our standard limited-practice coefficient. Kelce's actual target share dropped 58% from his season average, suggesting the limitation was more significant than the report indicated. The NFL injury report understated the impact. <strong>This is a data source limitation, not a model failure. No coefficient change warranted. Human review will monitor limited-practice reports for Kelce more closely going forward.</strong></div>
+          <div class="call-signal">
+            <span class="call-signal-label">Classification:</span>
+            <span class="call-signal-badge" style="background:rgba(224,80,80,0.07);color:#e05050;border:0.5px solid rgba(224,80,80,0.18);">Role Miss · Data limitation</span>
+          </div>
+        </div>
+
+        <div class="call-card variance">
+          <div class="call-header">
+            <div><div class="call-player">Josh Allen · QB · BUF</div><div class="call-player-meta">at MIA · Week 6</div></div>
+            <div class="call-badge variance">Variance Event · Boom</div>
+          </div>
+          <div class="call-numbers">
+            <div class="cn-cell"><div class="cn-label">Projection</div><div class="cn-val proj">26.4</div></div>
+            <div class="cn-cell"><div class="cn-label">Actual</div><div class="cn-val actual up">42.8</div></div>
+            <div class="cn-cell"><div class="cn-label">Error</div><div class="cn-val err bad">+16.4 pts</div></div>
+          </div>
+          <div class="call-body">Allen's 42.8 falls 3.2 standard deviations above our distribution — outside our P90 ceiling of 38.1. This meets all three variance event criteria: outcome exceeds P90, standard deviation exceeds 2.5, and no systematic signal explains the miss. Three rushing touchdowns in the first half — a low-probability outcome that is not predictable from any available pre-game data. <strong>No model action. This is the distribution behaving correctly — 10% of outcomes should fall outside the P90. This was one of them.</strong></div>
+          <div class="call-signal">
+            <span class="call-signal-label">Classification:</span>
+            <span class="call-signal-badge" style="background:rgba(186,117,23,0.08);color:#c98c2a;border:0.5px solid rgba(186,117,23,0.2);">Variance Event · 3.2σ boom · No model action</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODEL IMPROVEMENT NOTES -->
+      <div class="report-section">
+        <div class="rs-label">Model Improvement Notes <div class="rs-rule"></div></div>
+
+        <div class="model-notes">
+          <div class="mn-header">
+            <span class="mn-title">What the data is telling us — Week 6</span>
+            <span class="mn-badge">1 change applied · 1 pending</span>
+          </div>
+          <div class="mn-body">
+            Game Script Misses represented 34% of all classified misses this week, against a 4-week rolling average of 26%. The spike is concentrated in games where the spread exceeded 7 points — our model underestimates the probability of a blowout game script that removes pass-catching RB and TE targets in the second half. This is a consistent pattern over the last three weeks and we are addressing it.
+            <br><br>
+            Community Challenge users are beating us on one specific category: <strong>WR2 short-week situations</strong>, where they hold a 78.8% win rate over 52 observations against our 71.2%. We have examined the pattern. Their edge appears to come from better weighting of individual player history vs positional averages. We are incorporating player-level short-week coefficients in the next engine update.
+          </div>
+
+          <div class="mn-change">
+            <div class="mn-change-icon applied">✓</div>
+            <div class="mn-change-text"><strong>Applied this week:</strong> Blowout game script coefficient adjusted for divisional matchups with spreads of 8+ points. Expected effect: −0.8 pts average adjustment on the projected RB1/TE in the heavy-favorite team's backfield when the spread is 8+.</div>
+          </div>
+          <div class="mn-change">
+            <div class="mn-change-icon pending">→</div>
+            <div class="mn-change-text"><strong>Pending next engine run:</strong> Player-level short-week coefficients for WR2 tier, replacing positional averages. Will incorporate individual player history on short weeks (minimum 4 observations). Expected to close approximately 40% of the gap vs community Challenge users on this signal.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MISS CLASSIFICATION BREAKDOWN -->
+      <div class="report-section">
+        <div class="rs-label">Miss Classification — Week 6 <div class="rs-rule"></div></div>
+        <div class="miss-breakdown">
+          <div class="mb-cell"><div style="flex:1"><div class="mb-label">Game Script</div><div class="mb-bar-wrap"><div class="mb-bar" style="width:88%"></div></div></div><span class="mb-count">11 · 34%</span></div>
+          <div class="mb-cell"><div style="flex:1"><div class="mb-label">Volume</div><div class="mb-bar-wrap"><div class="mb-bar" style="width:50%"></div></div></div><span class="mb-count">6 · 19%</span></div>
+          <div class="mb-cell"><div style="flex:1"><div class="mb-label">Role</div><div class="mb-bar-wrap"><div class="mb-bar" style="width:42%"></div></div></div><span class="mb-count">5 · 16%</span></div>
+          <div class="mb-cell"><div style="flex:1"><div class="mb-label">Injury</div><div class="mb-bar-wrap"><div class="mb-bar" style="width:35%"></div></div></div><span class="mb-count">4 · 13%</span></div>
+          <div class="mb-cell"><div style="flex:1"><div class="mb-label">Variance Event</div><div class="mb-bar-wrap"><div class="mb-bar" style="width:28%"></div></div></div><span class="mb-count">4 · 13%</span></div>
+          <div class="mb-cell"><div style="flex:1"><div class="mb-label">Weather / Other</div><div class="mb-bar-wrap"><div class="mb-bar" style="width:12%"></div></div></div><span class="mb-count">2 · 6%</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <!-- SEASON CHART -->
+      <div class="sidebar-card">
+        <div class="sc-title">Season SS% — All Weeks</div>
+        <div class="season-chart">
+          <div class="sc-bars">
+            <div class="sc-wk-bar">
+              <div class="sc-wk-fill" style="height:70%;background:rgba(0,210,140,0.25);"></div>
+              <div class="sc-wk-label">W1</div>
+            </div>
+            <div class="sc-wk-bar">
+              <div class="sc-wk-fill" style="height:74%;background:rgba(0,210,140,0.3);"></div>
+              <div class="sc-wk-label">W2</div>
+            </div>
+            <div class="sc-wk-bar">
+              <div class="sc-wk-fill" style="height:66%;background:rgba(0,210,140,0.22);"></div>
+              <div class="sc-wk-label">W3</div>
+            </div>
+            <div class="sc-wk-bar">
+              <div class="sc-wk-fill" style="height:78%;background:rgba(0,210,140,0.35);"></div>
+              <div class="sc-wk-label">W4</div>
+            </div>
+            <div class="sc-wk-bar">
+              <div class="sc-wk-fill" style="height:72%;background:rgba(0,210,140,0.28);"></div>
+              <div class="sc-wk-label">W5</div>
+            </div>
+            <div class="sc-wk-bar">
+              <div class="sc-wk-fill" style="height:77%;background:#00d28c;"></div>
+              <div class="sc-wk-label">W6</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:4px;border-top:0.5px solid #111520;">
+          <span style="font-size:9px;color:#2e3d55;">Season avg</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#00d28c;">71.8%</span>
+        </div>
+      </div>
+
+      <!-- QUICK STATS -->
+      <div class="sidebar-card">
+        <div class="sc-title">Season at a Glance</div>
+        <div class="sc-stat-row"><span class="sc-stat-label">Total projections</span><span class="sc-stat-val b">1,128</span></div>
+        <div class="sc-stat-row"><span class="sc-stat-label">Correct start/sit</span><span class="sc-stat-val g">810</span></div>
+        <div class="sc-stat-row"><span class="sc-stat-label">Material misses</span><span class="sc-stat-val a">192</span></div>
+        <div class="sc-stat-row"><span class="sc-stat-label">Variance events</span><span class="sc-stat-val b">22</span></div>
+        <div class="sc-stat-row"><span class="sc-stat-label">Model changes applied</span><span class="sc-stat-val g">8</span></div>
+        <div class="sc-stat-row"><span class="sc-stat-label">Sharp signal hit rate</span><span class="sc-stat-val g">82%</span></div>
+        <div class="sc-stat-row"><span class="sc-stat-label">Community beats model</span><span class="sc-stat-val a">1 category</span></div>
+      </div>
+
+      <!-- SUBSCRIBE -->
+      <div class="subscribe-card">
+        <div class="sub-title">Get the full projection engine</div>
+        <div class="sub-body">This report shows the output. The app gives you the full distribution, move type analysis, and your own pick record vs the model — every week.</div>
+        <button class="sub-btn">Start Free Trial →</button>
+        <div class="sub-note">No credit card required · Cancel anytime</div>
+      </div>
+
+      <!-- METHODOLOGY -->
+      <div class="methodology-note">
+        <div class="mn-note-title">Methodology</div>
+        <div class="mn-note-body">Projections are built from Vegas prop market alt ladders via Monte Carlo simulation, blended with an internal model using snap share, target share, and role data. Start/Sit accuracy is scored binary: correct if the player started outperformed the alternative. MAE is mean absolute error in PPR points across all numeric projections. Variance events require three confirmed criteria before classification. <a href="#">Full methodology →</a></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.querySelectorAll('.week-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    if(this.style.color==='rgb(30, 42, 63)') return;
+    document.querySelectorAll('.week-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>

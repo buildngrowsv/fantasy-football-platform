@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "novapredict",
+  "account_id": "dd5b6e7cbd04f165545572bd23cc015f",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-05-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public", "nodejs_als"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "limits": {
+    "cpu_ms": 30000
+  },
+  "observability": {
+    "enabled": true
+  },
+  "r2_buckets": [
+    {
+      "binding": "DATA_BUCKET",
+      "bucket_name": "novapredict-data"
+    }
+  ],
+  "vars": {
+    "NEXT_PUBLIC_APP_NAME": "NovaPredict",
+    "NEXT_PUBLIC_APP_URL": "https://novapredict.buildngrowsv.workers.dev"
+  }
+}
