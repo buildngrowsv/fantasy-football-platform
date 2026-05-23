@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
 };
 
 if (process.env.NODE_ENV !== "production") {
+  // OpenNext Cloudflare dev init uses CJS require — standard pattern from @opennextjs/cloudflare docs.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { initOpenNextCloudflareForDev } = require("@opennextjs/cloudflare");
   initOpenNextCloudflareForDev();
 }

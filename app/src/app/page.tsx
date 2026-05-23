@@ -1,5 +1,7 @@
 import Link from "next/link";
-import type { NovaPredictPlatformMetricRecord, NovaPredictPlayerRecord } from "@/lib/db/schema";
+import Image from "next/image";
+import { NovaPredictPlayerProjectionCard } from "@/components/players/NovaPredictPlayerProjectionCard";
+import type { NovaPredictPlatformMetricRecord } from "@/lib/db/schema";
 import { getNovaPredictHomepageMetrics, getNovaPredictPlayerRecords } from "@/lib/db/queries";
 
 export const dynamic = "force-dynamic";
@@ -11,13 +13,6 @@ function metricToneColor(metric: NovaPredictPlatformMetricRecord): string {
   return "var(--np-text-strong)";
 }
 
-function playerCardAccent(player: NovaPredictPlayerRecord): string {
-  if (player.position === "QB") return "var(--np-amber)";
-  if (player.position === "RB") return "var(--np-accent)";
-  if (player.position === "TE") return "#a36bc8";
-  return "var(--np-cyan)";
-}
-
 export default async function HomePage() {
   const [homepageMetrics, featuredPlayers] = await Promise.all([
     getNovaPredictHomepageMetrics(),
@@ -26,7 +21,20 @@ export default async function HomePage() {
 
   return (
     <div className="np-page-shell" style={{ display: "grid", gap: "1.25rem" }}>
-      <section className="np-card np-grid-background" style={{ position: "relative", padding: "4rem 3rem", overflow: "hidden" }}>
+      <section className="np-card np-grid-background np-marketing-hero" style={{ position: "relative", padding: "4rem 3rem", overflow: "hidden" }}>
+        <div
+          style={{
+            position: "absolute",
+            right: "-2%",
+            top: "50%",
+            transform: "translateY(-50%)",
+            opacity: 0.12,
+            pointerEvents: "none",
+          }}
+        >
+          <Image src="/assets/brand/novapredict-logo.svg" alt="" width={320} height={64} aria-hidden />
+        </div>
+
         <div style={{ position: "relative", zIndex: 1 }}>
           <div className="np-pill np-pill-accent" style={{ marginBottom: "1rem" }}>
             <span
@@ -57,7 +65,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="np-card" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", overflow: "hidden" }}>
+      <section className="np-card" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", overflow: "hidden" }}>
         {homepageMetrics.map((metric) => (
           <div key={metric.label} style={{ borderRight: "1px solid var(--np-border-subtle)", padding: "1.4rem 1rem", textAlign: "center" }}>
             <div style={{ fontFamily: "var(--font-jetbrains-mono)", fontWeight: 500, fontSize: "1.7rem", color: metricToneColor(metric) }}>{metric.value}</div>
@@ -71,7 +79,7 @@ export default async function HomePage() {
         ))}
       </section>
 
-      <section style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: "1.25rem" }}>
+      <section style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.1fr) minmax(0, 0.9fr)", gap: "1.25rem" }}>
         <article className="np-card" style={{ padding: "1.6rem" }}>
           <p className="np-pill np-pill-cyan" style={{ marginBottom: "0.9rem" }}>How It Works</p>
           <h2 style={{ fontSize: "1.8rem", letterSpacing: "-0.02em", color: "var(--np-text-strong)", marginBottom: "0.75rem" }}>
@@ -92,26 +100,8 @@ export default async function HomePage() {
         <article className="np-card" style={{ padding: "1.6rem" }}>
           <p className="np-pill np-pill-accent" style={{ marginBottom: "0.9rem" }}>Signal Board</p>
           <div style={{ display: "grid", gap: "0.65rem" }}>
-            {featuredPlayers.map((player) => (
-              <Link
-                href={`/players/${encodeURIComponent(player.id)}`}
-                key={player.id}
-                className="np-card-muted"
-                style={{ padding: "0.85rem 0.9rem", display: "grid", gridTemplateColumns: "1fr auto", gap: "0.8rem", alignItems: "center" }}
-              >
-                <div>
-                  <div style={{ color: "var(--np-text-strong)", fontWeight: 600 }}>{player.fullName}</div>
-                  <div style={{ marginTop: 3, fontSize: "0.72rem", color: "var(--np-text-dim)" }}>
-                    {player.position} · {player.team} · {player.matchupLabel}
-                  </div>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontFamily: "var(--font-jetbrains-mono)", color: playerCardAccent(player), fontWeight: 500, fontSize: "1.05rem" }}>
-                    {player.novaPprProjection.toFixed(1)}
-                  </div>
-                  <div style={{ fontSize: "0.7rem", color: "var(--np-text-dim)" }}>{player.marketSignalLabel}</div>
-                </div>
-              </Link>
+            {featuredPlayers.map((player, index) => (
+              <NovaPredictPlayerProjectionCard key={player.id} player={player} variant="featured" priorityImage={index < 2} />
             ))}
           </div>
         </article>

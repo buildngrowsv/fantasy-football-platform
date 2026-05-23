@@ -57,6 +57,16 @@ async function fetchJson(url) {
   return response.json();
 }
 
+function buildHeadshotUrl(espnId) {
+  if (!espnId) return null;
+  return `https://a.espncdn.com/i/headshots/nfl/players/full/${espnId}.png`;
+}
+
+function resolveEspnAthleteId(player) {
+  if (player?.espn_id) return String(player.espn_id);
+  return null;
+}
+
 async function main() {
   console.log("Fetching Sleeper players...");
   const sleeperPlayers = await fetchJson("https://api.sleeper.app/v1/players/nfl");
@@ -92,6 +102,8 @@ async function main() {
       full_name text NOT NULL,
       position text NOT NULL,
       team text,
+      espn_athlete_id text,
+      headshot_url text,
       created_at timestamptz DEFAULT now()
     )
   `;
@@ -164,9 +176,12 @@ async function main() {
   `;
 
   for (const player of fantasyPlayers) {
+    const espnAthleteId = resolveEspnAthleteId(player);
+    const headshotUrl = buildHeadshotUrl(espnAthleteId);
+
     await sql`
-      INSERT INTO players (id, sleeper_id, full_name, position, team)
-      VALUES (${player.player_id}, ${player.player_id}, ${player.full_name ?? `${player.first_name} ${player.last_name}`}, ${player.position}, ${player.team})
+      INSERT INTO players (id, sleeper_id, full_name, position, team, espn_athlete_id, headshot_url)
+      VALUES (${player.player_id}, ${player.player_id}, ${player.full_name ?? `${player.first_name} ${player.last_name}`}, ${player.position}, ${player.team}, ${espnAthleteId}, ${headshotUrl})
     `;
 
     const opponent = teamOpponent[player.team] ?? "TBD";

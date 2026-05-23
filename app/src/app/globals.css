@@ -121,3 +121,28 @@ a {
   background-size: 38px 38px;
   pointer-events: none;
 }
+
+/*
+  Responsive player card grid — replaces fixed 3-column inline grids so cards with headshots
+  reflow cleanly on tablet/mobile without crushing avatar images.
+*/
+.np-player-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
+}
+
+.np-player-projection-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 210, 140, 0.25);
+}
+
+@media (max-width: 900px) {
+  .np-app-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .np-marketing-hero {
+    padding: 2.5rem 1.5rem !important;
+  }
+}

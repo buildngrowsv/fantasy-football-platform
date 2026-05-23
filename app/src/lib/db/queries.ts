@@ -1,4 +1,5 @@
 import { sql } from "drizzle-orm";
+import { ResolveNovaPredictPlayerVisualAssets } from "@/lib/assets/ResolveNovaPredictPlayerVisualAssets";
 import { getNovaPredictDatabaseClient } from "@/lib/db/client";
 import type {
   FantasyFootballPlayerPosition,
@@ -41,8 +42,49 @@ async function runRows<T>(queryFactory: () => ReturnType<typeof sql>): Promise<T
   }
 }
 
+function enrichNovaPredictPlayerRecord(
+  baseRecord: Omit<
+    NovaPredictPlayerRecord,
+    | "headshotUrl"
+    | "localHeadshotPath"
+    | "teamLogoUrl"
+    | "teamLogoLocalPath"
+    | "opponentLogoUrl"
+    | "opponentLogoLocalPath"
+    | "teamPrimaryColor"
+    | "opponentPrimaryColor"
+    | "initials"
+  > & {
+    espnAthleteId?: string | null;
+    headshotUrl?: string | null;
+    localHeadshotPath?: string | null;
+  },
+): NovaPredictPlayerRecord {
+  const visualAssets = ResolveNovaPredictPlayerVisualAssets({
+    fullName: baseRecord.fullName,
+    position: baseRecord.position,
+    team: baseRecord.team,
+    opponent: baseRecord.opponent,
+    espnAthleteId: baseRecord.espnAthleteId,
+    sleeperPlayerId: baseRecord.id.startsWith("fallback-") ? null : baseRecord.id,
+  });
+
+  return {
+    ...baseRecord,
+    headshotUrl: baseRecord.headshotUrl ?? visualAssets.headshotUrl,
+    localHeadshotPath: baseRecord.localHeadshotPath ?? visualAssets.localHeadshotPath,
+    teamLogoUrl: visualAssets.teamLogoUrl,
+    teamLogoLocalPath: visualAssets.teamLogoLocalPath,
+    opponentLogoUrl: visualAssets.opponentLogoUrl,
+    opponentLogoLocalPath: visualAssets.opponentLogoLocalPath,
+    teamPrimaryColor: visualAssets.teamPrimaryColor,
+    opponentPrimaryColor: visualAssets.opponentPrimaryColor,
+    initials: visualAssets.initials,
+  };
+}
+
 const FALLBACK_PLAYER_RECORDS: NovaPredictPlayerRecord[] = [
-  {
+  enrichNovaPredictPlayerRecord({
     id: "fallback-ceedee-lamb",
     fullName: "CeeDee Lamb",
     position: "WR",
@@ -54,8 +96,9 @@ const FALLBACK_PLAYER_RECORDS: NovaPredictPlayerRecord[] = [
     boomProbability: 44,
     bustProbability: 9,
     marketSignalLabel: "Sharp steam detected",
-  },
-  {
+    espnAthleteId: "4241389",
+  }),
+  enrichNovaPredictPlayerRecord({
     id: "fallback-josh-allen",
     fullName: "Josh Allen",
     position: "QB",
@@ -67,8 +110,9 @@ const FALLBACK_PLAYER_RECORDS: NovaPredictPlayerRecord[] = [
     boomProbability: 49,
     bustProbability: 8,
     marketSignalLabel: "High-total accelerator",
-  },
-  {
+    espnAthleteId: "3918298",
+  }),
+  enrichNovaPredictPlayerRecord({
     id: "fallback-bijan-robinson",
     fullName: "Bijan Robinson",
     position: "RB",
@@ -80,7 +124,8 @@ const FALLBACK_PLAYER_RECORDS: NovaPredictPlayerRecord[] = [
     boomProbability: 38,
     bustProbability: 12,
     marketSignalLabel: "Post-bust rebound profile",
-  },
+    espnAthleteId: "4430807",
+  }),
 ];
 
 /*
@@ -91,19 +136,22 @@ const FALLBACK_PLAYER_RECORDS: NovaPredictPlayerRecord[] = [
 export async function getNovaPredictPlayerRecords(limit = 24): Promise<NovaPredictPlayerRecord[]> {
   const projectionRows = await runRows<Record<string, unknown>>(() => sql`
     SELECT
-      player_id AS id,
-      player_name AS full_name,
-      position,
-      team,
-      opponent,
-      matchup_label,
-      vegas_ppr AS vegas_projection,
-      nova_ppr AS nova_projection,
-      boom_probability,
-      bust_probability,
-      move_type AS signal_label
-    FROM player_projections
-    ORDER BY nova_ppr::numeric DESC
+      pp.player_id AS id,
+      pp.player_name AS full_name,
+      pp.position,
+      pp.team,
+      pp.opponent,
+      pp.matchup_label,
+      pp.vegas_ppr AS vegas_projection,
+      pp.nova_ppr AS nova_projection,
+      pp.boom_probability,
+      pp.bust_probability,
+      pp.move_type AS signal_label,
+      p.espn_athlete_id,
+      p.headshot_url
+    FROM player_projections pp
+    LEFT JOIN players p ON p.id = pp.player_id
+    ORDER BY pp.nova_ppr::numeric DESC
     LIMIT ${limit};
   `);
 
@@ -113,7 +161,9 @@ export async function getNovaPredictPlayerRecords(limit = 24): Promise<NovaPredi
         COALESCE((to_jsonb(p)->>'id'), (to_jsonb(p)->>'player_id'), (to_jsonb(p)->>'name')) AS id,
         COALESCE((to_jsonb(p)->>'full_name'), (to_jsonb(p)->>'name'), 'Unknown Player') AS full_name,
         COALESCE((to_jsonb(p)->>'position'), 'WR') AS position,
-        COALESCE((to_jsonb(p)->>'team'), 'TBD') AS team
+        COALESCE((to_jsonb(p)->>'team'), 'TBD') AS team,
+        (to_jsonb(p)->>'espn_athlete_id') AS espn_athlete_id,
+        (to_jsonb(p)->>'headshot_url') AS headshot_url
       FROM players p
       LIMIT ${limit};
     `);
@@ -122,34 +172,42 @@ export async function getNovaPredictPlayerRecords(limit = 24): Promise<NovaPredi
       return FALLBACK_PLAYER_RECORDS.slice(0, limit);
     }
 
-    return playerRows.map((row, index) => ({
-      id: safeText(row.id, `db-player-${index}`),
+    return playerRows.map((row, index) =>
+      enrichNovaPredictPlayerRecord({
+        id: safeText(row.id, `db-player-${index}`),
+        fullName: safeText(row.full_name, "Unknown Player"),
+        position: toPosition(row.position),
+        team: safeText(row.team, "TBD"),
+        opponent: "TBD",
+        matchupLabel: `${safeText(row.team, "TBD")} matchup pending`,
+        vegasPprProjection: 0,
+        novaPprProjection: 0,
+        boomProbability: 0,
+        bustProbability: 0,
+        marketSignalLabel: "Awaiting weekly projections",
+        espnAthleteId: safeText(row.espn_athlete_id) || null,
+        headshotUrl: safeText(row.headshot_url) || null,
+      }),
+    );
+  }
+
+  return projectionRows.map((row, index) =>
+    enrichNovaPredictPlayerRecord({
+      id: safeText(row.id, `db-projection-${index}`),
       fullName: safeText(row.full_name, "Unknown Player"),
       position: toPosition(row.position),
       team: safeText(row.team, "TBD"),
-      opponent: "TBD",
-      matchupLabel: `${safeText(row.team, "TBD")} matchup pending`,
-      vegasPprProjection: 0,
-      novaPprProjection: 0,
-      boomProbability: 0,
-      bustProbability: 0,
-      marketSignalLabel: "Awaiting weekly projections",
-    }));
-  }
-
-  return projectionRows.map((row, index) => ({
-    id: safeText(row.id, `db-projection-${index}`),
-    fullName: safeText(row.full_name, "Unknown Player"),
-    position: toPosition(row.position),
-    team: safeText(row.team, "TBD"),
-    opponent: safeText(row.opponent, "TBD"),
-    matchupLabel: safeText(row.matchup_label, `${safeText(row.team, "TBD")} vs ${safeText(row.opponent, "TBD")}`),
-    vegasPprProjection: safeNumber(row.vegas_projection),
-    novaPprProjection: safeNumber(row.nova_projection),
-    boomProbability: safeNumber(row.boom_probability),
-    bustProbability: safeNumber(row.bust_probability),
-    marketSignalLabel: safeText(row.signal_label, "Signal pending"),
-  }));
+      opponent: safeText(row.opponent, "TBD"),
+      matchupLabel: safeText(row.matchup_label, `${safeText(row.team, "TBD")} vs ${safeText(row.opponent, "TBD")}`),
+      vegasPprProjection: safeNumber(row.vegas_projection),
+      novaPprProjection: safeNumber(row.nova_projection),
+      boomProbability: safeNumber(row.boom_probability),
+      bustProbability: safeNumber(row.bust_probability),
+      marketSignalLabel: safeText(row.signal_label, "Signal pending"),
+      espnAthleteId: safeText(row.espn_athlete_id) || null,
+      headshotUrl: safeText(row.headshot_url) || null,
+    }),
+  );
 }
 
 export async function getNovaPredictHomepageMetrics(): Promise<NovaPredictPlatformMetricRecord[]> {

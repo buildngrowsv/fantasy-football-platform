@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -29,8 +30,8 @@ export function SiteNav() {
       }}
     >
       <div className="np-page-shell" style={{ display: "flex", alignItems: "center", gap: "1.2rem", padding: "0.95rem 0" }}>
-        <Link href="/" style={{ fontWeight: 700, color: "var(--np-text-strong)", letterSpacing: "-0.03em", marginRight: "0.8rem" }}>
-          Nova<span style={{ color: "var(--np-accent)" }}>Predict</span>
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: "0.55rem", marginRight: "0.8rem" }}>
+          <Image src="/assets/brand/novapredict-logo.svg" alt="NovaPredict" width={140} height={28} priority style={{ height: 28, width: "auto" }} />
         </Link>
 
         <nav style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.5rem" }}>

@@ -1,5 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { NovaPredictMatchupVisualStrip } from "@/components/media/NovaPredictMatchupVisualStrip";
+import { NovaPredictPlayerHeadshotAvatar } from "@/components/media/NovaPredictPlayerHeadshotAvatar";
+import { NovaPredictPlayerProjectionCard } from "@/components/players/NovaPredictPlayerProjectionCard";
 import type { NovaPredictPlayerRecord } from "@/lib/db/schema";
 import { getNovaPredictPlayerById, getNovaPredictPlayerRecords } from "@/lib/db/queries";
 
@@ -24,15 +26,40 @@ export default async function PlayerCardPage({ params }: { params: Promise<{ id:
   return (
     <section style={{ display: "grid", gap: "1rem" }}>
       <article className="np-card" style={{ maxWidth: 760, margin: "0 auto", width: "100%", overflow: "hidden" }}>
-        <div style={{ padding: "1.2rem 1.3rem", borderBottom: "1px solid var(--np-border-subtle)", background: "#10151f" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "0.8rem" }}>
-            <div>
-              <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.7rem", letterSpacing: "-0.03em" }}>{player.fullName}</h1>
-              <div style={{ marginTop: "0.25rem", color: "var(--np-text-dim)", fontSize: "0.78rem" }}>
-                {player.position} · {player.team} · {player.matchupLabel}
+        <div
+          style={{
+            padding: "1.2rem 1.3rem",
+            borderBottom: "1px solid var(--np-border-subtle)",
+            background: player.teamPrimaryColor
+              ? `linear-gradient(135deg, ${player.teamPrimaryColor}18 0%, #10151f 55%)`
+              : "#10151f",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "start", gap: "1rem" }}>
+            <NovaPredictPlayerHeadshotAvatar
+              fullName={player.fullName}
+              position={player.position}
+              headshotUrl={player.headshotUrl}
+              localHeadshotPath={player.localHeadshotPath}
+              initials={player.initials}
+              size={96}
+              showTeamRing
+              teamPrimaryColor={player.teamPrimaryColor}
+              priority
+            />
+
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "0.8rem" }}>
+                <div>
+                  <h1 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.7rem", letterSpacing: "-0.03em" }}>{player.fullName}</h1>
+                  <div style={{ marginTop: "0.35rem" }}>
+                    <NovaPredictMatchupVisualStrip team={player.team} opponent={player.opponent} matchupLabel={player.matchupLabel} logoSize={26} />
+                  </div>
+                  <div style={{ marginTop: "0.25rem", color: "var(--np-text-dim)", fontSize: "0.78rem" }}>{player.position}</div>
+                </div>
+                <span className="np-pill np-pill-accent">{getTierLabel(player)}</span>
               </div>
             </div>
-            <span className="np-pill np-pill-accent">{getTierLabel(player)}</span>
           </div>
 
           <div style={{ marginTop: "0.9rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.6rem" }}>
@@ -55,11 +82,6 @@ export default async function PlayerCardPage({ params }: { params: Promise<{ id:
           </div>
         </div>
 
-        {/*
-          We mirror the "v10 card" intent by exposing component-level projection logic.
-          This narrative breakdown is deliberately human-readable so users understand why
-          the projection differs from market baseline and can challenge it with context.
-        */}
         <div style={{ padding: "1rem 1.3rem", borderBottom: "1px solid var(--np-border-subtle)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.7rem" }}>
             <span style={{ color: "var(--np-text-dim)", fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.11em" }}>
@@ -152,13 +174,9 @@ export default async function PlayerCardPage({ params }: { params: Promise<{ id:
 
       <article className="np-card" style={{ padding: "1rem" }}>
         <h2 style={{ margin: 0, color: "var(--np-text-strong)", fontSize: "1.1rem" }}>Related Profiles</h2>
-        <div style={{ marginTop: "0.75rem", display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "0.6rem" }}>
+        <div className="np-player-card-grid" style={{ marginTop: "0.75rem", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
           {relatedPlayers.map((relatedPlayer) => (
-            <Link key={relatedPlayer.id} href={`/players/${encodeURIComponent(relatedPlayer.id)}`} className="np-card-muted" style={{ padding: "0.7rem", display: "grid", gap: "0.3rem" }}>
-              <strong style={{ color: "var(--np-text-strong)", fontSize: "0.84rem" }}>{relatedPlayer.fullName}</strong>
-              <span style={{ color: "var(--np-text-dim)", fontSize: "0.7rem" }}>{relatedPlayer.position} · {relatedPlayer.team}</span>
-              <span style={{ color: "var(--np-accent)", fontFamily: "var(--font-jetbrains-mono)", fontSize: "0.8rem" }}>{relatedPlayer.novaPprProjection.toFixed(1)}</span>
-            </Link>
+            <NovaPredictPlayerProjectionCard key={relatedPlayer.id} player={relatedPlayer} variant="compact" />
           ))}
         </div>
       </article>

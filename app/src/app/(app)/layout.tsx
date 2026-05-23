@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { NovaPredictPlayerHeadshotAvatar } from "@/components/media/NovaPredictPlayerHeadshotAvatar";
 import { getNovaPredictPlayerRecords } from "@/lib/db/queries";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +19,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   const topPlayers = await getNovaPredictPlayerRecords(4);
 
   return (
-    <div className="np-page-shell" style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: "1rem" }}>
+    <div className="np-page-shell np-app-layout" style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: "1rem" }}>
       <aside className="np-card" style={{ padding: "1rem", alignSelf: "start", position: "sticky", top: "5.5rem" }}>
         <p className="np-pill np-pill-cyan" style={{ marginBottom: "0.8rem" }}>
           App Navigation
@@ -40,16 +41,26 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           <div style={{ fontSize: "0.66rem", color: "var(--np-text-dim)", textTransform: "uppercase", letterSpacing: "0.11em", marginBottom: "0.65rem" }}>
             Top Nova Signals
           </div>
-          <div style={{ display: "grid", gap: "0.45rem" }}>
+          <div style={{ display: "grid", gap: "0.65rem" }}>
             {topPlayers.map((player) => (
-              <div key={player.id}>
-                <div style={{ fontSize: "0.84rem", color: "var(--np-text-strong)", fontWeight: 600 }}>
-                  {player.fullName}
+              <Link key={player.id} href={`/players/${encodeURIComponent(player.id)}`} style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
+                <NovaPredictPlayerHeadshotAvatar
+                  fullName={player.fullName}
+                  position={player.position}
+                  headshotUrl={player.headshotUrl}
+                  localHeadshotPath={player.localHeadshotPath}
+                  initials={player.initials}
+                  size={36}
+                  showTeamRing
+                  teamPrimaryColor={player.teamPrimaryColor}
+                />
+                <div>
+                  <div style={{ fontSize: "0.84rem", color: "var(--np-text-strong)", fontWeight: 600 }}>{player.fullName}</div>
+                  <div style={{ fontSize: "0.68rem", color: "var(--np-text-dim)", fontFamily: "var(--font-jetbrains-mono)" }}>
+                    {player.novaPprProjection.toFixed(1)} · {player.marketSignalLabel}
+                  </div>
                 </div>
-                <div style={{ fontSize: "0.68rem", color: "var(--np-text-dim)", fontFamily: "var(--font-jetbrains-mono)" }}>
-                  {player.novaPprProjection.toFixed(1)} · {player.marketSignalLabel}
-                </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -1,4 +1,7 @@
-import type { NovaPredictAccountabilityCallRecord } from "@/lib/db/schema";
+import { NovaPredictNflTeamLogoBadge } from "@/components/media/NovaPredictNflTeamLogoBadge";
+import { NovaPredictPlayerHeadshotAvatar } from "@/components/media/NovaPredictPlayerHeadshotAvatar";
+import { ResolveNovaPredictPlayerVisualAssets } from "@/lib/assets/ResolveNovaPredictPlayerVisualAssets";
+import type { NovaPredictAccountabilityCallRecord, FantasyFootballPlayerPosition } from "@/lib/db/schema";
 import { getNovaPredictAccountabilityCalls, getNovaPredictHomepageMetrics } from "@/lib/db/queries";
 
 function callClassStyles(call: NovaPredictAccountabilityCallRecord): { border: string; badge: string; text: string } {
@@ -25,7 +28,7 @@ export default async function AccountabilityPage() {
         </p>
       </article>
 
-      <article className="np-card" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", overflow: "hidden" }}>
+      <article className="np-card" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", overflow: "hidden" }}>
         {metrics.map((metric) => (
           <div key={metric.label} style={{ borderRight: "1px solid var(--np-border-subtle)", padding: "1rem" }}>
             <div style={{ color: "var(--np-text-strong)", fontFamily: "var(--font-jetbrains-mono)", fontSize: "1.2rem" }}>{metric.value}</div>
@@ -40,16 +43,34 @@ export default async function AccountabilityPage() {
         {calls.map((call) => {
           const styles = callClassStyles(call);
           const error = call.actual - call.projection;
+          const visualAssets = ResolveNovaPredictPlayerVisualAssets({
+            fullName: call.playerName,
+            position: call.position as FantasyFootballPlayerPosition,
+            team: call.team,
+            opponent: "TBD",
+          });
 
           return (
             <div key={call.id} className="np-card-muted" style={{ padding: "0.85rem", borderLeft: `2px solid ${styles.border}` }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.8rem", marginBottom: "0.5rem" }}>
-                <div>
-                  <div style={{ color: "var(--np-text-strong)", fontWeight: 600 }}>
-                    {call.playerName} · {call.position} · {call.team}
-                  </div>
-                  <div style={{ color: "var(--np-text-dim)", fontSize: "0.7rem", marginTop: 2 }}>
-                    Projection vs actual diagnostic
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                  <NovaPredictPlayerHeadshotAvatar
+                    fullName={call.playerName}
+                    position={call.position}
+                    headshotUrl={visualAssets.headshotUrl}
+                    initials={visualAssets.initials}
+                    size={44}
+                    showTeamRing
+                    teamPrimaryColor={visualAssets.teamPrimaryColor}
+                  />
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+                      <div style={{ color: "var(--np-text-strong)", fontWeight: 600 }}>{call.playerName}</div>
+                      <NovaPredictNflTeamLogoBadge teamAbbreviation={call.team} size={22} />
+                    </div>
+                    <div style={{ color: "var(--np-text-dim)", fontSize: "0.7rem", marginTop: 2 }}>
+                      {call.position} · Projection vs actual diagnostic
+                    </div>
                   </div>
                 </div>
                 <span

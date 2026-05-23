@@ -14,6 +14,10 @@ export const playersTable = pgTable("players", {
   fullName: text("full_name").notNull(),
   position: text("position").notNull(),
   team: text("team"),
+  /** Cross-reference ID from Sleeper payload — used to build ESPN headshot CDN URLs. */
+  espnAthleteId: text("espn_athlete_id"),
+  /** Precomputed headshot URL for query convenience; mirrors ESPN CDN pattern. */
+  headshotUrl: text("headshot_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
@@ -93,6 +97,17 @@ export interface NovaPredictPlayerRecord {
   boomProbability: number;
   bustProbability: number;
   marketSignalLabel: string;
+  /** ESPN athlete ID from Sleeper cross-ref — drives headshot CDN URL. */
+  espnAthleteId?: string | null;
+  headshotUrl?: string | null;
+  localHeadshotPath?: string | null;
+  teamLogoUrl?: string | null;
+  teamLogoLocalPath?: string | null;
+  opponentLogoUrl?: string | null;
+  opponentLogoLocalPath?: string | null;
+  teamPrimaryColor?: string | null;
+  opponentPrimaryColor?: string | null;
+  initials: string;
 }
 
 export interface NovaPredictPlatformMetricRecord {
