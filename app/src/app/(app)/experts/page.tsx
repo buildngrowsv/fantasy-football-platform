@@ -12,7 +12,7 @@ export const metadata = BuildNovaPredictPageSiteMetadata({
 
 function rowTone(expert: NovaPredictExpertComparisonRecord): string {
   if (expert.analystName.toLowerCase().includes("nova")) {
-    return "var(--np-accent-bright)";
+    return "var(--np-accent)";
   }
   return "var(--np-text-strong)";
 }

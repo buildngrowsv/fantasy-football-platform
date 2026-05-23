@@ -1,37 +1,33 @@
 @import "tailwindcss";
 
 /*
-  NovaPredict design tokens — "Broadcast Ledger" identity.
-  Warm charcoal surfaces, stadium-gold accent, editorial serif headlines.
-  We moved away from cold neon green/cyan dashboards because they read as generic
-  AI-generated fintech chrome; this palette feels like Sunday-night broadcast meets
-  a sharp fantasy desk.
+  NovaPredict design tokens — green/cyan dark palette shared across marketing and app shell.
 */
 :root {
-  --np-bg: #12110f;
-  --np-surface: #1a1816;
-  --np-surface-muted: #151412;
-  --np-surface-raised: #211e1b;
-  --np-border: #2a2622;
-  --np-border-subtle: #221f1c;
-  --np-border-strong: #3a3530;
-  --np-text: #e8e2d9;
-  --np-text-strong: #f5f0e8;
-  --np-text-muted: #9a9288;
-  --np-text-dim: #6b645c;
-  --np-accent: #c8960c;
-  --np-accent-bright: #e0ad2e;
-  --np-signal: #6b9e7a;
-  --np-data: #7a96b0;
-  --np-cyan: var(--np-data);
-  --np-amber: #b8842e;
-  --np-danger: #c45c4a;
-  --np-stat-label: #6b645c;
-  --np-stat-value-muted: #8a9aaa;
-  --np-shadow: 0 10px 32px rgba(0, 0, 0, 0.32);
-  --np-shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.18);
-  --np-radius: 12px;
-  --np-radius-sm: 6px;
+  --np-bg: #090b11;
+  --np-surface: #0f1118;
+  --np-surface-muted: #0b0e16;
+  --np-surface-raised: #131722;
+  --np-border: #1c2133;
+  --np-border-subtle: #161b27;
+  --np-border-strong: #253048;
+  --np-text: #e2e8f0;
+  --np-text-strong: #f0f4ff;
+  --np-text-muted: #5a6a84;
+  --np-text-dim: #2e3d55;
+  --np-accent: #00d28c;
+  --np-accent-bright: #00d28c;
+  --np-signal: #00d28c;
+  --np-data: #00b4d8;
+  --np-cyan: #00b4d8;
+  --np-amber: #c98c2a;
+  --np-danger: #e05050;
+  --np-stat-label: #2e3d55;
+  --np-stat-value-muted: #7a9bbb;
+  --np-shadow: 0 14px 44px rgba(0, 0, 0, 0.38);
+  --np-shadow-soft: 0 14px 44px rgba(0, 0, 0, 0.38);
+  --np-radius: 14px;
+  --np-radius-sm: 8px;
   --np-header-height: 4.25rem;
   --np-bottom-nav-height: 4.75rem;
 }
@@ -97,15 +93,15 @@ a {
 
 .np-btn-primary,
 .np-accent-gradient {
-  background: var(--np-accent);
-  border: 1px solid rgba(200, 150, 12, 0.45);
-  color: #1a1204;
+  background: linear-gradient(135deg, #00553a, #009060);
+  border: 1px solid rgba(0, 210, 140, 0.3);
+  color: #a8ffd4;
   font-weight: 700;
 }
 
 .np-btn-primary:hover,
 .np-accent-gradient:hover {
-  background: var(--np-accent-bright);
+  opacity: 0.92;
 }
 
 /*
@@ -126,14 +122,13 @@ a {
 }
 
 .np-btn-secondary {
-  border: 1px solid var(--np-border-strong);
-  background: var(--np-surface-muted);
-  color: var(--np-text);
+  border: 1px solid rgba(0, 180, 216, 0.3);
+  background: rgba(0, 180, 216, 0.1);
+  color: var(--np-cyan);
 }
 
 .np-btn-secondary:hover {
-  border-color: var(--np-data);
-  color: var(--np-text-strong);
+  opacity: 0.92;
 }
 
 .np-btn-ghost {
@@ -148,13 +143,13 @@ a {
 }
 
 .np-text-link {
-  color: var(--np-data);
+  color: var(--np-cyan);
   font-weight: 600;
   font-size: 0.88rem;
 }
 
 .np-text-link:hover {
-  color: var(--np-text-strong);
+  color: #4dd4f0;
 }
 
 .np-kicker {
@@ -180,20 +175,20 @@ a {
 }
 
 .np-pill-accent {
-  background: rgba(200, 150, 12, 0.1);
-  border: 1px solid rgba(200, 150, 12, 0.22);
-  color: var(--np-accent-bright);
+  background: rgba(0, 210, 140, 0.1);
+  border: 1px solid rgba(0, 210, 140, 0.25);
+  color: var(--np-accent);
 }
 
 .np-pill-cyan {
-  background: rgba(122, 150, 176, 0.1);
-  border: 1px solid rgba(122, 150, 176, 0.22);
-  color: var(--np-data);
+  background: rgba(0, 180, 216, 0.1);
+  border: 1px solid rgba(0, 180, 216, 0.25);
+  color: var(--np-cyan);
 }
 
 .np-pill-amber {
-  background: rgba(184, 132, 46, 0.1);
-  border: 1px solid rgba(184, 132, 46, 0.22);
+  background: rgba(201, 140, 42, 0.12);
+  border: 1px solid rgba(201, 140, 42, 0.25);
   color: var(--np-amber);
 }
 
@@ -303,7 +298,7 @@ a {
   margin-top: 1rem;
   padding: 0.95rem 1rem 0.95rem 1.1rem;
   border-left: 3px solid var(--np-accent);
-  background: rgba(200, 150, 12, 0.04);
+  background: rgba(0, 210, 140, 0.03);
   border-radius: 0 var(--np-radius-sm) var(--np-radius-sm) 0;
 }
 
@@ -387,8 +382,8 @@ a {
 }
 
 .np-player-projection-card:hover {
-  transform: translateY(-1px);
-  border-color: var(--np-border-strong);
+  transform: translateY(-2px);
+  border-color: rgba(0, 210, 140, 0.25);
 }
 
 /* ── Site header ─────────────────────────────────────────────────────────── */
@@ -398,7 +393,7 @@ a {
   top: 0;
   z-index: 60;
   border-bottom: 1px solid var(--np-border-subtle);
-  background: rgba(18, 17, 15, 0.94);
+  background: rgba(9, 11, 17, 0.94);
   backdrop-filter: blur(12px);
 }
 
@@ -453,8 +448,8 @@ a {
 
 .np-site-header-marketing-link.is-active,
 .np-site-header-app-link.is-active {
-  border-color: rgba(200, 150, 12, 0.35);
-  background: rgba(200, 150, 12, 0.08);
+  border-color: rgba(0, 210, 140, 0.35);
+  background: rgba(0, 210, 140, 0.08);
   color: var(--np-accent);
 }
 
@@ -486,7 +481,7 @@ a {
 
 .np-site-header-menu-trigger:hover {
   color: var(--np-text-strong);
-  border-color: rgba(200, 150, 12, 0.25);
+  border-color: rgba(0, 210, 140, 0.25);
 }
 
 /* Week context strip (app routes) */
@@ -630,8 +625,8 @@ a {
 }
 
 .np-mobile-nav-drawer-link.is-active {
-  border-color: rgba(200, 150, 12, 0.35);
-  background: rgba(200, 150, 12, 0.06);
+  border-color: rgba(0, 210, 140, 0.35);
+  background: rgba(0, 210, 140, 0.06);
   color: var(--np-accent);
 }
 
@@ -676,7 +671,7 @@ a {
   grid-template-columns: repeat(5, 1fr);
   gap: 0;
   padding: 0.45rem 0 calc(0.45rem + env(safe-area-inset-bottom, 0px));
-  background: rgba(26, 24, 22, 0.96);
+  background: rgba(13, 16, 24, 0.96);
   border-top: 1px solid var(--np-border-subtle);
   backdrop-filter: blur(10px);
 }
@@ -741,10 +736,11 @@ a {
 }
 
 .np-app-sidebar-week-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--np-accent);
+  box-shadow: 0 0 14px rgba(0, 210, 140, 0.55);
 }
 
 .np-app-sidebar-nav {
@@ -786,8 +782,8 @@ a {
 }
 
 .np-app-sidebar-link.is-active {
-  border-color: rgba(200, 150, 12, 0.35);
-  background: rgba(200, 150, 12, 0.07);
+  border-color: rgba(0, 210, 140, 0.35);
+  background: rgba(0, 210, 140, 0.07);
   color: var(--np-accent);
 }
 
@@ -803,8 +799,8 @@ a {
 }
 
 .np-app-sidebar-link.is-active .np-app-sidebar-link-icon {
-  border-color: rgba(200, 150, 12, 0.3);
-  background: rgba(200, 150, 12, 0.1);
+  border-color: rgba(0, 210, 140, 0.3);
+  background: rgba(0, 210, 140, 0.1);
 }
 
 .np-app-sidebar-link-copy strong {
@@ -939,8 +935,8 @@ a {
 }
 
 .np-weekly-flow-step.is-active .np-weekly-flow-step-link {
-  border-color: rgba(200, 150, 12, 0.35);
-  background: rgba(200, 150, 12, 0.06);
+  border-color: rgba(0, 210, 140, 0.35);
+  background: rgba(0, 210, 140, 0.06);
   color: var(--np-accent);
 }
 
@@ -1206,14 +1202,14 @@ a {
 
 .np-accountability-week-btn.is-active {
   color: var(--np-accent);
-  border-color: rgba(200, 150, 12, 0.35);
-  background: rgba(200, 150, 12, 0.08);
+  border-color: rgba(0, 210, 140, 0.35);
+  background: rgba(0, 210, 140, 0.08);
 }
 
 /* ── League import (Sleeper) ──────────────────────────────────────────── */
 
 .np-league-import-sleeper-card {
-  border-color: rgba(200, 150, 12, 0.18);
+  border-color: rgba(0, 210, 140, 0.18);
 }
 
 .np-league-import-form {
@@ -1371,7 +1367,7 @@ a {
 }
 
 .np-player-weekly-chart-bar.is-above-projection {
-  background: linear-gradient(180deg, rgba(200, 150, 12, 0.9), rgba(140, 100, 8, 0.75));
+  background: linear-gradient(180deg, rgba(0, 210, 140, 0.95), rgba(0, 130, 90, 0.75));
 }
 
 .np-player-weekly-chart-bar-col:hover .np-player-weekly-chart-bar {
