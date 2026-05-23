@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Player headshot PNG cache — manifest + ESPN CDN URLs are source of truth at runtime
+/public/assets/players/

@@ -3,16 +3,12 @@
 /*
   NovaPredictPlayerHeadshotAvatar
   -------------------------------
-  Renders ESPN player headshots with graceful degradation to initials badge.
+  Renders NFL player headshots with a three-stage fallback chain.
 
-  Why client component:
-  - next/image onError requires client-side state to swap CDN → local cached → initials fallback chain.
-  - Used across dashboard cards, slate rows, player detail hero, sidebar signals, accountability list.
-
-  Fallback order (because CDN 404s happen for retired/inactive players still in seed data):
-  1. ESPN CDN headshot (headshotUrl)
-  2. Local synced copy (/assets/players/{sleeperId}.png)
-  3. Initials on position-colored gradient (matches design mock position badges)
+  Fallback order:
+  1. ESPN CDN headshot URL from manifest — covers all ~2.9k roster athletes
+  2. Local cached PNG for fantasy-matched players synced by assets:sync
+  3. Initials badge on position-colored gradient — never show empty shells
 */
 
 import Image from "next/image";
@@ -32,6 +28,8 @@ export interface NovaPredictPlayerHeadshotAvatarProps {
   priority?: boolean;
 }
 
+type HeadshotFallbackStage = "cdn" | "local" | "initials";
+
 export function NovaPredictPlayerHeadshotAvatar({
   fullName,
   position,
@@ -43,7 +41,9 @@ export function NovaPredictPlayerHeadshotAvatar({
   teamPrimaryColor,
   priority = false,
 }: NovaPredictPlayerHeadshotAvatarProps) {
-  const [fallbackStage, setFallbackStage] = useState<"cdn" | "local" | "initials">("cdn");
+  const [fallbackStage, setFallbackStage] = useState<HeadshotFallbackStage>(
+    headshotUrl ? "cdn" : localHeadshotPath ? "local" : "initials",
+  );
 
   const positionAccent = ResolvePositionAccentColor(position);
   const ringColor = teamPrimaryColor ?? positionAccent;
@@ -62,6 +62,7 @@ export function NovaPredictPlayerHeadshotAvatar({
         width: size,
         height: size,
         minWidth: size,
+        flexShrink: 0,
         borderRadius: "50%",
         overflow: "hidden",
         position: "relative",
@@ -78,6 +79,7 @@ export function NovaPredictPlayerHeadshotAvatar({
           width={size}
           height={size}
           priority={priority}
+          sizes={`${size}px`}
           style={{ objectFit: "cover", objectPosition: "top center", width: "100%", height: "100%" }}
           onError={() => {
             if (fallbackStage === "cdn" && localHeadshotPath) {

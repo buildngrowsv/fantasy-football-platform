@@ -1,7 +1,11 @@
-import { getNovaPredictHomepageMetrics } from "@/lib/db/queries";
+import { NovaPredictPlayerProjectionCard } from "@/components/players/NovaPredictPlayerProjectionCard";
+import { getNovaPredictHomepageMetrics, getNovaPredictPlayerRecords } from "@/lib/db/queries";
 
 export default async function ChallengePage() {
-  const metrics = await getNovaPredictHomepageMetrics();
+  const [metrics, challengePlayers] = await Promise.all([
+    getNovaPredictHomepageMetrics(),
+    getNovaPredictPlayerRecords(6),
+  ]);
 
   return (
     <section style={{ display: "grid", gap: "1rem" }}>
@@ -12,7 +16,16 @@ export default async function ChallengePage() {
         </p>
       </article>
 
-      <article className="np-card" style={{ padding: "1rem", display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: "0.85rem" }}>
+      <article className="np-card" style={{ padding: "1rem" }}>
+        <div style={{ color: "var(--np-text-strong)", fontWeight: 600, marginBottom: "0.75rem" }}>This Week&apos;s Challenge Slate</div>
+        <div className="np-player-card-grid">
+          {challengePlayers.map((player, index) => (
+            <NovaPredictPlayerProjectionCard key={player.id} player={player} variant="compact" priorityImage={index < 3} />
+          ))}
+        </div>
+      </article>
+
+      <article className="np-card" style={{ padding: "1rem", display: "grid", gridTemplateColumns: "minmax(0, 1.1fr) minmax(0, 0.9fr)", gap: "0.85rem" }}>
         <div className="np-card-muted" style={{ padding: "0.95rem" }}>
           <div style={{ color: "var(--np-text-strong)", fontWeight: 600, marginBottom: "0.45rem" }}>Weekly Challenge Scorecard</div>
           <p style={{ color: "var(--np-text-muted)", margin: 0, lineHeight: 1.65, fontSize: "0.88rem" }}>
@@ -56,7 +69,7 @@ export default async function ChallengePage() {
 
       <article className="np-card" style={{ padding: "1rem" }}>
         <div style={{ marginBottom: "0.7rem", color: "var(--np-text-strong)", fontWeight: 600 }}>Platform Benchmarks</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "0.45rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "0.45rem" }}>
           {metrics.map((metric) => (
             <div key={metric.label} className="np-card-muted" style={{ padding: "0.55rem 0.6rem" }}>
               <div style={{ color: "var(--np-text-strong)", fontFamily: "var(--font-jetbrains-mono)" }}>{metric.value}</div>

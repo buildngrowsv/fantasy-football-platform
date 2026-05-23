@@ -58,6 +58,7 @@ export default async function AccountabilityPage() {
                     fullName={call.playerName}
                     position={call.position}
                     headshotUrl={visualAssets.headshotUrl}
+                    localHeadshotPath={visualAssets.localHeadshotPath}
                     initials={visualAssets.initials}
                     size={44}
                     showTeamRing

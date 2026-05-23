@@ -11,6 +11,7 @@
 */
 
 import { BuildEspnNflPlayerHeadshotUrl, BuildPlayerInitialsFromFullName } from "@/lib/assets/BuildEspnNflPlayerHeadshotUrl";
+import { LookupNovaPredictPlayerHeadshotFromManifest } from "@/lib/assets/LookupNovaPredictPlayerHeadshotFromManifest";
 import { lookupNflTeamBrandAsset } from "@/lib/assets/NflTeamBrandAssetCatalog";
 import type { FantasyFootballPlayerPosition } from "@/lib/db/schema";
 
@@ -24,6 +25,7 @@ export interface NovaPredictPlayerVisualAssetBundle {
   teamPrimaryColor: string | null;
   opponentPrimaryColor: string | null;
   initials: string;
+  espnAthleteId: string | null;
 }
 
 export function ResolveNovaPredictPlayerVisualAssets(input: {
@@ -36,17 +38,31 @@ export function ResolveNovaPredictPlayerVisualAssets(input: {
 }): NovaPredictPlayerVisualAssetBundle {
   const teamBrand = lookupNflTeamBrandAsset(input.team);
   const opponentBrand = lookupNflTeamBrandAsset(input.opponent);
-  const espnHeadshotUrl = BuildEspnNflPlayerHeadshotUrl(input.espnAthleteId);
 
   /*
-    Local headshot path mirrors sync-nfl-visual-assets.mjs output under public/assets/players/.
-    We prefer CDN at runtime (always fresh) but local copy gives same-origin fallback on Cloudflare edge.
+    Manifest lookup fills gaps when DB lacks espn_athlete_id — ESPN rosters cover ~2k+ NFL athletes
+    while Sleeper espn_id is sparse on rookies and recently promoted players.
   */
-  const localHeadshotPath =
-    input.sleeperPlayerId && espnHeadshotUrl ? `/assets/players/${input.sleeperPlayerId}.png` : null;
+  const manifestRecord = LookupNovaPredictPlayerHeadshotFromManifest({
+    sleeperPlayerId: input.sleeperPlayerId,
+    espnAthleteId: input.espnAthleteId,
+    fullName: input.fullName,
+    team: input.team,
+  });
+
+  const resolvedEspnAthleteId =
+    input.espnAthleteId != null && String(input.espnAthleteId).trim()
+      ? String(input.espnAthleteId)
+      : manifestRecord?.espnAthleteId ?? null;
+
+  const headshotUrl =
+    manifestRecord?.headshotUrl ?? BuildEspnNflPlayerHeadshotUrl(resolvedEspnAthleteId);
+
+  const localHeadshotPath = manifestRecord?.localHeadshotPath
+    ?? (resolvedEspnAthleteId ? `/assets/players/by-espn/${resolvedEspnAthleteId}.png` : null);
 
   return {
-    headshotUrl: espnHeadshotUrl,
+    headshotUrl,
     localHeadshotPath,
     teamLogoUrl: teamBrand?.logoUrl ?? null,
     teamLogoLocalPath: teamBrand?.localLogoPath ?? null,
@@ -55,6 +71,7 @@ export function ResolveNovaPredictPlayerVisualAssets(input: {
     teamPrimaryColor: teamBrand?.primaryColor ?? null,
     opponentPrimaryColor: opponentBrand?.primaryColor ?? null,
     initials: BuildPlayerInitialsFromFullName(input.fullName),
+    espnAthleteId: resolvedEspnAthleteId,
   };
 }
 

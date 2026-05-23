@@ -56,6 +56,7 @@ export const NFL_TEAM_BRAND_ASSET_CATALOG: Record<string, NflTeamBrandAssetRecor
   TB: { abbreviation: "TB", city: "Tampa Bay", name: "Buccaneers", espnSlug: "tb", primaryColor: "#D50A0A", alternateColor: "#FF7900", logoUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/tb.png", localLogoPath: "/assets/teams/tb.png" },
   TEN: { abbreviation: "TEN", city: "Tennessee", name: "Titans", espnSlug: "ten", primaryColor: "#0C2340", alternateColor: "#4B92DB", logoUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ten.png", localLogoPath: "/assets/teams/ten.png" },
   WAS: { abbreviation: "WAS", city: "Washington", name: "Commanders", espnSlug: "wsh", primaryColor: "#5A1414", alternateColor: "#FFB612", logoUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/wsh.png", localLogoPath: "/assets/teams/wsh.png" },
+  WSH: { abbreviation: "WSH", city: "Washington", name: "Commanders", espnSlug: "wsh", primaryColor: "#5A1414", alternateColor: "#FFB612", logoUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/wsh.png", localLogoPath: "/assets/teams/wsh.png" },
 };
 
 /**

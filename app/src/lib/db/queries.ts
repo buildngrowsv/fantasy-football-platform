@@ -71,6 +71,7 @@ function enrichNovaPredictPlayerRecord(
 
   return {
     ...baseRecord,
+    espnAthleteId: baseRecord.espnAthleteId ?? visualAssets.espnAthleteId,
     headshotUrl: baseRecord.headshotUrl ?? visualAssets.headshotUrl,
     localHeadshotPath: baseRecord.localHeadshotPath ?? visualAssets.localHeadshotPath,
     teamLogoUrl: visualAssets.teamLogoUrl,
