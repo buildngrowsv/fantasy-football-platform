@@ -1,5 +1,13 @@
 import type { NovaPredictExpertComparisonRecord } from "@/lib/db/schema";
 import { getNovaPredictExpertComparisons } from "@/lib/db/queries";
+import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
+
+export const metadata = BuildNovaPredictPageSiteMetadata({
+  title: "Expert Comparison Board",
+  description:
+    "Compare NovaPredict against leading analysts and consensus feeds on identical weekly slates and scoring rules.",
+  path: "/experts",
+});
 
 function rowTone(expert: NovaPredictExpertComparisonRecord): string {
   if (expert.analystName.toLowerCase().includes("nova")) {

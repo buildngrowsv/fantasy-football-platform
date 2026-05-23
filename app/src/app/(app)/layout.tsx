@@ -1,49 +1,46 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { NovaPredictAppSidebarNavigationPanel } from "@/components/layout/NovaPredictAppSidebarNavigationPanel";
+import { NovaPredictWeeklyDecisionFlowStrip } from "@/components/layout/NovaPredictWeeklyDecisionFlowStrip";
 import { NovaPredictPlayerHeadshotAvatar } from "@/components/media/NovaPredictPlayerHeadshotAvatar";
 import { getNovaPredictPlayerRecords } from "@/lib/db/queries";
 
 export const dynamic = "force-dynamic";
 
-const APP_SIDEBAR_LINKS = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/slate", label: "Pick Slate" },
-  { href: "/accountability", label: "Accountability" },
-  { href: "/challenge", label: "Challenge" },
-  { href: "/experts", label: "Experts" },
-  { href: "/import", label: "Import" },
-  { href: "/admin", label: "Signal Weights" },
-];
+/*
+  (app)/layout.tsx
+  ----------------
+  App shell: desktop sidebar with grouped IA + top signals, weekly flow strip,
+  and main content column. Mobile navigation lives in NovaPredictSiteHeader
+  (bottom bar + drawer) — sidebar hides under 900px via CSS.
+*/
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const topPlayers = await getNovaPredictPlayerRecords(4);
 
   return (
-    <div className="np-page-shell np-app-layout" style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: "1rem" }}>
-      <aside className="np-card" style={{ padding: "1rem", alignSelf: "start", position: "sticky", top: "5.5rem" }}>
-        <p className="np-pill np-pill-cyan" style={{ marginBottom: "0.8rem" }}>
-          App Navigation
-        </p>
-        <nav style={{ display: "grid", gap: "0.45rem", marginBottom: "1rem" }}>
-          {APP_SIDEBAR_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="np-card-muted"
-              style={{ padding: "0.6rem 0.75rem", color: "var(--np-text-muted)", fontSize: "0.82rem", letterSpacing: "0.04em", textTransform: "uppercase" }}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+    <div className="np-page-shell np-app-shell">
+      <aside className="np-app-sidebar np-card">
+        <div className="np-app-sidebar-intro">
+          <p className="np-pill np-pill-accent">NovaPredict App</p>
+          <p className="np-app-sidebar-intro-copy">
+            Your weekly decision engine — projections, overrides, and accountability in one loop.
+          </p>
+        </div>
 
-        <div className="np-card-muted" style={{ padding: "0.75rem" }}>
-          <div style={{ fontSize: "0.66rem", color: "var(--np-text-dim)", textTransform: "uppercase", letterSpacing: "0.11em", marginBottom: "0.65rem" }}>
-            Top Nova Signals
+        <NovaPredictAppSidebarNavigationPanel />
+
+        <div className="np-app-sidebar-signals np-card-muted">
+          <div className="np-app-sidebar-signals-header">
+            <span>Top Nova Signals</span>
+            <Link href="/slate" className="np-app-sidebar-signals-action">
+              Full slate →
+            </Link>
           </div>
-          <div style={{ display: "grid", gap: "0.65rem" }}>
+
+          <div className="np-app-sidebar-signals-list">
             {topPlayers.map((player) => (
-              <Link key={player.id} href={`/players/${encodeURIComponent(player.id)}`} style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
+              <Link key={player.id} href={`/players/${encodeURIComponent(player.id)}`} className="np-app-sidebar-signal-row">
                 <NovaPredictPlayerHeadshotAvatar
                   fullName={player.fullName}
                   position={player.position}
@@ -54,9 +51,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
                   showTeamRing
                   teamPrimaryColor={player.teamPrimaryColor}
                 />
-                <div>
-                  <div style={{ fontSize: "0.84rem", color: "var(--np-text-strong)", fontWeight: 600 }}>{player.fullName}</div>
-                  <div style={{ fontSize: "0.68rem", color: "var(--np-text-dim)", fontFamily: "var(--font-jetbrains-mono)" }}>
+                <div className="np-app-sidebar-signal-copy">
+                  <div className="np-app-sidebar-signal-name">{player.fullName}</div>
+                  <div className="np-app-sidebar-signal-meta">
                     {player.novaPprProjection.toFixed(1)} · {player.marketSignalLabel}
                   </div>
                 </div>
@@ -66,7 +63,10 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      <div style={{ minWidth: 0 }}>{children}</div>
+      <div className="np-app-main">
+        <NovaPredictWeeklyDecisionFlowStrip />
+        {children}
+      </div>
     </div>
   );
 }

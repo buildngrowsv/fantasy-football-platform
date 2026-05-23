@@ -1,10 +1,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import { NovaPredictPlayerProjectionCard } from "@/components/players/NovaPredictPlayerProjectionCard";
+import { NovaPredictHomepageJsonLdScript } from "@/components/seo/NovaPredictHomepageJsonLdScript";
 import type { NovaPredictPlatformMetricRecord } from "@/lib/db/schema";
 import { getNovaPredictHomepageMetrics, getNovaPredictPlayerRecords } from "@/lib/db/queries";
+import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = BuildNovaPredictPageSiteMetadata({
+  title: "Fantasy Intelligence Platform",
+  description:
+    "NovaPredict translates sportsbook probability into actionable fantasy football decisions — weekly projections, pick slate, accountability, and challenge mode.",
+  path: "/",
+});
 
 function metricToneColor(metric: NovaPredictPlatformMetricRecord): string {
   if (metric.tone === "accent") return "var(--np-accent)";
@@ -20,7 +29,9 @@ export default async function HomePage() {
   ]);
 
   return (
-    <div className="np-page-shell" style={{ display: "grid", gap: "1.25rem" }}>
+    <>
+      <NovaPredictHomepageJsonLdScript />
+      <div className="np-page-shell" style={{ display: "grid", gap: "1.25rem" }}>
       <section className="np-card np-grid-background np-marketing-hero" style={{ position: "relative", padding: "4rem 3rem", overflow: "hidden" }}>
         <div
           style={{
@@ -119,5 +130,6 @@ export default async function HomePage() {
         </Link>
       </section>
     </div>
+    </>
   );
 }

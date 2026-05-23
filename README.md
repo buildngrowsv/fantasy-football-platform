@@ -24,10 +24,22 @@ AI-powered fantasy football decision platform — complete Vegas prop distributi
 
 | Component | Technology |
 |-----------|------------|
-| Web app | Cloudflare Worker (OpenNext, local deploy) |
-| Database | Neon Postgres |
-| Pipeline | Cron → Queues → Python Container Workers |
-| Deploy | `npm run deploy:cf:full` |
+| Web app | Cloudflare Worker (OpenNext, local deploy) — `app/` |
+| Database | Neon Postgres (`novapredict` project) |
+| Pipeline | Python ingest + future computation — `pipeline/` |
+| Deploy | `npm run deploy:cf:full` (web) |
+
+## Pipeline (parallel track)
+
+The Python ingestion layer lives in [`pipeline/`](pipeline/README.md) — separate from the Next.js app the other agent is deploying.
+
+```bash
+./scripts/setup-neon-env.sh dev      # non-interactive Neon DATABASE_URL
+./scripts/ingest-smoke-tests.sh      # live API checks (6 endpoints)
+./scripts/run-pipeline-weekly-ingest.sh  # full ingest → normalize → compute (real PPR baselines)
+```
+
+Neon branches: `dev` (local), `staging`, `main` (production).
 
 ## Starter Docs
 

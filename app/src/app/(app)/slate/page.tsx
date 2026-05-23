@@ -3,6 +3,14 @@ import { NovaPredictMatchupVisualStrip } from "@/components/media/NovaPredictMat
 import { NovaPredictPlayerHeadshotAvatar } from "@/components/media/NovaPredictPlayerHeadshotAvatar";
 import type { NovaPredictPlayerRecord } from "@/lib/db/schema";
 import { getNovaPredictPlayerRecords } from "@/lib/db/queries";
+import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
+
+export const metadata = BuildNovaPredictPageSiteMetadata({
+  title: "Pick Slate",
+  description:
+    "NovaPredict pick slate — ranked weekly player projections with matchup context, market signals, and start/sit guidance.",
+  path: "/slate",
+});
 
 function getPositionBadgeClass(position: NovaPredictPlayerRecord["position"]): string {
   if (position === "QB") return "np-pill-amber";

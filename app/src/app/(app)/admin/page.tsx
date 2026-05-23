@@ -1,5 +1,13 @@
 import type { NovaPredictSignalWeightRecord } from "@/lib/db/schema";
 import { getNovaPredictSignalWeights } from "@/lib/db/queries";
+import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
+
+export const metadata = BuildNovaPredictPageSiteMetadata({
+  title: "Signal Weights Admin",
+  description: "Internal NovaPredict signal weight controls for model tuning.",
+  path: "/admin",
+  noIndex: true,
+});
 
 function weightStatusPill(signalWeight: NovaPredictSignalWeightRecord): string {
   if (signalWeight.status === "suppressed") return "np-pill-amber";

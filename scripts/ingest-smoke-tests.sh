@@ -72,10 +72,13 @@ PY
 
 smoke_odds_api_endpoint() {
   python3 - <<'PY'
-import json, urllib.request
+import json, urllib.error, urllib.request
 url = "https://api.the-odds-api.com/v4/sports?apiKey=invalid_smoke_test"
-with urllib.request.urlopen(url, timeout=20) as r:
-    body = r.read().decode()
+try:
+    with urllib.request.urlopen(url, timeout=20) as r:
+        body = r.read().decode()
+except urllib.error.HTTPError as exc:
+    body = exc.read().decode()
 data = json.loads(body)
 print(f"Odds API response keys: {list(data.keys())}")
 assert "error_code" in data or "message" in data
@@ -106,7 +109,11 @@ smoke_neon_database() {
     echo "SKIP: DATABASE_URL not set — run ./scripts/setup-neon-env.sh first"
     return 0
   fi
-  python3 - <<'PY'
+  PYTHON_BIN="${REPO_ROOT}/pipeline/.venv/bin/python"
+  if [[ ! -x "$PYTHON_BIN" ]]; then
+    PYTHON_BIN="python3"
+  fi
+  "$PYTHON_BIN" - <<'PY'
 import os
 import psycopg
 with psycopg.connect(os.environ["DATABASE_URL"]) as conn:

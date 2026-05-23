@@ -1,5 +1,13 @@
 import Image from "next/image";
 import { getNovaPredictLeagueImportProviders } from "@/lib/db/queries";
+import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
+
+export const metadata = BuildNovaPredictPageSiteMetadata({
+  title: "League Import",
+  description:
+    "Connect Sleeper, ESPN, or Yahoo leagues to personalize NovaPredict projections, lineup recommendations, and accountability tracking.",
+  path: "/import",
+});
 
 const PROVIDER_ASSET_MAP: Record<string, string> = {
   Sleeper: "/assets/providers/sleeper.svg",

@@ -1,54 +1,72 @@
 # NovaPredict Python Pipeline
 
-Batch ingestion and (future) computation engine for NovaPredict. Runs locally and in **Cloudflare Workers Containers** per [documentation/architecture-plan.md](../documentation/architecture-plan.md).
+Batch ingestion, normalization, and baseline computation for NovaPredict. Runs locally and in **Cloudflare Workers Containers** per [documentation/architecture-plan.md](../documentation/architecture-plan.md).
 
 ## What lives here
 
 | Path | Purpose |
 |------|---------|
-| `ingest/` | One ingest job per file — pulls live data, writes raw rows + audit trail |
-| `lib/` | Shared env loading and Neon connection helpers |
-| `sql/` | Idempotent SQL migrations for ingestion tables |
-| `ApplyNovaPredictIngestionSqlMigrations.py` | Applies `sql/*.sql` to `DATABASE_URL` |
+| `ingest/` | Pull live data from ESPN, Sleeper, nflverse, The Odds API |
+| `normalize/` | Promote raw snapshots → core + app tables (`players`, matchups, actuals) |
+| `compute/` | Derive `player_projections` from **real** trailing PPR stats |
+| `lib/` | Shared env, DB, crosswalk helpers |
+| `sql/` | Idempotent SQL migrations |
+| `RunNovaPredictWeeklyIngestOrchestrator.py` | Full weekly chain entrypoint |
 
 ## Quick start
 
 ```bash
-# 1. Write DATABASE_URL to .env (non-interactive Neon)
 ./scripts/setup-neon-env.sh dev
-
-# 2. Live API smoke tests (no DB writes)
-./scripts/ingest-smoke-tests.sh
-
-# 3. Migrate + run free-tier ingest jobs
-./scripts/run-pipeline-ingest-smoke-test.sh
+./scripts/ingest-smoke-tests.sh              # live API checks
+./scripts/run-pipeline-weekly-ingest.sh      # full ingest → normalize → compute
 ```
 
-## Ingest jobs (Phase 1 — free feeds)
+## Data honesty
 
-| Job | Source | Table |
-|-----|--------|-------|
+| Column | Source today | Future (paid feeds) |
+|--------|--------------|---------------------|
+| `vegas_ppr` | Trailing 4-week nflverse `fantasy_points_ppr` avg | The Odds API prop-implied CDF |
+| `nova_ppr` | Trailing avg + small trend adjustment from same real data | Full 10-phase blend engine |
+| `move_type` | `"Trailing PPR baseline"` | Line Move Classifier labels |
+
+No mock or hash-randomized projections in this pipeline path.
+
+## Ingest jobs
+
+| Job | Source | Output |
+|-----|--------|--------|
 | `FetchEspnNflScoreboardIngestJob` | ESPN public API | `raw_espn_scoreboard_events` |
 | `FetchEspnNflNewsHeadlinesIngestJob` | ESPN public API | `raw_espn_news_articles` |
 | `FetchSleeperNflPlayerCatalogIngestJob` | Sleeper API | `raw_sleeper_player_catalog_snapshots` |
+| `FetchNflverseWeeklyPlayerStatsIngestJob` | nflverse GitHub | `raw_nflverse_weekly_player_stats` |
+| `FetchNflverseGamesScheduleIngestJob` | nflverse GitHub | `raw_nflverse_games` |
+| `FetchTheOddsApiNflEventsIngestJob` | The Odds API (optional) | `raw_the_odds_api_events` |
 
-Every job writes an `ingest_runs` audit row (`running` → `success` / `failed`).
+## Normalize + compute
+
+| Step | Output table |
+|------|--------------|
+| `NormalizeSleeperCatalogIntoPlayersTable` | `players` |
+| `NormalizeEspnScoreboardIntoWeeklyMatchupsTable` | `weekly_team_matchups`, `nfl_games` |
+| `NormalizeNflverseWeeklyStatsIntoPlayerWeeklyActualsTable` | `player_weekly_actuals` |
+| `ComputeWeeklyProjectionsFromRealWeeklyStatsJob` | `player_projections` |
+
+The Next.js app in `app/` reads `players` and `player_projections` directly.
 
 ## Neon branches
 
 | Branch | Use |
 |--------|-----|
-| `dev` | Local pipeline development (default for scripts) |
-| `staging` | Pre-production Worker deploy |
+| `dev` | Local pipeline (default) |
+| `staging` | Pre-production Worker |
 | `main` | Production |
 
-Project: **novapredict** (`patient-sunset-77985570`) · Org: `org-flat-fire-88103782`
+Project: **novapredict** (`patient-sunset-77985570`)
 
-## Next pipeline work (not in `app/`)
+## Next steps
 
 - The Odds API prop + alt ladder ingest (requires `THE_ODDS_API_KEY`)
-- nflverse parquet → Neon normalization
-- Python computation engine (Phases 1–9)
-- Workers Container cron entrypoints in `workers/pipeline-orchestrator/`
+- Vig removal + CDF + Monte Carlo computation engine (Phase 2)
+- Cloudflare Cron → Workers Container binding
 
-See [documentation/build-roadmap.md](../documentation/build-roadmap.md) Phase 1–2.
+See [documentation/build-roadmap.md](../documentation/build-roadmap.md).

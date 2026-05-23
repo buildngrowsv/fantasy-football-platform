@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { SiteNav } from "@/components/layout/SiteNav";
+import { NovaPredictSiteHeader } from "@/components/layout/NovaPredictSiteHeader";
+import { BuildNovaPredictRootSiteMetadata } from "@/lib/seo/BuildNovaPredictRootSiteMetadata";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -15,11 +15,7 @@ const jetBrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "NovaPredict | Fantasy Intelligence Platform",
-  description:
-    "NovaPredict translates sportsbook probability into actionable fantasy football decisions.",
-};
+export const metadata = BuildNovaPredictRootSiteMetadata();
 
 export default function RootLayout({
   children,
@@ -34,8 +30,8 @@ export default function RootLayout({
           a marketing narrative and a power-user workflow. A persistent nav prevents
           users from feeling "lost in a separate app" when they jump between those contexts.
         */}
-        <SiteNav />
-        <main style={{ flex: 1, padding: "1.5rem 0 3rem" }}>{children}</main>
+        <NovaPredictSiteHeader />
+        <main className="np-main-content">{children}</main>
       </body>
     </html>
   );

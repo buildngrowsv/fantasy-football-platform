@@ -1,9 +1,25 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NovaPredictMatchupVisualStrip } from "@/components/media/NovaPredictMatchupVisualStrip";
 import { NovaPredictPlayerHeadshotAvatar } from "@/components/media/NovaPredictPlayerHeadshotAvatar";
 import { NovaPredictPlayerProjectionCard } from "@/components/players/NovaPredictPlayerProjectionCard";
 import type { NovaPredictPlayerRecord } from "@/lib/db/schema";
 import { getNovaPredictPlayerById, getNovaPredictPlayerRecords } from "@/lib/db/queries";
+import { BuildNovaPredictPlayerPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPlayerPageSiteMetadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const player = await getNovaPredictPlayerById(resolvedParams.id);
+
+  if (!player) {
+    return {
+      title: "Player Not Found",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  return BuildNovaPredictPlayerPageSiteMetadata(player);
+}
 
 function getTierLabel(player: NovaPredictPlayerRecord): string {
   if (player.novaPprProjection >= 23) return "Tier 1 · Start";

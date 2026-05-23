@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { NovaPredictPlayerProjectionCard } from "@/components/players/NovaPredictPlayerProjectionCard";
 import { getNovaPredictHomepageMetrics, getNovaPredictPlayerRecords } from "@/lib/db/queries";
+import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
+
+export const metadata = BuildNovaPredictPageSiteMetadata({
+  title: "Weekly Dashboard",
+  description:
+    "Live NovaPredict weekly dashboard — platform metrics, top signals, and projection cards for your fantasy decisions.",
+  path: "/dashboard",
+});
 
 export default async function DashboardPage() {
   const [metrics, players] = await Promise.all([getNovaPredictHomepageMetrics(), getNovaPredictPlayerRecords(12)]);

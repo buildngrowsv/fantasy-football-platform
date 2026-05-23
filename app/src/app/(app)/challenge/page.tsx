@@ -1,5 +1,13 @@
 import { NovaPredictPlayerProjectionCard } from "@/components/players/NovaPredictPlayerProjectionCard";
 import { getNovaPredictHomepageMetrics, getNovaPredictPlayerRecords } from "@/lib/db/queries";
+import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
+
+export const metadata = BuildNovaPredictPageSiteMetadata({
+  title: "Challenge The Model",
+  description:
+    "Override NovaPredict projections, track your record by reason code, and discover where your instincts beat consensus and the model.",
+  path: "/challenge",
+});
 
 export default async function ChallengePage() {
   const [metrics, challengePlayers] = await Promise.all([

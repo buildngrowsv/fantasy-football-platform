@@ -59,7 +59,10 @@ def FetchSleeperNflPlayerCatalogIngestJob() -> int:
         )
 
         try:
+            batch: list[tuple] = []
+            batch_size = 500
             stored = 0
+
             for sleeper_player_id, player_record in catalog.items():
                 if not isinstance(player_record, dict):
                     continue
@@ -71,12 +74,7 @@ def FetchSleeperNflPlayerCatalogIngestJob() -> int:
                 position = str(player_record.get("position") or "").strip() or None
                 team = str(player_record.get("team") or "").strip() or None
 
-                connection.execute(
-                    """
-                    INSERT INTO raw_sleeper_player_catalog_snapshots
-                      (ingest_run_id, sleeper_player_id, full_name, position, team, payload)
-                    VALUES (%s, %s, %s, %s, %s, %s::jsonb)
-                    """,
+                batch.append(
                     (
                         ingest_run_id,
                         str(sleeper_player_id),
@@ -84,9 +82,33 @@ def FetchSleeperNflPlayerCatalogIngestJob() -> int:
                         position,
                         team,
                         json.dumps(player_record),
-                    ),
+                    )
                 )
-                stored += 1
+
+                if len(batch) >= batch_size:
+                    with connection.cursor() as cursor:
+                        cursor.executemany(
+                            """
+                            INSERT INTO raw_sleeper_player_catalog_snapshots
+                              (ingest_run_id, sleeper_player_id, full_name, position, team, payload)
+                            VALUES (%s, %s, %s, %s, %s, %s::jsonb)
+                            """,
+                            batch,
+                        )
+                    stored += len(batch)
+                    batch.clear()
+
+            if batch:
+                with connection.cursor() as cursor:
+                    cursor.executemany(
+                        """
+                        INSERT INTO raw_sleeper_player_catalog_snapshots
+                          (ingest_run_id, sleeper_player_id, full_name, position, team, payload)
+                        VALUES (%s, %s, %s, %s, %s, %s::jsonb)
+                        """,
+                        batch,
+                    )
+                stored += len(batch)
 
             PersistIngestRunAuditRecordFinishSuccess(
                 connection,

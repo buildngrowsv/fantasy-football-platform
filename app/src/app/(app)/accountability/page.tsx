@@ -3,6 +3,14 @@ import { NovaPredictPlayerHeadshotAvatar } from "@/components/media/NovaPredictP
 import { ResolveNovaPredictPlayerVisualAssets } from "@/lib/assets/ResolveNovaPredictPlayerVisualAssets";
 import type { NovaPredictAccountabilityCallRecord, FantasyFootballPlayerPosition } from "@/lib/db/schema";
 import { getNovaPredictAccountabilityCalls, getNovaPredictHomepageMetrics } from "@/lib/db/queries";
+import { BuildNovaPredictPageSiteMetadata } from "@/lib/seo/BuildNovaPredictPageSiteMetadata";
+
+export const metadata = BuildNovaPredictPageSiteMetadata({
+  title: "Accountability Report",
+  description:
+    "NovaPredict accountability report — every model call graded correct, miss, or pending with full transparency on weekly fantasy decisions.",
+  path: "/accountability",
+});
 
 function callClassStyles(call: NovaPredictAccountabilityCallRecord): { border: string; badge: string; text: string } {
   if (call.classification === "correct") {
